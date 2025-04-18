@@ -1,0 +1,22 @@
+# Dépendances npm
+node_modules/
+
+# Build Angular
+dist/
+.angular/
+
+# Environnements et caches
+.coverage/
+tmp/
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs et éditeurs
+.vscode/
+.idea/
+
+# Système
+.DS_Store
+Thumbs.db
