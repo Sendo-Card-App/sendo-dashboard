@@ -29,7 +29,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/sendo-dashboard
+            cd ${{ secrets.DASHBOARD_DESTINATION }}
             rm -rf ./build
             git pull origin main
             cp -r $GITHUB_WORKSPACE/build ./
