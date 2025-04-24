@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+concurrency: 
+  group: deploy-${{ secrets.VPS_HOST }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -22,6 +26,13 @@ jobs:
       - name: Build production
         run: npm run build
 
+      - name: Validate SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keygen -l -f ~/.ssh/id_rsa
+
       - name: Déploiement via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -32,5 +43,6 @@ jobs:
             cd ${{ secrets.DASHBOARD_DESTINATION }}
             rm -rf ./build
             git pull origin main
-            cp -r $GITHUB_WORKSPACE/build ./
+            cp -r "$GITHUB_WORKSPACE/build" ./
             sudo systemctl restart nginx
+          debug: true
