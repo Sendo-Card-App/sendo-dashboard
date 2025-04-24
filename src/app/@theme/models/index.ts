@@ -1,4 +1,4 @@
-import { Role } from "../types/role";
+
 
 export interface LoginResponse {
     accessToken: string;
@@ -10,12 +10,12 @@ export interface BaseResponse {
     message: string;
     data: unknown;
 }
-  
+
 export interface RolePayload {
     id: number;
     name: string;
   }
-  
+
   export interface MeResponse {
     id: number;
     firstname: string;
@@ -33,16 +33,13 @@ export interface RolePayload {
     createdAt: string;    // ISO date
     updatedAt: string;    // ISO date
     role: RolePayload;    // objet role tel que renvoyé
-    kycDocuments: any[];
     wallet: {
       id: number;
       balance: number;
       currency: string;
     };
-    virtualCard: any | null;
-    transactions: any[];
   }
-  
+
 
 export interface Login {
     email: string;

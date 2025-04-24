@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanActivateChild } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, Router, CanActivateChild } from '@angular/router';
 import { AuthenticationService } from '../services/authentication.service';
-import { MeResponse } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class RoleGuard implements CanActivate, CanActivateChild {
@@ -10,11 +9,11 @@ export class RoleGuard implements CanActivate, CanActivateChild {
     private router: Router
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot): boolean {
     return this.checkRoleAccess(route);
   }
 
-  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivateChild(childRoute: ActivatedRouteSnapshot): boolean {
     return this.checkRoleAccess(childRoute);
   }
 
