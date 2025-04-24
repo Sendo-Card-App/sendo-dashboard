@@ -4,13 +4,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../types/user';
-import { BaseResponse, Login } from '../models';
+import { BaseResponse, MeResponse, Login } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
 
   private url = environment.apiUrl + environment.authUrl;
-
+  private urlcurl = environment.apiUrl;
 
   private getConfig() {
     return {
@@ -68,6 +68,19 @@ export class AuthenticationService {
 
   login(data: Login) {
     return this.httpClient.post<BaseResponse>(`${this.url}/login`, data, this.getConfig());
+  }
+  getUserIdentifiant(){
+    return this.httpClient.get<BaseResponse>(`${this.urlcurl}/users/me`, this.getConfigAuthorized());
+  }
+
+  public getStoredUser(): MeResponse | null {
+    const raw = localStorage.getItem('user-info');
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as MeResponse;
+    } catch {
+      return null;
+    }
   }
 
   logout(): void {

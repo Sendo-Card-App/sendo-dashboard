@@ -3,8 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './demo/layout/admin';
 import { EmptyComponent } from './demo/layout/empty/empty.component';
 import { GuestComponent } from './demo/layout/front/guest.component';
-import { AuthGuardChild } from './@theme/helpers/auth.guard';
+// import { AuthGuardChild } from './@theme/helpers/auth.guard';
 import { Role } from './@theme/types/role';
+import { RoleGuard } from './@theme/helpers/role.guards';
 
 const routes: Routes = [
   { 
@@ -51,12 +52,12 @@ const routes: Routes = [
   {
     path: '',
     component: AdminComponent,
-    canActivateChild: [AuthGuardChild],
+    canActivateChild: [RoleGuard],
     children: [
       { 
         path: 'sample-page', 
         loadComponent: () => import('./demo/pages/other/sample-page/sample-page.component').then((c) => c.SamplePageComponent),
-        data: { roles: [Role.Admin, Role.User] } 
+        data: { roles: ['USER', 'ADMIN'] }
       }
     ]
   },
