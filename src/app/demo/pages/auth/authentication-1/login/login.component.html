@@ -1,0 +1,93 @@
+<div class="auth-main">
+  <div class="auth-wrapper version-1">
+    <div class="auth-form">
+      <div class="auth-background">
+        <div class="yellow-circle"></div>
+        <div class="red-circle"></div>
+      </div>
+
+      <div class="main-form">
+        <app-card
+          [showHeader]="false"
+          class="auth-form-card"
+          [class.user-role]="!authenticationService.isLoggedIn()"
+          padding="40"
+        >
+          <div class="text-center">
+            <a href="#">
+              <img src="assets/images/icon-logo.png" alt="logo" width="100" />
+            </a>
+          </div>
+          <div class="text-center m-b-25 f-20 f-w-500">Remplissez les champs</div>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="text-start">
+            <!-- Email -->
+            <label for="email" class="f-w-500">Entrez votre Email</label>
+            <mat-form-field appearance="outline" class="w-100 m-t-5">
+              <input
+                id="email"
+                matInput
+                formControlName="email"
+                [ngClass]="{ 'is-invalid': submitted && loginForm.get('email')?.errors }"
+              />
+              <mat-hint *ngIf="submitted && loginForm.get('email')?.errors" class="text-warn-500">
+                L'e-mail est obligatoire
+              </mat-hint>
+            </mat-form-field>
+
+            <!-- Mot de passe -->
+            <label for="password" class="f-w-500">Entrez votre mot de passe</label>
+            <mat-form-field appearance="outline" class="w-100 m-t-5">
+              <input
+                [type]="hide ? 'password' : 'text'"
+                id="password"
+                matInput
+                formControlName="password"
+                [ngClass]="{ 'is-invalid': submitted && loginForm.get('password')?.errors }"
+              />
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hide = !hide"
+                [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide"
+              >
+                <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-hint *ngIf="submitted && loginForm.get('password')?.errors" class="text-warn-500">
+                Le mot de passe est requis
+              </mat-hint>
+            </mat-form-field>
+
+            <!-- Mot de passe oublié -->
+            <div class="check-me">
+              <a
+                class="f-w-400 text-primary-500"
+                [routerLink]="
+                  authenticationService.isLoggedIn()
+                    ? '/authentication-1/forgot-password'
+                    : '/forgot-password'
+                "
+              >
+                Mot de passe oublié ?
+              </a>
+            </div>
+
+            <!-- Bouton Connexion -->
+            <div class="grid">
+              <button mat-flat-button color="primary" type="submit" class="b-rad-20 m-t-15">
+                Connexion
+              </button>
+            </div>
+
+            <!-- Message d'erreur -->
+            <div *ngIf="error" class="bg-warn-50 text-warn-500 p-10 m-t-15 mb-0">
+              {{ error }}
+            </div>
+          </form>
+        </app-card>
+      </div>
+    </div>
+  </div>
+</div>
