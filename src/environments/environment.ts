@@ -4,10 +4,13 @@
 
 import packageInfo from '../../package.json';
 
+export const apiUrl = 'http://217.65.146.204:3000/api'
+const authUrl = '/auth'
 export const environment = {
   appVersion: packageInfo.version,
   production: false,
-  apiUrl: 'http://217.65.146.204:3000/api'
+  apiUrl: apiUrl,
+  authUrl: authUrl
 };
 
 /*

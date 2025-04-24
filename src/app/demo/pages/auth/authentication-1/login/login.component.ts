@@ -5,6 +5,7 @@ import { RouterModule, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
+import { BaseResponse } from 'src/app/@theme/models';
 
 @Component({
   selector: 'app-login',
@@ -47,15 +48,19 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid) {
       return;
     }
-    const { email, password } = this.loginForm.value;
+    const data = this.loginForm.value;
     this.error = null;
-    this.authenticationService.login(email, password).subscribe({
-
-      next: () => this.router.navigate(['/dashboard']),
-      error: err => {
-        console.error('Login failed:', err);
-        this.error = err.error?.message || 'Échec de la connexion';
-      }
-    });
+    try {
+      this.authenticationService.login(data).subscribe((response: BaseResponse) => {
+        console.log(response)
+        localStorage.setItem('login-sendo', JSON.stringify(response.data))
+        this.router.navigate(['/dashboard'])
+      }, (error) => {
+        console.log('error', error)
+        this.error = error.error?.message || 'Échec de la connexion';
+      });
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
