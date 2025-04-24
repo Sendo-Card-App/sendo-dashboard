@@ -29,9 +29,9 @@ jobs:
       - name: Validate SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keygen -l -f ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/gh-actions-key
+          chmod 600 ~/.ssh/gh-actions-key
+          ssh-keygen -l -f ~/.ssh/gh-actions-key
 
       - name: Déploiement via SSH
         uses: appleboy/ssh-action@master
