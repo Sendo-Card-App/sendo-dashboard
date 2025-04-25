@@ -47,24 +47,24 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
-    
+
     // Arrête la soumission si le formulaire est invalide
     if (this.loginForm.invalid) {
       return;
     }
-  
+
     const data = this.loginForm.value;
     this.error = null;
-  
+
     // Appel au service d'authentification
     this.authenticationService.login(data).pipe(
       // Opérateur switchMap pour chaîner les appels API
       switchMap((loginResponse: BaseResponse) => {
         console.log('Login response:', loginResponse);
-        
+
         // Stocke les données de connexion
         localStorage.setItem('login-sendo', JSON.stringify(loginResponse.data));
-        
+
         // Récupère les infos utilisateur après le login
         return this.authenticationService.getUserIdentifiant().pipe(
           tap((userResponse: BaseResponse) => {
@@ -82,7 +82,7 @@ export class LoginComponent implements OnInit {
     ).subscribe({
       next: () => {
         // Redirige après succès (même si getUserIdentifiant a échoué)
-        this.router.navigate(['/sample-page']);
+        this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         console.error('Login error:', error);

@@ -5,6 +5,7 @@ import { EmptyComponent } from './demo/layout/empty/empty.component';
 import { GuestComponent } from './demo/layout/front/guest.component';
 // import { AuthGuardChild } from './@theme/helpers/auth.guard';
 import { RoleGuard } from './@theme/helpers/role.guards';
+import { AlreadyLoggedInGuard } from './@theme/helpers/already-logged-in.guard';
 
 const routes: Routes = [
   {
@@ -18,11 +19,18 @@ const routes: Routes = [
     children: [
       {
         path: 'login',
-        loadComponent: () => import('./demo/pages/auth/authentication-1/login/login.component').then((c) => c.LoginComponent)
+        loadComponent: () => import('./demo/pages/auth/authentication-1/login/login.component').then((c) => c.LoginComponent),
+        canActivate: [AlreadyLoggedInGuard]
       },
       {
         path: 'forgot-password',
-        loadComponent: () => import('./demo/pages/auth/authentication-1/forgot-password/forgot-password.component').then((c) => c.ForgotPasswordComponent)
+        loadComponent: () => import('./demo/pages/auth/authentication-1/forgot-password/forgot-password.component').then((c) => c.ForgotPasswordComponent),
+        canActivate: [AlreadyLoggedInGuard]
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () => import('./demo/pages/auth/authentication-1/code-verification/code-verification.component').then((c) => c.CodeVerificationComponent),
+        canActivate: [AlreadyLoggedInGuard]
       },
       {
         path: '',
@@ -54,7 +62,7 @@ const routes: Routes = [
     canActivateChild: [RoleGuard],
     children: [
       {
-        path: 'sample-page',
+        path: 'dashboard',
         loadComponent: () => import('./demo/pages/other/sample-page/sample-page.component').then((c) => c.SamplePageComponent),
         data: { roles: ['CUSTOMER', 'ADMIN','VALIDATOR'] }
       }

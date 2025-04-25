@@ -1,7 +1,7 @@
 // src/app/services/authentication.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, finalize, map, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, distinctUntilChanged, finalize, map, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../types/user';
 import { BaseResponse, MeResponse, Login } from '../models';
@@ -55,16 +55,26 @@ export class AuthenticationService {
   }
 
 
-  public isLoggedIn(): boolean {
-    return !!this.currentUserValue?.serviceToken;
-  }
+  isLoggedIn(): boolean {
+
+    if (this.currentUserSubject.value) {
+        return true;
+    }
+
+    // 2. Vérifie les données dans le localStorage
+    const authData = JSON.parse(localStorage.getItem('login-sendo') || '{}');
+    const userData = this.getStoredUser();
+
+    // 3. Validation complète du token et des données utilisateur
+    if (authData?.accessToken && userData?.id) {
+
+        return true;
+    }
+
+    return false;
+}
 
 
-  public isLoggedIn$(): Observable<boolean> {
-    return this.currentUser$.pipe(
-      map(user => !!user?.serviceToken)
-    );
-  }
 
   login(data: Login) {
     return this.httpClient.post<BaseResponse>(`${this.url}/login`, data, this.getConfig());
@@ -113,5 +123,13 @@ public clearSession(): void {
     localStorage.removeItem('login-sendo');
     localStorage.removeItem('user-info');
     this.currentUserSubject.next(null);
+}
+
+forgotPassword(email: string): Observable<{ message: string }> {
+  return this.httpClient.post<{ message: string }>(
+    `${this.url}/forgot-password`,
+    { email },
+    this.getConfig()
+  );
 }
 }
