@@ -1,7 +1,7 @@
 // src/app/services/authentication.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, finalize, map, of, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../types/user';
 import { BaseResponse, MeResponse, Login } from '../models';
@@ -49,17 +49,17 @@ export class AuthenticationService {
     }
   }
 
- 
+
   public get currentUserValue(): User | null {
     return this.currentUserSubject.value;
   }
 
- 
+
   public isLoggedIn(): boolean {
     return !!this.currentUserValue?.serviceToken;
   }
 
-  
+
   public isLoggedIn$(): Observable<boolean> {
     return this.currentUser$.pipe(
       map(user => !!user?.serviceToken)
@@ -83,9 +83,35 @@ export class AuthenticationService {
     }
   }
 
-  logout(): void {
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('login-sendo')
+  logout(): Observable<void> {
+    // Récupère le deviceId depuis le localStorage
+    const authData = JSON.parse(localStorage.getItem('login-sendo') || '{}');
+    const deviceId = authData.deviceId;
+
+    if (!deviceId) {
+        console.error('DeviceId is required for logout');
+        this.clearSession();
+        return throwError(() => new Error('DeviceId required'));
+    }
+
+    return this.httpClient.post<void>(
+        `${this.url}/logout`,
+        { deviceId },
+        this.getConfigAuthorized()
+    ).pipe(
+        catchError(error => {
+            console.error('Logout API error:', error);
+            return throwError(() => error);
+        }),
+        finalize(() => {
+            this.clearSession();
+        })
+    );
+}
+
+public clearSession(): void {
+    localStorage.removeItem('login-sendo');
+    localStorage.removeItem('user-info');
     this.currentUserSubject.next(null);
-  }
+}
 }

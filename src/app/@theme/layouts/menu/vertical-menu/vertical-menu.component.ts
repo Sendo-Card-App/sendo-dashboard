@@ -1,7 +1,7 @@
 // Angular import
 import { Component, effect, inject, input } from '@angular/core';
 import { Location, LocationStrategy } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 
 // project import
 import { NavigationItem } from 'src/app/@theme/types/navigation';
@@ -15,7 +15,7 @@ import { MenuCollapseComponent } from './menu-collapse/menu-collapse.component';
 
 @Component({
   selector: 'app-vertical-menu',
-  imports: [SharedModule, MenuGroupVerticalComponent, MenuItemVerticalComponent, MenuCollapseComponent, RouterModule],
+  imports: [SharedModule, MenuGroupVerticalComponent, MenuItemVerticalComponent, MenuCollapseComponent],
   templateUrl: './vertical-menu.component.html',
   styleUrls: ['./vertical-menu.component.scss']
 })
@@ -32,7 +32,7 @@ export class VerticalMenuComponent {
   direction: string = 'ltr';
 
   // Constructor
-  constructor() {
+  constructor(private router: Router) {
     effect(() => {
       this.updateThemeLayout(this.themeService.layout());
     });
@@ -85,6 +85,14 @@ export class VerticalMenuComponent {
 
   // user Logout
   logout() {
-    this.authenticationService.logout();
-  }
+    this.authenticationService.logout().subscribe({
+        complete: () => {
+            this.router.navigate(['/']);
+        },
+        error: (err) => {
+            console.error('Logout error:', err);
+            this.router.navigate(['/']);
+        }
+    });
+}
 }
