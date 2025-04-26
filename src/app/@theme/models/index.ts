@@ -1,4 +1,4 @@
-import { Role } from "../types/role";
+
 
 export interface LoginResponse {
     accessToken: string;
@@ -10,15 +10,36 @@ export interface BaseResponse {
     message: string;
     data: unknown;
 }
-  
-export interface MeResponse {
-    firstName?: string;
-    lastName?: string;
-    id: string;
-    email: string;
+
+export interface RolePayload {
+    id: number;
     name: string;
-    role: Role;
-}
+  }
+
+  export interface MeResponse {
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+    isVerifiedEmail: boolean;
+    phone: string;
+    address: string;
+    profession: string | null;
+    region: string | null;
+    city: string | null;
+    district: string | null;
+    isVerifiedKYC: boolean;
+    roleId: number;
+    createdAt: string;    // ISO date
+    updatedAt: string;    // ISO date
+    role: RolePayload;    // objet role tel que renvoyé
+    wallet: {
+      id: number;
+      balance: number;
+      currency: string;
+    };
+  }
+
 
 export interface Login {
     email: string;

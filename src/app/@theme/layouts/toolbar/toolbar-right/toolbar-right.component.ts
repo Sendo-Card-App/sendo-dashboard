@@ -1,7 +1,7 @@
 // angular import
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, output } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 // third party
 import { TranslateService } from '@ngx-translate/core';
@@ -30,7 +30,7 @@ export class NavRightComponent {
   direction: string = 'ltr';
 
   // constructor
-  constructor() {
+  constructor(private router: Router) {
     const translate = this.translate;
 
     translate.setDefaultLang(AbleProConfig.i18n);
@@ -56,8 +56,16 @@ export class NavRightComponent {
 
   // user Logout
   logout() {
-    this.authenticationService.logout();
-  }
+    this.authenticationService.logout().subscribe({
+        complete: () => {
+            this.router.navigate(['/']);
+        },
+        error: (err) => {
+            console.error('Logout error:', err);
+            this.router.navigate(['/']);
+        }
+    });
+}
 
   cards = [
     {

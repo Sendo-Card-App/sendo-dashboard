@@ -6,6 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 import { BaseResponse } from 'src/app/@theme/models';
+import { switchMap, tap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -45,22 +47,47 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
+
+    // Arrête la soumission si le formulaire est invalide
     if (this.loginForm.invalid) {
       return;
     }
+
     const data = this.loginForm.value;
     this.error = null;
-    try {
-      this.authenticationService.login(data).subscribe((response: BaseResponse) => {
-        console.log(response)
-        localStorage.setItem('login-sendo', JSON.stringify(response.data))
-        this.router.navigate(['/dashboard'])
-      }, (error) => {
-        console.log('error', error)
-        this.error = error.error?.message || 'Échec de la connexion';
-      });
-    } catch (error) {
-      console.log(error)
-    }
+
+    // Appel au service d'authentification
+    this.authenticationService.login(data).pipe(
+      // Opérateur switchMap pour chaîner les appels API
+      switchMap((loginResponse: BaseResponse) => {
+        console.log('Login response:', loginResponse);
+
+        // Stocke les données de connexion
+        localStorage.setItem('login-sendo', JSON.stringify(loginResponse.data));
+
+        // Récupère les infos utilisateur après le login
+        return this.authenticationService.getUserIdentifiant().pipe(
+          tap((userResponse: BaseResponse) => {
+            console.log('User info:', userResponse.data);
+            localStorage.setItem('user-info', JSON.stringify(userResponse.data));
+          }),
+          catchError((error) => {
+            console.error('User info error:', error);
+            this.error = error.error?.message || error;
+            // On retourre un Observable vide pour continuer malgré l'erreur
+            return of(null);
+          })
+        );
+      })
+    ).subscribe({
+      next: () => {
+        // Redirige après succès (même si getUserIdentifiant a échoué)
+        this.router.navigate(['/dashboard']);
+      },
+      error: (error) => {
+        console.error('Login error:', error);
+        this.error = error.error?.message || error;
+      }
+    });
   }
 }
