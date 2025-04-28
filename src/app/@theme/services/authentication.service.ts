@@ -1,7 +1,7 @@
 // src/app/services/authentication.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, distinctUntilChanged, finalize, map, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, finalize, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { User } from '../types/user';
 import { BaseResponse, MeResponse, Login } from '../models';

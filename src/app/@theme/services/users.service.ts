@@ -12,10 +12,10 @@ export interface UserCreateRequest {
   roleId: number;
 }
 
-interface ApiResponse {
+interface ApiResponse<T = unknown> {
   status: number;
   message: string;
-  data?: any;
+  data?: T;
 }
 
 @Injectable({

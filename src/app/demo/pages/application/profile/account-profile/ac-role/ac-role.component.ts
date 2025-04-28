@@ -5,6 +5,7 @@ import { AdminService, Role } from 'src/app/@theme/services/admin.service';
 import { UserService } from 'src/app/@theme/services/users.service';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-ac-role',
@@ -99,7 +100,7 @@ export class AcRoleComponent implements OnInit {
     });
   }
 
-  private getErrorMessage(error: any): string {
+  private getErrorMessage(error: HttpErrorResponse): string {
     if (error.error?.message) {
       return error.error.message;
     }

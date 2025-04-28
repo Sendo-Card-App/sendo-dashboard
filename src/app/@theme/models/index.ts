@@ -17,7 +17,7 @@ export interface BaseResponse {
     name: string;
   }
 
-  export interface MeResponse {
+  export interface MeResponse<T = unknown> {
     id: number;
     firstname: string;
     lastname: string;
@@ -38,8 +38,8 @@ export interface BaseResponse {
       balance: number;
       currency: string;
     };
-    virtualCard: any | null;
-    transactions: any[];
+    virtualCard: T | null;
+    transactions: T[];
   }
 
 
