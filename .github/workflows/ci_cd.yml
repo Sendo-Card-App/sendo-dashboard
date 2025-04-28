@@ -1,0 +1,80 @@
+name: CI/CD Dashboard Sendo
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build-and-test:
+    name: Build et Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Linter
+        run: npm run lint
+
+      - name: Build production
+        run: npm run build -- --output-path=build --configuration production
+
+      - name: Archive build
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: build/
+
+  deploy:
+    name: Déploiement VPS
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Télécharger l'artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-output
+
+      - name: Configuration SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/gh-key
+          chmod 600 ~/.ssh/gh-key
+          ssh-keyscan ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test connexion SSH
+        run: ssh -i ~/.ssh/gh-key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'Connexion réussie ✅'"
+
+      - name: Déploiement
+        uses: appleboy/ssh-action@v1.8.1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.DASHBOARD_DESTINATION }}
+            rm -rf ./dist
+            cp -r "$GITHUB_WORKSPACE/build" ./dist
+            sudo chown -R www-data:www-data ./dist
+            sudo systemctl restart nginx
