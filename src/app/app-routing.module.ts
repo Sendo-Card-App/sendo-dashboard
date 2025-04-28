@@ -29,6 +29,11 @@ const routes: Routes = [
       },
       {
         path: 'reset-password',
+        loadComponent: () => import('./demo/pages/auth/authentication-1/reset-password/reset-password.component').then((c) => c.ResetPasswordComponent),
+        canActivate: [AlreadyLoggedInGuard]
+      },
+      {
+        path: 'verify',
         loadComponent: () => import('./demo/pages/auth/authentication-1/code-verification/code-verification.component').then((c) => c.CodeVerificationComponent),
         canActivate: [AlreadyLoggedInGuard]
       },

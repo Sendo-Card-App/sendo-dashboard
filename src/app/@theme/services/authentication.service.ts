@@ -132,4 +132,15 @@ forgotPassword(email: string): Observable<{ message: string }> {
     this.getConfig()
   );
 }
+
+resetPassword(newPassword: string, token: string): Observable<{ message: string }> {
+  return this.httpClient.post<{ message: string }>(
+    `${this.url}/reset-password`,
+    {
+      newPassword,
+      token
+    },
+    this.getConfig()
+  );
+}
 }
