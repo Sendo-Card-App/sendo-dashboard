@@ -68,10 +68,12 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # Clé sans passphrase
+          port: 22
           script: |
             cd ${{ secrets.DASHBOARD_DESTINATION }}
-            rm -rf ./build  # On nettoie l'ancien build
-            cp -r "$GITHUB_WORKSPACE/build" ./  # On copie le nouveau dossier build
+            rm -rf ./build
+            cp -r "$GITHUB_WORKSPACE/build" ./
             sudo chown -R www-data:www-data ./build
             sudo systemctl restart nginx
+
