@@ -22,11 +22,6 @@ const routes: Routes = [
         data: { roles: [Role.Admin, Role.User] }
       },
       {
-        path: 'calender',
-        loadChildren: () => import('./calender/calender.module').then((m) => m.CalenderModule),
-        data: { roles: [Role.Admin, Role.User] }
-      },
-      {
         path: 'customer',
         loadComponent: () => import('./customer-list/customer-list.component').then((c) => c.CustomerListComponent),
         data: { roles: [Role.Admin, Role.User] }
@@ -36,21 +31,6 @@ const routes: Routes = [
         loadChildren: () => import('./profile/profile.module').then((m) => m.ProfileModule),
         data: { roles: ['SUPER_ADMIN'] }
       },
-      {
-        path: 'e-commerce',
-        loadChildren: () => import('./e-commerce/e-commerce.module').then((m) => m.ECommerceModule),
-        data: { roles: [Role.Admin, Role.User] }
-      },
-      {
-        path: 'file-manager',
-        loadComponent: () => import('./file-manager/file-manager.component').then((c) => c.FileManagerComponent),
-        data: { roles: [Role.Admin, Role.User] }
-      },
-      {
-        path: 'email',
-        loadComponent: () => import('./email/email.component').then((c) => c.EmailComponent),
-        data: { roles: [Role.Admin, Role.User] }
-      }
     ]
   }
 ];
