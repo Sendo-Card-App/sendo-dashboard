@@ -143,4 +143,10 @@ resetPassword(newPassword: string, token: string): Observable<{ message: string 
     this.getConfig()
   );
 }
+verifyAccount(token: string): Observable<{ message: string }> {
+  return this.httpClient.get<{ message: string }>(
+    `${this.url}/verify?token=${token}`,
+    this.getConfig()
+  );
+}
 }
