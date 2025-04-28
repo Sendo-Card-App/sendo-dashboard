@@ -44,6 +44,23 @@ export class UserService {
     );
   }
 
+  updatePassword(
+    oldPassword: string,
+    newPassword: string
+  ): Observable<{ message: string }> {
+    const dataRegistered = localStorage.getItem('user-info') || '{}'
+    const data = JSON.parse(dataRegistered)
+
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/update-password/${data.id}`, // Endpoint PUT
+      {
+        oldPassword,
+        newPassword
+      },
+      this.getConfigAuthorized()
+    );
+  }
+
   private getConfigAuthorized() {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'
     const data = JSON.parse(dataRegistered)
