@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-test:
     name: Build et Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -23,10 +23,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Setup Node.js 18
+      - name: Setup Node.js 20
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
 
       - name: Install dependencies
@@ -39,7 +39,7 @@ jobs:
         run: npm run build -- --output-path=build --configuration production
 
       - name: Archive build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-output
           path: build/
@@ -47,12 +47,12 @@ jobs:
   deploy:
     name: Déploiement VPS
     needs: build-and-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.ref == 'refs/heads/main'
     
     steps:
       - name: Télécharger l'artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-output
 
@@ -63,9 +63,6 @@ jobs:
           chmod 600 ~/.ssh/gh-key
           ssh-keyscan ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Test connexion SSH
-        run: ssh -i ~/.ssh/gh-key ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'Connexion réussie ✅'"
-
       - name: Déploiement
         uses: appleboy/ssh-action@v1.8.1
         with:
@@ -74,7 +71,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.DASHBOARD_DESTINATION }}
-            rm -rf ./build
-            cp -r "$GITHUB_WORKSPACE/build" ./build
+            rm -rf ./build  # On nettoie l'ancien build
+            cp -r "$GITHUB_WORKSPACE/build" ./  # On copie le nouveau dossier build
             sudo chown -R www-data:www-data ./build
             sudo systemctl restart nginx
