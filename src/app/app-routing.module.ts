@@ -29,6 +29,11 @@ const routes: Routes = [
       },
       {
         path: 'reset-password',
+        loadComponent: () => import('./demo/pages/auth/authentication-1/reset-password/reset-password.component').then((c) => c.ResetPasswordComponent),
+        canActivate: [AlreadyLoggedInGuard]
+      },
+      {
+        path: 'verify',
         loadComponent: () => import('./demo/pages/auth/authentication-1/code-verification/code-verification.component').then((c) => c.CodeVerificationComponent),
         canActivate: [AlreadyLoggedInGuard]
       },
@@ -64,14 +69,19 @@ const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./demo/pages/other/sample-page/sample-page.component').then((c) => c.SamplePageComponent),
-        data: { roles: ['CUSTOMER', 'ADMIN','VALIDATOR'] }
-      }
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: 'application',
+        loadChildren: () => import('./demo/pages/application/application.module').then((m) => m.ApplicationModule),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
     ]
   },
   {
     path: '**',
     loadComponent: () => import('./demo/pages/maintenance/error/error.component').then((c) => c.ErrorComponent)
-  }
+  },
 ];
 
 @NgModule({

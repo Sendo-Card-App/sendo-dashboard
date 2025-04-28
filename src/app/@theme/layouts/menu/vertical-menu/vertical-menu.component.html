@@ -7,7 +7,7 @@
         </div>
         <div class="flex-grow-1 user-details">
           <div class="f-w-600">{{ this.authenticationService.currentUserName }}</div>
-          <div class="mat-caption">Administrator</div>
+          <div class="mat-caption">Administrateur</div>
         </div>
         <div class="user-setting">
           <a href="javascript:" [matMenuTriggerFor]="menu" class="text-muted">
@@ -17,27 +17,28 @@
           </a>
           <mat-menu #menu="matMenu" [overlapTrigger]="false" yPosition="below" xPosition="after">
             <button mat-menu-item>
-              <a [routerLink]="['/application/profile/account']" class="text-muted">
+
+              <a [routerLink]="['/application', 'profile', 'account', 'profile']" class="text-muted">
                 <i class="ti ti-user f-18 m-r-10"></i>
-                <span>My Account</span>
+                <span>Mon compte</span>
               </a>
             </button>
-            <button mat-menu-item>
+            <!-- <button mat-menu-item>
               <a href="javascript:" class="text-muted" [routerLink]="['/application/profile/account/settings']">
                 <i class="ti ti-settings f-18 m-r-10"></i>
-                <span>Settings</span>
+                <span>Paramettre</span>
               </a>
-            </button>
-            <button mat-menu-item>
+            </button> -->
+            <!-- <button mat-menu-item>
               <a href="javascript:" class="text-muted" [routerLink]="['/application/profile/account/settings']">
                 <i class="ti ti-lock f-18 m-r-10"></i>
                 <span>Lock Screen</span>
               </a>
-            </button>
+            </button> -->
             <button mat-menu-item>
               <a href="javascript:" class="text-muted" (click)="logout()">
                 <i class="ti ti-power f-18 m-r-10"></i>
-                <span>Logout</span>
+                <span>Déconnexion</span>
               </a>
             </button>
           </mat-menu>

@@ -11,12 +11,13 @@ export interface BaseResponse {
     data: unknown;
 }
 
-export interface RolePayload {
+
+  export interface RolePayload {
     id: number;
     name: string;
   }
 
-  export interface MeResponse {
+  export interface MeResponse<T = unknown> {
     id: number;
     firstname: string;
     lastname: string;
@@ -29,19 +30,35 @@ export interface RolePayload {
     city: string | null;
     district: string | null;
     isVerifiedKYC: boolean;
-    roleId: number;
-    createdAt: string;    // ISO date
-    updatedAt: string;    // ISO date
-    role: RolePayload;    // objet role tel que renvoyé
+    createdAt: string;
+    updatedAt: string;
+    roles: RolePayload[]; // Tableau de rôles
     wallet: {
       id: number;
       balance: number;
       currency: string;
     };
+    virtualCard: T | null;
+    transactions: T[];
   }
 
 
 export interface Login {
     email: string;
     password: string;
+}
+
+export interface InviteUserRequest {
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  address: string;
+  roleId: number;
+}
+
+export interface InviteUserResponse {
+  id: number;
+  invitationSent: boolean;
+  message?: string;
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, Router, CanActivateChild } from '@angular/router';
 import { AuthenticationService } from '../services/authentication.service';
+import { MeResponse } from '../models'; // Assurez-vous d'importer la bonne interface
 
 @Injectable({ providedIn: 'root' })
 export class RoleGuard implements CanActivate, CanActivateChild {
@@ -18,16 +19,16 @@ export class RoleGuard implements CanActivate, CanActivateChild {
   }
 
   private checkRoleAccess(route: ActivatedRouteSnapshot): boolean {
-    const user = this.auth.getStoredUser();
+    const user = this.auth.getStoredUser() as MeResponse; // Cast vers MeResponse
 
     // 1. Vérification de la connexion
     if (!user) {
-      this.router.navigate(['/'], { queryParams: { returnUrl: route.url } });
+      this.router.navigate(['/login'], { queryParams: { returnUrl: route.url } });
       return false;
     }
 
-    // 2. Vérification du rôle
-    if (!user.role) {
+    // 2. Vérification des rôles
+    if (!user.roles || user.roles.length === 0) {
       this.router.navigate(['/unauthorized']);
       return false;
     }
@@ -40,8 +41,12 @@ export class RoleGuard implements CanActivate, CanActivateChild {
       return true;
     }
 
-    // 5. Vérification du rôle utilisateur
-    if (allowedRoles.includes(user.role.name)) {
+    // 5. Vérification des rôles utilisateur
+    const hasRequiredRole = user.roles.some(role =>
+      allowedRoles.includes(role.name)
+    );
+
+    if (hasRequiredRole) {
       return true;
     }
 
