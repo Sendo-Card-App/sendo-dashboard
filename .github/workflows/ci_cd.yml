@@ -64,7 +64,7 @@ jobs:
           ssh-keyscan ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
       - name: Déploiement
-        uses: appleboy/ssh-action@v1.8.1
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
