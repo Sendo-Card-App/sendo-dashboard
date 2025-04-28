@@ -3,10 +3,6 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { MeResponse } from 'src/app/@theme/models';
 
-interface Role {
-  id: number;
-  name: string;
-}
 
 interface ContactInfo {
   icon: string;
