@@ -74,7 +74,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.DASHBOARD_DESTINATION }}
-            rm -rf ./dist
-            cp -r "$GITHUB_WORKSPACE/build" ./dist
-            sudo chown -R www-data:www-data ./dist
+            rm -rf ./build
+            cp -r "$GITHUB_WORKSPACE/build" ./build
+            sudo chown -R www-data:www-data ./build
             sudo systemctl restart nginx
