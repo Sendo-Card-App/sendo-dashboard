@@ -1,0 +1,112 @@
+<div class="row m-t-25">
+  <!-- Colonne de gauche - Profil -->
+  <div class="col-lg-4 col-xxl-3">
+    <app-card [showHeader]="false">
+      <div class="account-info">
+        <div class="user-status">
+          <span class="bg-primary-500 text-white f-12">
+            {{ userData?.isVerifiedKYC ? 'Vérifié' : 'Non vérifié' }}
+          </span>
+        </div>
+        <div class="text-center m-t-15">
+          <!-- Photo de profil par défaut -->
+          <img src="assets/images/user/avatar-5.jpg" alt="avatar" class="img-fluid wid-70 border-50" />
+
+          <!-- Nom complet -->
+          <div class="f-16 f-w-600">
+            {{ userData?.firstname }} {{ userData?.lastname }}
+          </div>
+
+          <!-- Rôles -->
+          <p class="text-muted">{{ userRoles }}</p>
+
+          <mat-divider class="m-y-15"></mat-divider>
+
+          <!-- Informations de contact -->
+          @for (info of contactInfos; track info) {
+            <div class="flex-inline align-item-center justify-content-start w-100 m-b-15">
+              <i class="{{ info.icon }} m-r-10"></i>
+              <div>{{ info.text }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    </app-card>
+
+    <!-- Carte Compétences (optionnelle) -->
+    <app-card cardTitle="Statut">
+      <div class="row align-item-center m-b-15">
+        <div class="col-sm-12">
+          <div class="flex align-item-center">
+            <div class="flex-grow-1 m-r-15">
+              <mat-progress-bar
+                mode="determinate"
+                [value]="userData?.isVerifiedEmail ? 100 : 50"
+                [color]="userData?.isVerifiedEmail ? 'primary' : 'warn'">
+              </mat-progress-bar>
+            </div>
+            <div class="flex-shrink-0">
+              <div class="text-muted">
+                {{ userData?.isVerifiedEmail ? 'Email vérifié' : 'Email non vérifié' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- Colonne de droite - Détails -->
+  <div class="col-lg-8 col-xxl-9">
+    <!-- Section Détails Personnels -->
+    <app-card cardTitle="Détails Personnels">
+      <ul class="list-group-flush">
+        @for (detail of personalDetails; track detail) {
+          <li class="list-group-item p-x-0">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">{{ detail.group }}</p>
+                <div class="f-w-500">{{ detail.text }}</div>
+              </div>
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">{{ detail.group_2 }}</p>
+                <div class="f-w-500">{{ detail.text_2 }}</div>
+              </div>
+            </div>
+          </li>
+        }
+        <li class="list-group-item p-b-0 p-x-0">
+          <p class="m-b-5 text-muted">Date de création</p>
+          <div class="f-w-500">
+            {{ userData?.createdAt
+              ? (userData.createdAt | date:'dd/MM/yyyy')
+              : 'Non disponible' }}
+
+          </div>
+        </li>
+      </ul>
+    </app-card>
+
+    <!-- Section Wallet -->
+    <app-card cardTitle="Portefeuille">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item p-x-0">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Solde</p>
+              <div class="f-w-500">
+                {{ userData?.wallet?.balance || 0 }} {{ userData?.wallet?.currency || 'XAF' }}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Statut KYC</p>
+              <div class="f-w-500">
+                {{ userData?.isVerifiedKYC ? 'Vérifié' : 'Non vérifié' }}
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </app-card>
+  </div>
+</div>
