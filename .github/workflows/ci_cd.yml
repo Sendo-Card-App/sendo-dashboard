@@ -30,9 +30,8 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
+        run: 
           npm ci
-          npm install ng-apexcharts apexcharts
         
       - name: Linter
         run: npm run lint
