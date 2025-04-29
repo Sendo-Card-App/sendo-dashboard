@@ -1,7 +1,7 @@
 // Angular import
 import { Component, effect, inject, input } from '@angular/core';
 import { Location, LocationStrategy } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 // project import
 import { NavigationItem } from 'src/app/@theme/types/navigation';
@@ -12,7 +12,25 @@ import { MenuGroupVerticalComponent } from './menu-group/menu-group.component';
 import { MenuItemVerticalComponent } from './menu-item/menu-item.component';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 import { MenuCollapseComponent } from './menu-collapse/menu-collapse.component';
+import { MeResponse } from 'src/app/@theme/models';
 
+interface ContactInfo {
+  icon: string;
+  text: string;
+  editable: boolean;
+  fieldName?: keyof MeResponse;
+}
+
+interface PersonalDetail {
+  group: string;
+  text: string;
+  editable: boolean;
+  fieldName?: keyof MeResponse;
+  group_2: string;
+  text_2: string;
+  editable_2: boolean;
+  fieldName_2?: keyof MeResponse;
+}
 @Component({
   selector: 'app-vertical-menu',
   imports: [SharedModule, MenuGroupVerticalComponent, MenuItemVerticalComponent, MenuCollapseComponent, RouterModule],
@@ -24,21 +42,28 @@ export class VerticalMenuComponent {
   private locationStrategy = inject(LocationStrategy);
   private themeService = inject(ThemeLayoutService);
   authenticationService = inject(AuthenticationService);
+  userData: MeResponse | null = null;
+  userRoles = '';
+  contactInfos: ContactInfo[] = [];
+  personalDetails: PersonalDetail[] = [];
 
   // public props
   readonly menus = input<NavigationItem[]>();
   showUser: false;
   showContent = true;
   direction: string = 'ltr';
+  userName: string = '';
 
   // Constructor
-  constructor() {
+  constructor(private router: Router) {
     effect(() => {
       this.updateThemeLayout(this.themeService.layout());
     });
     effect(() => {
       this.isRtlTheme(this.themeService.directionChange());
     });
+    const userData = JSON.parse(localStorage.getItem('user-info') || '{}');
+    this.userName = [userData.firstname, userData.lastname].filter(Boolean).join(' ');
   }
 
   // public method
@@ -85,6 +110,18 @@ export class VerticalMenuComponent {
 
   // user Logout
   logout() {
-    this.authenticationService.logout();
-  }
+    this.authenticationService.logout().subscribe({
+        complete: () => {
+            this.router.navigate(['/']);
+        },
+        error: (err) => {
+            console.error('Logout error:', err);
+            this.router.navigate(['/']);
+        }
+    });
+}
+
+
+
+
 }

@@ -63,12 +63,14 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
               <td mat-cell *matCellDef="let role" class="text-right">
-                <button mat-icon-button color="primary">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" class="m-l-5">
-                  <mat-icon>delete</mat-icon>
-                </button>
+
+                  <a href="javascript:" class="avatar avatar-xs hover text-accent-500 m-r-10">
+                    <i class="ti ti-eye f-20"></i>
+                  </a>
+                  <a href="javascript:" class="avatar avatar-xs hover text-accent-500">
+                    <i class="ti ti-trash f-20"></i>
+                  </a>
+               
               </td>
             </ng-container>
 
