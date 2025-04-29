@@ -23,7 +23,7 @@ export class CommissionListComponent implements OnInit, AfterViewInit {
   feesByType: any[] = [];
 
   // Table configuration
-  displayedColumns: string[] = ['transactionId', 'amount', 'sendoFees', 'type', 'status', 'createdAt'];
+  displayedColumns: string[] = ['transactionId', 'amount', 'sendoFees', 'totalAmount', 'type', 'status', 'createdAt'];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
