@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { MeResponse } from '../models';
 
 export interface UserCreateRequest {
   firstname: string;
@@ -60,6 +61,18 @@ export class UserService {
       this.getConfigAuthorized()
     );
   }
+
+  updateUser(
+    userId: string | number,
+    userData: MeResponse
+  ): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/${userId}`,
+      userData,
+      this.getConfigAuthorized()
+    );
+  }
+
 
   private getConfigAuthorized() {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'

@@ -9,7 +9,7 @@
           </span>
         </div>
         <div class="text-center m-t-15">
-          <!-- Photo de profil par défaut -->
+          <!-- Photo de profil -->
           <img src="assets/images/user/avatar-5.jpg" alt="avatar" class="img-fluid wid-70 border-50" />
 
           <!-- Nom complet -->
@@ -26,14 +26,27 @@
           @for (info of contactInfos; track info) {
             <div class="flex-inline align-item-center justify-content-start w-100 m-b-15">
               <i class="{{ info.icon }} m-r-10"></i>
-              <div>{{ info.text }}</div>
+              @if (isEditing && info.editable) {
+
+                <mat-form-field appearance="outline" class="w-100 m-t-5">
+                  <input
+                  matInput
+                  type="text"
+                  [(ngModel)]="userData![info.fieldName!]"
+                  class="form-control"
+                  [disabled]="!info.editable">
+                </mat-form-field>
+
+              } @else {
+                <div>{{ info.text }}</div>
+              }
             </div>
           }
         </div>
       </div>
     </app-card>
 
-    <!-- Carte Compétences (optionnelle) -->
+    <!-- Carte Statut -->
     <app-card cardTitle="Statut">
       <div class="row align-item-center m-b-15">
         <div class="col-sm-12">
@@ -60,30 +73,63 @@
   <div class="col-lg-8 col-xxl-9">
     <!-- Section Détails Personnels -->
     <app-card cardTitle="Détails Personnels">
+      <div class="text-end m-b-15">
+        @if (!isEditing) {
+          <button mat-flat-button color="primary" (click)="toggleEdit()">
+            Modifier le profil
+          </button>
+        } @else {
+          <button mat-flat-button color="warn" class="m-r-10" (click)="toggleEdit()">
+            Annuler
+          </button>
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="saveChanges()"
+            [disabled]="loading">
+            <span *ngIf="!loading">Enregistrer</span>
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+          </button>
+        }
+      </div>
+
       <ul class="list-group-flush">
         @for (detail of personalDetails; track detail) {
           <li class="list-group-item p-x-0">
             <div class="row">
               <div class="col-md-6">
                 <p class="m-b-5 text-muted">{{ detail.group }}</p>
-                <div class="f-w-500">{{ detail.text }}</div>
+                @if (isEditing && detail.editable) {
+                  <mat-form-field appearance="outline" class="w-100 m-t-5">
+                    <input
+                    matInput
+                      type="text"
+                      [(ngModel)]="userData![detail.fieldName!]"
+                      class="form-control">
+                  </mat-form-field>
+
+                } @else {
+                  <div class="f-w-500">{{ detail.text }}</div>
+                }
               </div>
               <div class="col-md-6">
                 <p class="m-b-5 text-muted">{{ detail.group_2 }}</p>
-                <div class="f-w-500">{{ detail.text_2 }}</div>
+                @if (isEditing && detail.editable_2) {
+                  <mat-form-field appearance="outline" class="w-100 m-t-5">
+                    <input
+                      matInput
+                    type="text"
+                    [(ngModel)]="userData![detail.fieldName_2!]"
+                    class="form-control">
+                  </mat-form-field>
+
+                } @else {
+                  <div class="f-w-500">{{ detail.text_2 }}</div>
+                }
               </div>
             </div>
           </li>
         }
-        <!-- <li class="list-group-item p-b-0 p-x-0">
-          <p class="m-b-5 text-muted">Date de création</p>
-          <div class="f-w-500">
-            {{ userData?.createdAt
-              ? (userData.createdAt | date:'dd/MM/yyyy')
-              : 'Non disponible' }}
-
-          </div>
-        </li> -->
       </ul>
     </app-card>
 
