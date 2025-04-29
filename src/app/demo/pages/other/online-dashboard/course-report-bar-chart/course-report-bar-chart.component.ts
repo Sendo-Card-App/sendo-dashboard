@@ -69,9 +69,9 @@ export class CourseReportBarChartComponent implements OnInit {
           useSeriesColors: false
         },
         markers: {
-          width: 10,
-          height: 10,
-          radius: 50,
+          // width: 10,
+          // height: 10,
+          // radius: 50,
           offsetX: 2,
           offsetY: 2
         },

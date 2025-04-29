@@ -50,20 +50,7 @@ export class VisitorsBarChartComponent implements OnInit {
       yaxis: {
         tickAmount: 3
       },
-      states: {
-        normal: {
-          filter: {
-            type: 'lighten',
-            value: 0.5
-          }
-        },
-        hover: {
-          filter: {
-            type: 'lighten',
-            value: 0
-          }
-        }
-      },
+      
       plotOptions: {
         bar: {
           borderRadius: 2,
