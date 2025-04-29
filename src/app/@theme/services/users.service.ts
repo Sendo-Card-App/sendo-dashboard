@@ -64,9 +64,9 @@ export class UserService {
 
   updateUser(
     userId: string | number,
-    userData: MeResponse
-  ): Observable<{ message: string }> {
-    return this.http.put<{ message: string }>(
+    userData: Partial<MeResponse>
+  ): Observable<{ message: string; data: Partial<MeResponse> }> {
+    return this.http.put<{ message: string; data: Partial<MeResponse> }>(
       `${this.apiUrl}/${userId}`,
       userData,
       this.getConfigAuthorized()
