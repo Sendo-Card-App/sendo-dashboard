@@ -28,7 +28,9 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm install ng-apexcharts apexcharts
 
       - name: Lint code
         run: npm run lint
