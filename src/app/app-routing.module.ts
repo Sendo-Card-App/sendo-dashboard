@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './demo/layout/admin';
 import { EmptyComponent } from './demo/layout/empty/empty.component';
-import { GuestComponent } from './demo/layout/front/guest.component';
 import { RoleGuard } from './@theme/helpers/role.guards';
 import { AlreadyLoggedInGuard } from './@theme/helpers/already-logged-in.guard';
 
