@@ -45,20 +45,23 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: GuestComponent,
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+
     children: [
       {
-        path: 'contact-us',
-        loadComponent: () => import('./demo/pages/contact-us/contact-us.component').then((c) => c.ContactUsComponent)
+        path: 'alluser',
+        loadComponent: () => import('./demo/pages/utilisateur/ut-alluser/ut-alluser.component').then((c) => c.UtAlluserComponent),
+        data: { roles: ['SUPER_ADMIN'] }
       },
-      {
-        path: 'components',
-        loadChildren: () => import('src/app/demo/layout/component/component.module').then((m) => m.ComponentModule)
-      },
-      {
-        path: 'maintenance',
-        loadChildren: () => import('./demo/pages/maintenance/maintenance.module').then((m) => m.MaintenanceModule)
-      }
+      // {
+      //   path: 'components',
+      //   loadChildren: () => import('src/app/demo/layout/component/component.module').then((m) => m.ComponentModule)
+      // },
+      // {
+      //   path: 'maintenance',
+      //   loadChildren: () => import('./demo/pages/maintenance/maintenance.module').then((m) => m.MaintenanceModule)
+      // }
     ]
   },
   {
@@ -68,7 +71,7 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadComponent: () => import('./demo/pages/other/sample-page/sample-page.component').then((c) => c.SamplePageComponent),
+        loadComponent: () => import('./demo/pages/other/online-dashboard/online-dashboard.component').then((c) => c.OnlineDashboardComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
       {
