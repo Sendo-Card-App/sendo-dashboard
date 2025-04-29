@@ -25,7 +25,7 @@ const routes: Routes = [
         data: { roles: ['SUPER_ADMIN'] }
       },
       {
-        path: 'personal',
+        path: 'role',
         loadComponent: () => import('./ac-personal/ac-personal.component').then((c) => c.AcPersonalComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
@@ -40,7 +40,7 @@ const routes: Routes = [
         data: { roles: ['SUPER_ADMIN'] }
       },
       {
-        path: 'role',
+        path: 'utilisateur',
         loadComponent: () => import('./ac-role/ac-role.component').then((c) => c.AcRoleComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
