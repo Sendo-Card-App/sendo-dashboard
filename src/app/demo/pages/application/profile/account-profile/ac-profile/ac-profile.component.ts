@@ -51,7 +51,13 @@ export class AcProfileComponent {
     if (!stored) { return; }
 
     this.userData = JSON.parse(stored) as MeResponse;
-    this.userRoles = this.userData.roles.map(r => r.name).join(', ');
+    this.updateDisplayData();
+  }
+
+  private updateDisplayData(): void {
+    if (!this.userData) return;
+
+    this.userRoles = this.userData.roles?.map(r => r.name).join(', ') || '';
     this.initContactInfos();
     this.initPersonalDetails();
   }
@@ -61,12 +67,12 @@ export class AcProfileComponent {
       {
         icon: 'ti ti-mail',
         text: this.userData?.email ?? 'Non renseigné',
-        editable: false // Email non modifiable
+        editable: false
       },
       {
         icon: 'ti ti-phone',
         text: this.userData?.phone ?? 'Non renseigné',
-        editable: false // Téléphone non modifiable
+        editable: false
       },
       {
         icon: 'ti ti-map-pin',
@@ -120,16 +126,38 @@ export class AcProfileComponent {
     if (!this.userData) return;
 
     this.loading = true;
-    this.userService.updateUser(this.userData.id, this.userData)
+
+    // Préparer seulement les données modifiables à envoyer
+    const updateData = {
+      firstname: this.userData.firstname,
+      lastname: this.userData.lastname,
+      address: this.userData.address,
+      profession: this.userData.profession,
+      city: this.userData.city,
+      region: this.userData.region,
+      district: this.userData.district
+    };
+
+    this.userService.updateUser(this.userData.id, updateData)
       .subscribe({
-        next: () => {
-          this.snackBar.open('Profil mis à jour avec succès', 'Fermer', { duration: 3000 });
-          localStorage.setItem('user-info', JSON.stringify(this.userData));
+        next: (response) => {
+          // Fusionner les nouvelles données avec les données existantes
+          const currentData: MeResponse = JSON.parse(localStorage.getItem('user-info') || '{}');
+          const updatedData = { ...currentData, ...response.data };
+
+          localStorage.setItem('user-info', JSON.stringify(updatedData));
+          this.userData = updatedData;
+          this.updateDisplayData();
+
+          this.snackBar.open(response.message, 'Fermer', { duration: 3000 });
           this.isEditing = false;
         },
         error: (error) => {
-          this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
-          console.error('Error:', error);
+          this.snackBar.open(
+            error.error?.message || 'Erreur lors de la mise à jour',
+            'Fermer',
+            { duration: 3000 }
+          );
         },
         complete: () => {
           this.loading = false;
