@@ -33,7 +33,7 @@ export class AccountProfileComponent implements OnInit {
       },
       {
         label: 'Utilisateurs',
-        link: '/application/profile/account/role',
+        link: '/application/profile/account/utilisateur',
         icon: 'ti ti-users',
         index: 1
       },
@@ -44,25 +44,25 @@ export class AccountProfileComponent implements OnInit {
         index: 2
       },
       {
-        label: 'Personal Details',
-        link: '/application/profile/account/personal',
+        label: 'Roles',
+        link: '/application/profile/account/role',
         icon: 'ti ti-file-text',
         index: 3
       },
-      {
-        label: 'My Account',
-        link: '/application/profile/account/account',
-        icon: 'ti ti-id',
-        index: 4
-      },
+      // {
+      //   label: 'My Account',
+      //   link: '/application/profile/account/account',
+      //   icon: 'ti ti-id',
+      //   index: 4
+      // },
 
 
-      {
-        label: 'Settings',
-        link: '/application/profile/account/settings',
-        icon: 'ti ti-settings',
-        index: 5
-      }
+      // {
+      //   label: 'Settings',
+      //   link: '/application/profile/account/settings',
+      //   icon: 'ti ti-settings',
+      //   index: 5
+      // }
     ];
   }
 

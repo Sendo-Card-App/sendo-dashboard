@@ -11,10 +11,10 @@ export const menus: Navigation[] = [
     children: [
       {
         id: 'sample-page',
-        title: 'Sample Page',
+        title: 'Dashboard',
         type: 'item',
         classes: 'nav-item',
-        url: '/sample-page',
+        url: '/dashboard',
         icon: '#custom-notification-status'
       }
     ]
@@ -28,44 +28,44 @@ export const menus: Navigation[] = [
     role: [Role.Admin, Role.User],
     children: [
       {
-        id: 'maintenance',
-        title: 'Maintenance',
+        id: 'utilisateur',
+        title: 'Utilisateurs',
         type: 'collapse',
         icon: '#custom-flag',
         role: [Role.Admin, Role.User],
         children: [
           {
             id: 'error',
-            title: 'Error 404',
+            title: 'liste des utilisateurs',
             type: 'item',
             url: '/maintenance/error-404',
             target: true,
             breadcrumbs: false
           },
-          {
-            id: 'error-500',
-            title: 'Error 500',
-            type: 'item',
-            url: '/maintenance/error-500',
-            target: true,
-            breadcrumbs: false
-          },
-          {
-            id: 'under-constructor',
-            title: 'Under Construction',
-            type: 'item',
-            url: '/maintenance/under-constructor',
-            target: true,
-            breadcrumbs: false
-          },
-          {
-            id: 'coming-soon',
-            title: 'Coming Soon',
-            type: 'item',
-            url: '/maintenance/coming-soon',
-            target: true,
-            breadcrumbs: false
-          }
+          // {
+          //   id: 'error-500',
+          //   title: 'Error 500',
+          //   type: 'item',
+          //   url: '/maintenance/error-500',
+          //   target: true,
+          //   breadcrumbs: false
+          // },
+          // {
+          //   id: 'under-constructor',
+          //   title: 'Under Construction',
+          //   type: 'item',
+          //   url: '/maintenance/under-constructor',
+          //   target: true,
+          //   breadcrumbs: false
+          // },
+          // {
+          //   id: 'coming-soon',
+          //   title: 'Coming Soon',
+          //   type: 'item',
+          //   url: '/maintenance/coming-soon',
+          //   target: true,
+          //   breadcrumbs: false
+          // }
         ]
       },
       {
