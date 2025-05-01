@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
+import { RolePayload } from '../ut-updateuser/ut-updateuser.component';
 
 @Component({
   selector: 'app-ut-alluser',
@@ -46,7 +47,7 @@ export class UtAlluserComponent implements AfterViewInit {
         user.firstname,
         user.lastname,
         user.email,
-        user.roles?.map((role: any) => role.name).join(' '),
+        user.roles?.map((role: RolePayload) => role.name).join(' '),
       ].join(' ').toLowerCase();
       return dataStr.includes(filter);
     };
@@ -81,7 +82,7 @@ export class UtAlluserComponent implements AfterViewInit {
   formatUserName(user: MeResponse): string {
     return `${user.firstname} ${user.lastname}`.trim();
   }
-  formatRoleName(role: any): string {
+  formatRoleName(role: RolePayload): string {
     return role?.name || 'N/A';
   }
   // avatar…

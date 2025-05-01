@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule }      from '@angular/common';
 import { SharedModule }      from 'src/app/demo/shared/shared.module';
 import { ActivatedRoute }    from '@angular/router';
-import { MeResponse, RolePayload } from 'src/app/@theme/models';
+import { MeResponse } from 'src/app/@theme/models';
 import { UserService }       from 'src/app/@theme/services/users.service';
 
 @Component({

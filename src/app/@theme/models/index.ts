@@ -63,3 +63,11 @@ export interface InviteUserResponse {
   invitationSent: boolean;
   message?: string;
 }
+
+// confirm-dialog-data.interface.ts
+export interface ConfirmDialogData {
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+}

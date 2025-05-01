@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from 'src/app/@theme/services/users.service';
@@ -74,7 +74,7 @@ export class UtUpdateuserComponent implements OnInit {
         }
         this.isLoading = false;
       },
-      error: (err) => {
+      error: () => {
         this.snackBar.open('Échec du chargement des données utilisateur', 'Fermer', { duration: 3000 });
         this.isLoading = false;
       }
@@ -117,7 +117,7 @@ export class UtUpdateuserComponent implements OnInit {
     };
 
     this.userService.updateUserById(this.userId, userUpdateData).subscribe({
-      next: (response) => {
+      next: () => {
         this.snackBar.open('Utilisateur mis à jour avec succès', 'Fermer', { duration: 3000 });
         this.isSubmitting = false;
       },
