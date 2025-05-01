@@ -32,22 +32,16 @@ export class AccountProfileComponent implements OnInit {
         index: 0
       },
       {
-        label: 'Utilisateurs',
-        link: '/application/profile/account/utilisateur',
-        icon: 'ti ti-users',
-        index: 1
-      },
-      {
         label: 'Mot de passe',
         link: '/application/profile/account/password',
         icon: 'ti ti-lock',
-        index: 2
+        index: 1
       },
       {
         label: 'Roles',
         link: '/application/profile/account/role',
         icon: 'ti ti-file-text',
-        index: 3
+        index: 2
       },
       // {
       //   label: 'My Account',

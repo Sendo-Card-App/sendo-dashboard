@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MeResponse } from '../models';
@@ -17,6 +17,19 @@ interface ApiResponse<T = unknown> {
   status: number;
   message: string;
   data?: T;
+}
+
+export interface PaginatedUsers {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  items: MeResponse[];
+}
+
+export interface UsersResponse {
+  status: number;
+  message: string;
+  data: PaginatedUsers;
 }
 
 @Injectable({
@@ -73,7 +86,46 @@ export class UserService {
     );
   }
 
+  getUsers(
+    page: number = 1,
+    limit: number = 10,
+    search: string = ''
+  ): Observable<UsersResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
 
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const config = this.getConfigAuthorized();
+    return this.http.get<UsersResponse>(`${this.apiUrl}`, {
+      params,
+      headers: config.headers
+    });
+  }
+
+  // Get user by ID
+  getUserById(userId: string | number): Observable<MeResponse> {
+    return this.http.get<MeResponse>(`${this.apiUrl}/${userId}`, this.getConfigAuthorized());
+  }
+
+  // Delete user by ID
+  deleteUser(userId: string | number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${userId}`, this.getConfigAuthorized());
+  }
+
+  //update user by ID
+  updateUserById(userId: string | number, userData: Partial<MeResponse>): Observable<{ message: string; data: Partial<MeResponse> }> {
+    return this.http.put<{ message: string; data: Partial<MeResponse> }>(
+      `${this.apiUrl}/${userId}`,
+      userData,
+      this.getConfigAuthorized()
+    );
+  }
+
+  
   private getConfigAuthorized() {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'
     const data = JSON.parse(dataRegistered)

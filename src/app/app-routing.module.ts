@@ -42,7 +42,7 @@ const routes: Routes = [
     ]
   },
   {
-    path: '',
+    path: 'users',
     component: AdminComponent,
     canActivateChild: [RoleGuard],
 
@@ -52,6 +52,17 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/utilisateur/ut-alluser/ut-alluser.component').then((c) => c.UtAlluserComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
+      {
+        path: 'adduser',
+        loadComponent: () => import('./demo/pages/utilisateur/ut-adduser/ut-adduser.component').then((c) => c.UtAdduserComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./demo/pages/utilisateur/ut-updateuser/ut-updateuser.component').then((c) => c.UtUpdateuserComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+
       // {
       //   path: 'components',
       //   loadChildren: () => import('src/app/demo/layout/component/component.module').then((m) => m.ComponentModule)

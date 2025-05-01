@@ -1,12 +1,119 @@
 <div class="row p-t-25">
   <div class="col-12">
-    <app-card cardTitle="Hello card">
-      <p>
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-        ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-        in culpa qui officia deserunt mollit anim id est laborum."
-      </p>
+    <app-card cardTitle="Liste des utilisateurs" padding="0" cardClass="sm-block">
+      <ng-template #headerOptionsTemplate>
+        <div class="table-options">
+          <button mat-flat-button color="primary" [routerLink]="['/adduser']">
+            <div class="flex align-item-center">
+              <i class="ti ti-plus f-18 m-r-5"></i>
+              Add user
+            </div>
+          </button>
+        </div>
+      </ng-template>
+      <div class="p-b-15">
+        <div class="table-containe table-reponsive">
+          <div class="table-search p-t-15 p-x-15">
+            <mat-form-field appearance="outline" class="w-100">
+              <input matInput (keyup)="applyFilter($event)" placeholder="Search...." #input />
+            </mat-form-field>
+          </div>
+          <div class="table-responsive">
+            <div *ngIf="isLoading" class="loading-spinner text-center p-3">
+              <mat-spinner diameter="50"></mat-spinner>
+            </div>
+
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef class="p-l-25">NAME</th>
+                <td mat-cell *matCellDef="let user" class="p-l-25 text-nowrap">
+                  <div class="flex align-item-center">
+                    <div class="flex-shrink-0">
+                      <div class="avatar-circle" [style.background]="createStableAvatar(user).color">
+                        {{ createStableAvatar(user).letter }}
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 m-l-15">
+                      <div class="f-w-600">{{ formatUserName(user) }}</div>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Email Column -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef>EMAIL</th>
+                <td mat-cell *matCellDef="let user" class="text-nowrap">{{ user.email }}</td>
+              </ng-container>
+
+              <!-- Role Column -->
+              <ng-container matColumnDef="role">
+                <th mat-header-cell *matHeaderCellDef>ROLE</th>
+                <td mat-cell *matCellDef="let user" class="text-nowrap">{{ formatRoleName(user.role) }}</td>
+              </ng-container>
+
+              <!-- Phone Column -->
+              <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef>PHONE</th>
+                <td mat-cell *matCellDef="let user" class="text-nowrap">{{ user.phone || 'N/A' }}</td>
+              </ng-container>
+
+              <!-- Created At Column -->
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>CREATED AT</th>
+                <td mat-cell *matCellDef="let user" class="text-nowrap">{{ user.createdAt | date:'mediumDate' }}</td>
+              </ng-container>
+
+              <!-- action Column -->
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef class="text-center">ACTIONS</th>
+                <td mat-cell *matCellDef="let user" class="text-nowrap">
+                  <div class="text-center text-nowrap">
+                    <ul class="list-inline p-l-0">
+                      <li class="list-inline-item m-r-10" matTooltip="View">
+                        <a [routerLink]="['/users', user.id]" class="avatar avatar-xs text-muted">
+                          <i class="ti ti-eye f-18"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item m-r-10" matTooltip="Edit">
+                        <a [routerLink]="['/users/edit', user.id]" class="avatar avatar-xs text-muted">
+                          <i class="ti ti-edit-circle f-18"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item m-r-10" matTooltip="Delete">
+                        <a href="javascript:" (click)="deleteUser(user.id)" class="avatar avatar-xs text-muted">
+                          <i class="ti ti-trash f-18"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+              <!-- Row shown when there is no matching data. -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="6">
+                  <div *ngIf="!isLoading" class="text-center p-3">
+                    No users found {{ searchText ? 'matching "' + searchText + '"' : '' }}
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                          [length]="totalItems"
+                          [pageSize]="itemsPerPage"
+                          [pageIndex]="currentPage - 1"
+                          (page)="onPageChange($event)"
+                          aria-label="Select page of users">
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
     </app-card>
   </div>
 </div>

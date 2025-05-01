@@ -1,0 +1,53 @@
+.avatar-circle {
+  // Variables
+  $avatar-size: 40px;
+  $font-size: 18px;
+  $font-weight: bold;
+  $text-color: white;
+
+  // Dimensions et forme
+  width: $avatar-size;
+  height: $avatar-size;
+  min-width: $avatar-size; // Empêche le rétrécissement
+  border-radius: 50%;
+
+  // Centrage du contenu
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Style du texte
+  color: $text-color;
+  font-weight: $font-weight;
+  font-size: $font-size;
+  text-transform: uppercase;
+  line-height: 1; // Assure une hauteur de ligne cohérente
+
+  // Effets interactifs optionnels
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: default;
+  }
+
+  // Variantes optionnelles
+  &--small {
+    $avatar-size: 30px;
+    $font-size: 14px;
+
+    width: $avatar-size;
+    height: $avatar-size;
+    font-size: $font-size;
+  }
+
+  &--large {
+    $avatar-size: 60px;
+    $font-size: 24px;
+
+    width: $avatar-size;
+    height: $avatar-size;
+    font-size: $font-size;
+  }
+}

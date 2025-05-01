@@ -39,11 +39,11 @@ const routes: Routes = [
         loadComponent: () => import('./ac-password/ac-password.component').then((c) => c.AcPasswordComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
-      {
-        path: 'utilisateur',
-        loadComponent: () => import('./ac-role/ac-role.component').then((c) => c.AcRoleComponent),
-        data: { roles: ['SUPER_ADMIN'] }
-      },
+      // {
+      //   path: 'utilisateur',
+      //   loadComponent: () => import('./ac-role/ac-role.component').then((c) => c.AcRoleComponent),
+      //   data: { roles: ['SUPER_ADMIN'] }
+      // },
       {
         path: 'settings',
         loadComponent: () => import('./ac-setting/ac-setting.component').then((c) => c.AcSettingComponent),
