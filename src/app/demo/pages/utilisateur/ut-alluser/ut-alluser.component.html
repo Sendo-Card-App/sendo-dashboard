@@ -14,8 +14,8 @@
       <div class="p-b-15">
         <div class="table-containe table-reponsive">
           <div class="table-search p-t-15 p-x-15">
-            <mat-form-field appearance="outline" class="w-100">
-              <input matInput (keyup)="applyFilter($event)" placeholder="Search...." #input />
+            <mat-form-field appearance="outline" class="w-100 px-3 pt-3">
+              <input matInput placeholder="Search…" (keyup)="applyFilter($event.target.value)" />
             </mat-form-field>
           </div>
           <div class="table-responsive">
@@ -72,7 +72,7 @@
                   <div class="text-center text-nowrap">
                     <ul class="list-inline p-l-0">
                       <li class="list-inline-item m-r-10" matTooltip="View">
-                        <a [routerLink]="['/users', user.id]" class="avatar avatar-xs text-muted">
+                        <a [routerLink]="['/users/info', user.id]" class="avatar avatar-xs text-muted">
                           <i class="ti ti-eye f-18"></i>
                         </a>
                       </li>
@@ -81,7 +81,7 @@
                           <i class="ti ti-edit-circle f-18"></i>
                         </a>
                       </li>
-                      <li class="list-inline-item m-r-10" matTooltip="Delete">
+                      <li class="list-inline-item m-r-10" matTooltip="Supprimer">
                         <a href="javascript:" (click)="deleteUser(user.id)" class="avatar avatar-xs text-muted">
                           <i class="ti ti-trash f-18"></i>
                         </a>
@@ -104,12 +104,8 @@
               </tr>
             </table>
 
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
-                          [length]="totalItems"
-                          [pageSize]="itemsPerPage"
-                          [pageIndex]="currentPage - 1"
-                          (page)="onPageChange($event)"
-                          aria-label="Select page of users">
+            <mat-paginator [pageSizeOptions]="[5,10,25,100]" [length]="totalItems" [pageSize]="itemsPerPage"
+              [pageIndex]="currentPage-1" (page)="onPageChange($event)">
             </mat-paginator>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MeResponse } from '../models';
 
@@ -86,29 +86,43 @@ export class UserService {
     );
   }
 
-  getUsers(
-    page: number = 1,
-    limit: number = 10,
-    search: string = ''
-  ): Observable<UsersResponse> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+  
+getUsers(
+  page: number = 1,
+  limit: number = 10
+): Observable<UsersResponse> {
+  const params = new HttpParams()
+    .set('page',  page.toString())
+    .set('limit', limit.toString());
 
-    if (search) {
-      params = params.set('search', search);
-    }
+  const config = this.getConfigAuthorized();
+  return this.http.get<UsersResponse>(`${this.apiUrl}`, {
+    params,
+    headers: config.headers
+  });
+}
 
+
+  getUserById(userId: string | number): Observable<ApiResponse<MeResponse>> {
     const config = this.getConfigAuthorized();
-    return this.http.get<UsersResponse>(`${this.apiUrl}`, {
-      params,
-      headers: config.headers
-    });
-  }
-
-  // Get user by ID
-  getUserById(userId: string | number): Observable<MeResponse> {
-    return this.http.get<MeResponse>(`${this.apiUrl}/${userId}`, this.getConfigAuthorized());
+    return this.http.get<ApiResponse<MeResponse>>(
+      `${this.apiUrl}/${userId}`,
+      { headers: config.headers }
+    ).pipe(
+      catchError(error => {
+        // Transformation de l'erreur pour une meilleure gestion
+        let errorMessage = 'Une erreur est survenue';
+        if (error.status === 404) {
+          errorMessage = 'Utilisateur non trouvé';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+        return throwError(() => ({
+          message: errorMessage,
+          status: error.status || 500
+        }));
+      })
+    );
   }
 
   // Delete user by ID
@@ -125,7 +139,7 @@ export class UserService {
     );
   }
 
-  
+
   private getConfigAuthorized() {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'
     const data = JSON.parse(dataRegistered)

@@ -62,6 +62,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/utilisateur/ut-updateuser/ut-updateuser.component').then((c) => c.UtUpdateuserComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
+      {
+        path: 'info/:id',
+        loadComponent: () => import('./demo/pages/utilisateur/ut-infouser/ut-infouser.component').then((c) => c.UtInfouserComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
 
       // {
       //   path: 'components',

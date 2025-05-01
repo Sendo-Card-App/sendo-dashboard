@@ -46,7 +46,7 @@ export class ForgotPasswordComponent {
       next: (response) => {
         this.message = response.message || 'Un email de réinitialisation a été envoyé';
         this.forgotForm.reset();
-        this.router.navigate(['/auth/reset-password']);
+        // this.router.navigate(['/auth/reset-password']);
       },
       error: (err) => {
         this.error = err.error?.message || 'Une erreur est survenue';

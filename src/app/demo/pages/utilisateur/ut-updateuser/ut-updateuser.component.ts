@@ -16,7 +16,6 @@ export interface RolePayload {
 export interface UserUpdatePayload {
   firstname: string;
   lastname: string;
-  phone?: string;
   address?: string;
   profession?: string | null;
   region?: string | null;
@@ -48,7 +47,7 @@ export class UtUpdateuserComponent implements OnInit {
       lastname: new FormControl('', [Validators.required]),
       // Email non modifiable mais affiché
       email: new FormControl({value: '', disabled: true}),
-      phone: new FormControl(''),
+      phone: new FormControl({value: '', disabled: true}),
       address: new FormControl(''),
       profession: new FormControl(null),
       region: new FormControl(null),
@@ -68,17 +67,17 @@ export class UtUpdateuserComponent implements OnInit {
   loadUserData(): void {
     this.isLoading = true;
     this.userService.getUserById(this.userId).subscribe({
-      // next: (response) => {
-      //   if (response.data) {
-      //     this.populateForm(response.data);
-      //     this.userRoles = response.data.roles;
-      //   }
-      //   this.isLoading = false;
-      // },
-      // error: (err) => {
-      //   this.snackBar.open('Échec du chargement des données utilisateur', 'Fermer', { duration: 3000 });
-      //   this.isLoading = false;
-      // }
+      next: (response) => {
+        if (response.data) {
+          this.populateForm(response.data);
+          this.userRoles = response.data.roles;
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.snackBar.open('Échec du chargement des données utilisateur', 'Fermer', { duration: 3000 });
+        this.isLoading = false;
+      }
     });
   }
 
@@ -110,7 +109,6 @@ export class UtUpdateuserComponent implements OnInit {
     const userUpdateData: UserUpdatePayload = {
       firstname: formData.firstname,
       lastname: formData.lastname,
-      phone: formData.phone || null,
       address: formData.address || null,
       profession: formData.profession || null,
       region: formData.region || null,

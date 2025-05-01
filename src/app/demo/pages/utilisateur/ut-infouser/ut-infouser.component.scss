@@ -1,0 +1,78 @@
+.account-info {
+  .user-status {
+    position: absolute;
+    padding: 16px;
+    right: 0;
+    top: 0;
+
+    span {
+      font-size: 0.75em;
+      padding: 0.25em 0.9em;
+      display: inline-block;
+      border-radius: 8px;
+    }
+  }
+
+  .border-side {
+    border-right: 1px solid var(--accent-300);
+    border-left: 1px solid var(--accent-300);
+  }
+}
+
+/* Avatar */
+.avatar-circle-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 36px;
+  margin: 0 auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge de statut */
+.user-status {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+
+  span {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+}
+
+/* Rôles */
+.roles-container {
+  mat-chip {
+    margin: 3px;
+    color: white;
+    font-weight: 500;
+  }
+}
+
+/* Liste des détails */
+.list-group-item {
+  border-left: 0;
+  border-right: 0;
+
+  &:first-child {
+    border-top: 0;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+/* Layout responsive */
+@media (max-width: 992px) {
+  .col-lg-4, .col-lg-8 {
+    margin-bottom: 20px;
+  }
+}

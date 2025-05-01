@@ -37,6 +37,7 @@ export interface BaseResponse {
       id: number;
       balance: number;
       currency: string;
+      matricule: string;
     };
     virtualCard: T | null;
     transactions: T[];

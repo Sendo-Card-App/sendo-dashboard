@@ -1,85 +1,90 @@
+// ut-alluser.component.ts
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { MatTableDataSource }          from '@angular/material/table';
+import { MatPaginator, PageEvent }    from '@angular/material/paginator';
+import { MatSort }                    from '@angular/material/sort';
+import { finalize }                   from 'rxjs/operators';
+import { MeResponse }                 from 'src/app/@theme/models';
+import { UserService }                from 'src/app/@theme/services/users.service';
+import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { SharedModule } from 'src/app/demo/shared/shared.module';
-import { UserService } from 'src/app/@theme/services/users.service';
-import { finalize } from 'rxjs/operators';
-import { MeResponse } from 'src/app/@theme/models/index'; // Importez votre interface MeResponse
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-ut-alluser',
-  imports: [CommonModule, SharedModule, RouterModule],
   templateUrl: './ut-alluser.component.html',
-  styleUrl: './ut-alluser.component.scss'
+  imports: [CommonModule, SharedModule, RouterModule],
+  styleUrls: ['./ut-alluser.component.scss']
 })
 export class UtAlluserComponent implements AfterViewInit {
-  // public props
-  displayedColumns: string[] = ['name', 'email', 'role', 'phone', 'createdAt', 'action'];
+  displayedColumns = ['name','email','role','phone','createdAt','action'];
   dataSource = new MatTableDataSource<MeResponse>();
-  isLoading = false;
-  searchText = '';
+  isLoading  = false;
   totalItems = 0;
   currentPage = 1;
   itemsPerPage = 10;
 
-  // paginator
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatSort)      sort!: MatSort;
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, private dialog: MatDialog,
+    private snackBar: MatSnackBar) {
     this.loadUsers();
   }
 
-  loadUsers(page: number = this.currentPage, limit: number = this.itemsPerPage, search: string = this.searchText) {
+  ngAfterViewInit() {
+    // lie pagination + tri
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort      = this.sort;
+
+    // on définit le predicate de filtrage
+    this.dataSource.filterPredicate = (user, filter) => {
+      const dataStr = [
+        user.firstname,
+        user.lastname,
+        user.email,
+        user.roles?.map((role: any) => role.name).join(' '),
+      ].join(' ').toLowerCase();
+      return dataStr.includes(filter);
+    };
+  }
+
+  loadUsers(page = this.currentPage, limit = this.itemsPerPage) {
     this.isLoading = true;
-    this.userService.getUsers(page, limit, search)
+    this.userService.getUsers(page, limit)
       .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: (response) => {
-          this.dataSource.data = response.data.items;
-          this.totalItems = response.data.totalItems;
-          this.currentPage = response.data.page;
-        },
-        error: (err) => console.error('Error loading users:', err)
+      .subscribe(resp => {
+        this.dataSource.data = resp.data.items;
+        this.totalItems      = resp.data.totalItems;
+        this.currentPage     = resp.data.page;
       });
   }
 
-  // table search filter
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.searchText = filterValue.trim().toLowerCase();
-    this.loadUsers(1, this.itemsPerPage, this.searchText);
+  applyFilter(value: string) {
+    const filterValue = value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+    // remise à la première page si paginé
     if (this.paginator) {
       this.paginator.firstPage();
     }
   }
 
-  // Handle page change
-  onPageChange(event: PageEvent) {
-    this.itemsPerPage = event.pageSize;
-    this.currentPage = event.pageIndex + 1;
-    this.loadUsers(this.currentPage, this.itemsPerPage, this.searchText);
+  onPageChange(e: PageEvent) {
+    this.itemsPerPage = e.pageSize;
+    this.currentPage  = e.pageIndex + 1;
+    this.loadUsers(this.currentPage, this.itemsPerPage);
   }
 
-  // Format user name
   formatUserName(user: MeResponse): string {
     return `${user.firstname} ${user.lastname}`.trim();
   }
-
-  // Format role name (adapt according to your role structure)
   formatRoleName(role: any): string {
     return role?.name || 'N/A';
   }
-
-  // life cycle event
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
+  // avatar…
   getStableColor(str: string): string {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -96,5 +101,43 @@ export class UtAlluserComponent implements AfterViewInit {
       letter: firstLetter,
       color: this.getStableColor(user.firstname + user.lastname)
     };
+  }
+
+  deleteUser(userId: number | string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Alerte suppression',
+        message: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.performUserDeletion(userId);
+      }
+    });
+  }
+
+  private performUserDeletion(userId: number | string): void {
+    this.userService.deleteUser(userId).subscribe({
+      next: () => {
+        this.snackBar.open('Utilisateur supprimé avec succès', 'Fermer', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        // Recharger les données ou filtrer l'utilisateur supprimé
+        this.loadUsers();
+      },
+      error: (err) => {
+        this.snackBar.open('Échec de la suppression', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        console.error('Delete error:', err);
+      }
+    });
   }
 }
