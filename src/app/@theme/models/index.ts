@@ -37,6 +37,7 @@ export interface BaseResponse {
       id: number;
       balance: number;
       currency: string;
+      matricule: string;
     };
     virtualCard: T | null;
     transactions: T[];
@@ -61,4 +62,12 @@ export interface InviteUserResponse {
   id: number;
   invitationSent: boolean;
   message?: string;
+}
+
+// confirm-dialog-data.interface.ts
+export interface ConfirmDialogData {
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
 }

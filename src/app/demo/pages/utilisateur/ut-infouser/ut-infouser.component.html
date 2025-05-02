@@ -1,0 +1,164 @@
+<div class="row m-t-25">
+  <!-- Colonne de gauche - Profil utilisateur -->
+  <div class="col-lg-4 col-xxl-3">
+    <!-- Carte Profil -->
+    <app-card [showHeader]="false">
+      <div class="account-info">
+        <!-- Badge de statut -->
+        <div class="user-status">
+          <span class="bg-primary-500 text-white f-12" *ngIf="user?.isVerifiedKYC">Vérifié</span>
+          <span class="bg-warning-500 text-white f-12" *ngIf="!user?.isVerifiedKYC">Non vérifié</span>
+        </div>
+
+        <div class="text-center m-t-15">
+          <!-- Avatar -->
+          <div class="avatar-circle-large" [style.background]="createStableAvatar(user!).color">
+            {{ createStableAvatar(user!).letter }}
+          </div>
+
+          <!-- Nom et profession -->
+          <div class="f-16 f-w-600 m-t-10">{{ user?.firstname }} {{ user?.lastname }}</div>
+          <p class="text-muted">{{ user?.profession || 'Non spécifié' }}</p>
+
+          <mat-divider class="m-y-15"></mat-divider>
+
+          <!-- Statistiques -->
+          <div class="row">
+            <div class="col-4">
+              <div class="f-16 f-w-500">{{ user?.wallet?.balance || 0 }}</div>
+              <div class="text-muted">Solde</div>
+            </div>
+            <div class="col-4 border-side">
+              <div class="f-16 f-w-500">{{ user?.roles?.length || 0 }}</div>
+              <div class="text-muted">Rôles</div>
+            </div>
+            <div class="col-4">
+              <div class="f-16 f-w-500">{{ user?.createdAt | date:'dd/MM/yy' }}</div>
+              <div class="text-muted">Inscrit le</div>
+            </div>
+          </div>
+
+          <mat-divider class="m-y-15"></mat-divider>
+
+          <!-- Informations de contact -->
+          <div class="flex-inline align-item-center justify-content-start w-100 m-b-15">
+            <i class="ti ti-mail m-r-10"></i>
+            <div>{{ user?.email }}</div>
+          </div>
+
+          <div class="flex-inline align-item-center justify-content-start w-100 m-b-15" *ngIf="user?.phone">
+            <i class="ti ti-phone m-r-10"></i>
+            <div>{{ user?.phone }}</div>
+          </div>
+
+          <div class="flex-inline align-item-center justify-content-start w-100 m-b-15" *ngIf="user?.wallet?.matricule">
+            <i class="ti ti-id m-r-10"></i>
+            <div class="flex-grow-1">{{ user.wallet.matricule }}</div>
+            <button mat-icon-button (click)="copyMatricule()" matTooltip="Copier le matricule">
+              <i class="ti ti-copy"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </app-card>
+
+    <!-- Carte Rôles -->
+    <app-card cardTitle="Rôles" *ngIf="user?.roles?.length">
+      <div class="roles-container">
+        <mat-chip-listbox>
+          <mat-chip *ngFor="let role of user.roles" [style.background]="getStableColor(role.name)">
+            {{ role.name }}
+          </mat-chip>
+        </mat-chip-listbox>
+      </div>
+    </app-card>
+  </div>
+
+  <!-- Colonne de droite - Détails -->
+  <div class="col-lg-8 col-xxl-9">
+    <!-- Carte A propos -->
+    <app-card cardTitle="A propos">
+      <p class="m-b-0" *ngIf="user?.profession; else noInfo">
+        {{ user.profession }} basé à {{ user.city || 'ville non spécifiée' }}.
+      </p>
+      <ng-template #noInfo>
+        <p class="text-muted">Aucune information disponible</p>
+      </ng-template>
+    </app-card>
+
+    <!-- Carte Détails personnels -->
+    <app-card cardTitle="Détails personnels">
+      <ul class="list-group-flush">
+        <li class="list-group-item p-x-0">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Email</p>
+              <div class="f-w-500">{{ user?.email }}</div>
+            </div>
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Statut Email</p>
+              <div class="f-w-500">
+                <span [class.text-success]="user?.isVerifiedEmail" [class.text-warning]="!user?.isVerifiedEmail">
+                  {{ user?.isVerifiedEmail ? 'Vérifié' : 'Non vérifié' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <li class="list-group-item p-x-0">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Téléphone</p>
+              <div class="f-w-500">{{ user?.phone || 'Non spécifié' }}</div>
+            </div>
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">KYC</p>
+              <div class="f-w-500">
+                <span [class.text-success]="user?.isVerifiedKYC" [class.text-warning]="!user?.isVerifiedKYC">
+                  {{ user?.isVerifiedKYC ? 'Complété' : 'En attente' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <li class="list-group-item p-b-0 p-x-0">
+          <p class="m-b-5 text-muted">Adresse</p>
+          <div class="f-w-500">
+            {{ user?.address || 'Non spécifiée' }}
+            <span *ngIf="user?.city">, {{ user.city }}</span>
+            <span *ngIf="user?.region">, {{ user.region }}</span>
+          </div>
+        </li>
+      </ul>
+    </app-card>
+
+    <!-- Carte Wallet -->
+    <app-card cardTitle="Portefeuille" *ngIf="user?.wallet">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item p-x-0">
+          <div class="row">
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Solde</p>
+              <div class="f-w-500">{{ user.wallet.balance }} {{ user.wallet.currency }}</div>
+            </div>
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Matricule</p>
+              <div class="f-w-500 flex align-items-center">
+                {{ user.wallet.matricule }}
+                <button mat-icon-button (click)="copyMatricule()" matTooltip="Copier" class="m-l-10">
+                  <i class="ti ti-copy f-14"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item p-x-0">
+          <p class="m-b-5 text-muted">Date de création</p>
+          <div class="f-w-500">{{ user.createdAt | date:'mediumDate' }}</div>
+        </li>
+      </ul>
+    </app-card>
+  </div>
+</div>

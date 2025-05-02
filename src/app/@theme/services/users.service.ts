@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MeResponse } from '../models';
 
@@ -17,6 +17,19 @@ interface ApiResponse<T = unknown> {
   status: number;
   message: string;
   data?: T;
+}
+
+export interface PaginatedUsers {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  items: MeResponse[];
+}
+
+export interface UsersResponse {
+  status: number;
+  message: string;
+  data: PaginatedUsers;
 }
 
 @Injectable({
@@ -66,6 +79,59 @@ export class UserService {
     userId: string | number,
     userData: Partial<MeResponse>
   ): Observable<{ message: string; data: Partial<MeResponse> }> {
+    return this.http.put<{ message: string; data: Partial<MeResponse> }>(
+      `${this.apiUrl}/${userId}`,
+      userData,
+      this.getConfigAuthorized()
+    );
+  }
+
+  
+getUsers(
+  page: number = 1,
+  limit: number = 10
+): Observable<UsersResponse> {
+  const params = new HttpParams()
+    .set('page',  page.toString())
+    .set('limit', limit.toString());
+
+  const config = this.getConfigAuthorized();
+  return this.http.get<UsersResponse>(`${this.apiUrl}`, {
+    params,
+    headers: config.headers
+  });
+}
+
+
+  getUserById(userId: string | number): Observable<ApiResponse<MeResponse>> {
+    const config = this.getConfigAuthorized();
+    return this.http.get<ApiResponse<MeResponse>>(
+      `${this.apiUrl}/${userId}`,
+      { headers: config.headers }
+    ).pipe(
+      catchError(error => {
+        // Transformation de l'erreur pour une meilleure gestion
+        let errorMessage = 'Une erreur est survenue';
+        if (error.status === 404) {
+          errorMessage = 'Utilisateur non trouvé';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+        return throwError(() => ({
+          message: errorMessage,
+          status: error.status || 500
+        }));
+      })
+    );
+  }
+
+  // Delete user by ID
+  deleteUser(userId: string | number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${userId}`, this.getConfigAuthorized());
+  }
+
+  //update user by ID
+  updateUserById(userId: string | number, userData: Partial<MeResponse>): Observable<{ message: string; data: Partial<MeResponse> }> {
     return this.http.put<{ message: string; data: Partial<MeResponse> }>(
       `${this.apiUrl}/${userId}`,
       userData,

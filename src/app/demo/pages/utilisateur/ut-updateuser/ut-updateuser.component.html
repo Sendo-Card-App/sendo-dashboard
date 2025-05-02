@@ -1,0 +1,119 @@
+<app-card [showHeader]="false">
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <div class="col-12">
+        <div class="m-b-10 f-w-600">Informations personnelles</div>
+        <mat-divider class="m-b-20"></mat-divider>
+      </div>
+
+      <!-- Section non modifiable -->
+      <div class="col-sm-6">
+        <label class="f-w-500">Email</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input matInput formControlName="email" readonly>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-6">
+        <label class="f-w-500">Solde du portefeuille</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input matInput [value]="userForm.get('walletBalance')?.value + ' ' + userForm.get('walletCurrency')?.value" readonly>
+        </mat-form-field>
+      </div>
+
+      <!-- Section modifiable -->
+      <div class="col-sm-6">
+        <label for="firstname" class="f-w-500">Prénom</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input formControlName="firstname" type="text" matInput placeholder="Prénom" />
+          <mat-error *ngIf="userForm.get('firstname')?.hasError('required')">
+            Champ obligatoire
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-6">
+        <label for="lastname" class="f-w-500">Nom</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input formControlName="lastname" type="text" matInput placeholder="Nom" />
+          <mat-error *ngIf="userForm.get('lastname')?.hasError('required')">
+            Champ obligatoire
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-6">
+        <label for="phone" class="f-w-500">Téléphone</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input formControlName="phone" type="tel" matInput placeholder="Téléphone" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-6">
+        <label for="profession" class="f-w-500">Profession</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input formControlName="profession" type="text" matInput placeholder="Profession" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Section Adresse -->
+    <div class="row">
+      <div class="col-12">
+        <div class="m-b-10 f-w-600">Adresse</div>
+        <mat-divider class="m-b-20"></mat-divider>
+      </div>
+
+      <div class="col-sm-12">
+        <label for="address" class="f-w-500">Adresse complète</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <textarea formControlName="address" matInput rows="2" placeholder="Adresse"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-6">
+        <label for="region" class="f-w-500">Région</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input formControlName="region" type="text" matInput placeholder="Région" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-6">
+        <label for="city" class="f-w-500">Ville</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input formControlName="city" type="text" matInput placeholder="Ville" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-6">
+        <label for="district" class="f-w-500">Quartier</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input formControlName="district" type="text" matInput placeholder="Quartier" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Section Rôles (affichage seulement) -->
+    <div class="row" *ngIf="userRoles.length > 0">
+      <div class="col-12">
+        <div class="m-b-10 f-w-600">Rôles</div>
+        <mat-divider class="m-b-20"></mat-divider>
+      </div>
+      <div class="col-12">
+        <mat-chip-listbox>
+          <mat-chip *ngFor="let role of userRoles">{{ role.name }}</mat-chip>
+        </mat-chip-listbox>
+      </div>
+    </div>
+
+    <mat-divider class="m-t-15 m-b-15"></mat-divider>
+
+    <div class="text-end">
+      <button type="button" mat-stroked-button class="m-r-10" (click)="onCancel()">Annuler</button>
+      <button type="submit" mat-flat-button color="primary" [disabled]="isSubmitting || userForm.invalid">
+        <span *ngIf="!isSubmitting">Enregistrer</span>
+        <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+      </button>
+    </div>
+  </form>
+</app-card>

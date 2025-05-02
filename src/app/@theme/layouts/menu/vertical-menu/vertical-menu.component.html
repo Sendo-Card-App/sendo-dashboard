@@ -3,7 +3,10 @@
     <app-card [showHeader]="false" cardClass="user-card" padding="20">
       <div class="flex align-item-center">
         <div class="flex-shrink-0">
-          <img src="assets/images/icon.png" alt="user-image" class="user-avatar" />
+          <div class="avatar-circle-large" [style.background]="createStableAvatar().color">
+            {{ createStableAvatar().letter }}
+          </div>
+
         </div>
         <div class="flex-grow-1 user-details">
           <div class="f-w-600">{{ this.authenticationService.currentUserName }}</div>

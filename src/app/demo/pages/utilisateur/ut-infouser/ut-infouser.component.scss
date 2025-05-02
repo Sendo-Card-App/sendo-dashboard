@@ -21,15 +21,15 @@
 
 /* Avatar */
 .avatar-circle-large {
-  width: 40px;
-  height: 40px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 36px;
   margin: 0 auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -43,7 +43,7 @@
   span {
     padding: 3px 10px;
     border-radius: 20px;
-    font-size: 8px;
+    font-size: 12px;
   }
 }
 

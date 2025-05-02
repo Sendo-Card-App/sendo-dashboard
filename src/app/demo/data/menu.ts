@@ -38,7 +38,15 @@ export const menus: Navigation[] = [
             id: 'alluser',
             title: 'liste des utilisateurs',
             type: 'item',
-            url: '/alluser',
+            url: '/users/alluser',
+            // target: true,
+            breadcrumbs: true
+          },
+          {
+            id: 'adduser',
+            title: 'creer un utilisateur',
+            type: 'item',
+            url: '/users/adduser',
             // target: true,
             breadcrumbs: true
           },

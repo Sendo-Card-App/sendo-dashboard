@@ -121,6 +121,29 @@ export class VerticalMenuComponent {
     });
 }
 
+ /** Calcule une couleur stable à partir du nom */
+ private getStableColor(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const h = Math.abs(hash) % 360;
+  return `hsl(${h}, 70%, 60%)`;
+}
+
+/** Retourne la première lettre + couleur */
+createStableAvatar(): { letter: string; color: string } {
+  // si firstname est vide, on tombe sur '?'
+  const letter = (this.userName.charAt(0).toUpperCase() || '?');
+
+  // concaténation simple : toujours une string
+  const name = this.userName;
+
+  return {
+    letter,
+    color: this.getStableColor(name)
+  };
+}
 
 
 

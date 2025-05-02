@@ -1,0 +1,112 @@
+<div class="row m-t-25">
+  <div class="col-sm-12">
+    <app-card cardTitle="Créer un Nouvel Utilisateur">
+      <div class="p-b-25">
+        <h4 class="f-20 f-w-600">
+          Remplissez le formulaire pour ajouter un nouvel utilisateur
+        </h4>
+        <mat-divider class="m-y-15"></mat-divider>
+
+        <form [formGroup]="invitationForm" (ngSubmit)="onSubmit()">
+          <!-- Prénom et Nom -->
+          <div class="row">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <!-- <mat-label>Prénom</mat-label> -->
+                <input matInput formControlName="firstname" placeholder="Prénom" required>
+                <mat-error *ngIf="invitationForm.get('firstname')?.hasError('required')">
+                  Champ obligatoire
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <!-- <mat-label>Nom</mat-label> -->
+                <input matInput placeholder="Nom" formControlName="lastname" required>
+                <mat-error *ngIf="invitationForm.get('lastname')?.hasError('required')">
+                  Champ obligatoire
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Email et Téléphone -->
+          <div class="row">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <!-- <mat-label>Email</mat-label> -->
+                <input matInput placeholder="Email" formControlName="email" type="email" required>
+                <mat-error *ngIf="invitationForm.get('email')?.errors">
+                  <span *ngIf="invitationForm.get('email')?.hasError('required')">Champ obligatoire</span>
+                  <span *ngIf="invitationForm.get('email')?.hasError('email')">Email invalide</span>
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <!-- <mat-label>Téléphone</mat-label> -->
+                <input placeholder="Téléphone" matInput formControlName="phone" type="tel">
+                <mat-error *ngIf="invitationForm.get('phone')?.hasError('pattern')">
+                  Format invalide (9-15 chiffres)
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Adresse et Rôle -->
+          <div class="row">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <!-- <mat-label>Adresse</mat-label> -->
+                <input placeholder="Adresse" matInput formControlName="address">
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Rôle</mat-label>
+                <mat-select formControlName="roleId" required>
+                  <mat-option *ngFor="let role of roles" [value]="role.id">
+                    {{ role.name }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="invitationForm.get('roleId')?.hasError('required')">
+                  Sélectionnez un rôle
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Bouton de soumission -->
+          <div class="row m-t-20">
+            <div class="col-md-12 text-right">
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="invitationForm.invalid || isLoading"
+              >
+                @if (isLoading) {
+                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                } @else {
+                  Créer l'utilisateur
+                }
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Messages de feedback -->
+        @if (isSuccess) {
+          <div class="alert alert-success m-t-20">
+            Utilisateur créé avec succès !
+          </div>
+        }
+        @if (errorMessage) {
+          <div class="alert alert-danger m-t-20">
+            {{ errorMessage }}
+          </div>
+        }
+      </div>
+    </app-card>
+  </div>
+</div>
