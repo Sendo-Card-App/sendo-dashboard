@@ -45,7 +45,6 @@ const routes: Routes = [
     path: 'users',
     component: AdminComponent,
     canActivateChild: [RoleGuard],
-
     children: [
       {
         path: 'alluser',
