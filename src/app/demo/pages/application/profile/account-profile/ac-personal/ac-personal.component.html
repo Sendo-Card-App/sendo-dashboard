@@ -5,16 +5,24 @@
         <div class="row">
           <div class="col-md-8">
             <label for="email">Nom du role</label>
-            <div class="row">
-              <div class="col">
-                <mat-form-field appearance="outline" class="w-100 m-t-5">
-                  <input type="text" matInput placeholder="Name" />
-                </mat-form-field>
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+              <div class="row align-items-end">
+                <div class="col">
+                  <mat-form-field appearance="outline" class="w-100 m-t-5">
+                    <mat-label>Nom du rôle</mat-label>
+                    <input matInput placeholder="Name" formControlName="name" required />
+                    <mat-error *ngIf="form.get('name')?.hasError('required')">
+                      Le nom du rôle est requis
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+                <div class="col-auto p-10">
+                  <button mat-flat-button color="primary" [disabled]="form.invalid || submitting">
+                    {{ submitting ? 'Envoi...' : 'Envoyer' }}
+                  </button>
+                </div>
               </div>
-              <div class="col-auto p-10">
-                <button mat-flat-button color="primary">Envoyer</button>
-              </div>
-            </div>
+            </form>
           </div>
         </div>
       <div class="p-t-25">
@@ -70,7 +78,7 @@
                   <a href="javascript:" class="avatar avatar-xs hover text-accent-500">
                     <i class="ti ti-trash f-20"></i>
                   </a>
-               
+
               </td>
             </ng-container>
 
