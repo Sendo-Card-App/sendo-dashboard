@@ -31,6 +31,14 @@ export class AdminService {
     );
   }
 
+  createRole(name: string): Observable<Role> {
+    return this.http.post<Role>(
+      `${this.apiUrl}/roles`,
+      { name },
+      this.getConfigAuthorized()
+    );
+  }
+
   private getConfigAuthorized() {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'
     const data = JSON.parse(dataRegistered)

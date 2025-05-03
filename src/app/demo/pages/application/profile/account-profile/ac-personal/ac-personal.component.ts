@@ -7,6 +7,8 @@ import { MatTableModule } from '@angular/material/table';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { AdminService } from 'src/app/@theme/services/admin.service';
 import { DatePipe } from '@angular/common';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface RoleUser {
   id: number;
@@ -26,8 +28,18 @@ export class AcPersonalComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'createdAt', 'updatedAt', 'actions'];
   dataSource: RoleUser[] = [];
   loading = true;
+  form: FormGroup;
+  submitting = false;
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private fb: FormBuilder,
+     private snackBar: MatSnackBar
+  ) {
+    this.form = this.fb.group({
+      name: ['',Validators.required],
+    });
+  }
 
   ngOnInit(): void {
     this.loadRoles();
@@ -46,6 +58,42 @@ export class AcPersonalComponent implements OnInit {
       error: (error) => {
         console.error('Error loading roles:', error);
         this.loading = false;
+      }
+    });
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid) {
+      return;
+    }
+    this.submitting = true;
+    this.adminService.createRole(this.form.value.name).subscribe({
+      next: role => {
+        const now = new Date().toISOString();
+        const newRole: RoleUser = {
+          id: role.id,
+          name: role.name,
+          createdAt: role.createdAt || now,
+          updatedAt: role.updatedAt || now
+        };
+        this.dataSource = [newRole, ...this.dataSource];
+        this.form.reset();
+
+        this.snackBar.open('Role creer avec succes', 'Fermer', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        this.loadRoles();
+        this.submitting = false;
+      },
+      error: err => {
+        console.error('Erreur création rôle', err);
+        this.snackBar.open('Erreur lors de la création du rôle', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        this.form.reset();
+        this.submitting = false;
       }
     });
   }
