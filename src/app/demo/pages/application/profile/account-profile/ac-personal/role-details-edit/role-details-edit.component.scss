@@ -1,0 +1,36 @@
+.edit-customer {
+  ::ng-deep.able-pro-rtl & {
+    direction: rtl;
+    // form input
+    .mdc-text-field--outlined .mdc-notched-outline {
+      flex-direction: row-reverse !important;
+    }
+  }
+}
+
+.role-edit-card {
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+
+  .edit-role {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .mat-form-field {
+    margin-bottom: 15px;
+  }
+
+  .role-edit-header {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    z-index: 1;
+  }
+
+  mat-spinner {
+    display: inline-block;
+    margin: 0 8px;
+  }
+}

@@ -71,3 +71,15 @@ export interface ConfirmDialogData {
   confirmText?: string;
   cancelText?: string;
 }
+
+export interface RoleUser {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChangeUserStatusRequest {
+  email: string;
+  status: 'ACTIVE' | 'SUSPENDED';
+}

@@ -141,4 +141,6 @@ export class UtAlluserComponent implements AfterViewInit {
       }
     });
   }
+
+
 }

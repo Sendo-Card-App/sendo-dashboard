@@ -1,0 +1,29 @@
+<div class="role-assignment-container">
+  <h2>Attribuer un rôle</h2>
+
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <form *ngIf="!isLoading" [formGroup]="roleForm" (ngSubmit)="assignRole()">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Sélectionner un rôle</mat-label>
+      <mat-select formControlName="selectedRoleId" required>
+        <mat-option *ngFor="let role of allRoles" [value]="role.id">
+          {{ role.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="roleForm.get('selectedRoleId')?.hasError('required')">
+        Sélection obligatoire
+      </mat-error>
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-button type="button" (click)="dialogRef.close()">Annuler</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting">
+        <span *ngIf="!isSubmitting">Attribuer</span>
+        <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+      </button>
+    </div>
+  </form>
+</div>
