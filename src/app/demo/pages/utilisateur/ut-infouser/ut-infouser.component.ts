@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
-import { MeResponse, RemoveRoleRequest, RoleUser } from 'src/app/@theme/models';
+import { MeResponse, RemoveRoleRequest } from 'src/app/@theme/models';
 import { UserService } from 'src/app/@theme/services/users.service';
 import { RoleAddComponent } from './roles-add/role-add.component';
 import { MatDialog } from '@angular/material/dialog';

@@ -79,10 +79,10 @@ export class AdminService {
    * DELETE /admin/users/remove-role
    * Body: { userId: number, roleId: number }
    */
-  removeRoleFromUser(userId: number, roleId: number): Observable<any> {
+  removeRoleFromUser(userId: number, roleId: number){
     const url = `${this.apiUrl}/users/remove-role`;
     // Angular HttpClient.delete peut prendre un body en option
-    return this.http.delete<any>(
+    return this.http.delete(
       url,
       {
         ...this.getConfigAuthorized(),

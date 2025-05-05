@@ -46,7 +46,7 @@ export class RoleDetailsEditComponent {
         });
         this.dialogRef.close(updatedRole);
       },
-      error: (err) => {
+      error: () => {
         this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', {
           duration: 3000,
           panelClass: ['error-snackbar']
