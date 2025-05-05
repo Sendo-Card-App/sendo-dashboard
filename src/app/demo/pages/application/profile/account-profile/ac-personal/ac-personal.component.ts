@@ -9,13 +9,11 @@ import { AdminService } from 'src/app/@theme/services/admin.service';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { RoleDetailsEditComponent } from './role-details-edit/role-details-edit.component';
+import { RoleUser } from 'src/app/@theme/models';
 
-export interface RoleUser {
-  id: number;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
+
 
 @Component({
   selector: 'app-ac-role',
@@ -31,10 +29,12 @@ export class AcPersonalComponent implements OnInit {
   form: FormGroup;
   submitting = false;
 
+
   constructor(
     private adminService: AdminService,
     private fb: FormBuilder,
-     private snackBar: MatSnackBar
+     private snackBar: MatSnackBar,
+     private dialog: MatDialog,
   ) {
     this.form = this.fb.group({
       name: ['',Validators.required],
@@ -107,5 +107,23 @@ export class AcPersonalComponent implements OnInit {
       default:
         return 'badge-default';
     }
+  }
+
+  openEditDialog(role: RoleUser): void {
+    const dialogRef = this.dialog.open(RoleDetailsEditComponent, {
+      width: '500px',
+      data: { role }
+    });
+
+    dialogRef.afterClosed().subscribe(updatedRole => {
+      if (updatedRole) {
+        const index = this.dataSource.findIndex(r => r.id === updatedRole.id);
+        if (index !== -1) {
+          this.dataSource = this.dataSource.map(r =>
+            r.id === updatedRole.id ? updatedRole : r
+          );
+        }
+      }
+    });
   }
 }

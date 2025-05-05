@@ -71,13 +71,23 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef class="text-right">Actions</th>
               <td mat-cell *matCellDef="let role" class="text-right">
-
-                  <a href="javascript:" class="avatar avatar-xs hover text-accent-500 m-r-10">
-                    <i class="ti ti-eye f-20"></i>
-                  </a>
-                  <a href="javascript:" class="avatar avatar-xs hover text-accent-500">
-                    <i class="ti ti-trash f-20"></i>
-                  </a>
+                <ul class="list-inline p-l-0">
+                  <!-- <li class="list-inline-item m-r-10" matTooltip="View" (click)="customerDetails()">
+                    <a href="javascript:" class="avatar avatar-xs text-muted">
+                      <i class="ti ti-eye f-18"></i>
+                    </a>
+                  </li> -->
+                  <li class="list-inline-item m-r-10" matTooltip="Edit" (click)="openEditDialog(role)">
+                    <a href="javascript:" class="avatar avatar-xs text-muted">
+                      <i class="ti ti-edit-circle f-18"></i>
+                    </a>
+                  </li>
+                  <li class="list-inline-item m-r-10" matTooltip="Delete">
+                    <a href="javascript:" class="avatar avatar-xs text-warn-500">
+                      <i class="ti ti-trash f-18"></i>
+                    </a>
+                  </li>
+                </ul>
 
               </td>
             </ng-container>

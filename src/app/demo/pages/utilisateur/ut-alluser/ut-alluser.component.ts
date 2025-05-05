@@ -4,7 +4,7 @@ import { MatTableDataSource }          from '@angular/material/table';
 import { MatPaginator, PageEvent }    from '@angular/material/paginator';
 import { MatSort }                    from '@angular/material/sort';
 import { finalize }                   from 'rxjs/operators';
-import { MeResponse }                 from 'src/app/@theme/models';
+import { ChangeUserStatusRequest, MeResponse }                 from 'src/app/@theme/models';
 import { UserService }                from 'src/app/@theme/services/users.service';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { RolePayload } from '../ut-updateuser/ut-updateuser.component';
+import { AdminService } from 'src/app/@theme/services/admin.service';
 
 @Component({
   selector: 'app-ut-alluser',
@@ -21,7 +22,7 @@ import { RolePayload } from '../ut-updateuser/ut-updateuser.component';
   styleUrls: ['./ut-alluser.component.scss']
 })
 export class UtAlluserComponent implements AfterViewInit {
-  displayedColumns = ['name','email','role','phone','createdAt','action'];
+  displayedColumns = ['name', 'email', 'role', 'phone', 'status', 'createdAt', 'action'];
   dataSource = new MatTableDataSource<MeResponse>();
   isLoading  = false;
   totalItems = 0;
@@ -32,7 +33,7 @@ export class UtAlluserComponent implements AfterViewInit {
   @ViewChild(MatSort)      sort!: MatSort;
 
   constructor(private userService: UserService, private dialog: MatDialog,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar,private adminService: AdminService) {
     this.loadUsers();
   }
 
@@ -141,4 +142,38 @@ export class UtAlluserComponent implements AfterViewInit {
       }
     });
   }
+
+  toggleUserStatus(email: string, currentStatus: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Changement de statut',
+        message: `Êtes-vous sûr de vouloir ${currentStatus === 'ACTIVE' ? 'suspendre' : 'activer'} cet utilisateur ?`,
+        confirmText: 'Confirmer',
+        cancelText: 'Annuler'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirm => {
+      if (confirm) {
+        const newStatus = currentStatus === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+        const payload: ChangeUserStatusRequest = { email, status: newStatus };
+
+        this.isLoading = true;
+        this.adminService.changeUserStatus(payload).subscribe({
+          next: () => {
+            this.snackBar.open(`Statut changé à ${newStatus}`, 'Fermer', { duration: 3000 });
+            this.loadUsers(); // Recharger les données
+          },
+          error: (error) => {
+            this.snackBar.open('Échec du changement de statut', 'Fermer', { duration: 3000 });
+            console.error('Error:', error);
+            this.isLoading = false;
+          }
+        });
+      }
+    });
+  }
+
+
 }

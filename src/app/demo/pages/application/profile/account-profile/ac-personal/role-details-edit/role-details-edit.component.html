@@ -1,0 +1,43 @@
+<app-card cardTitle="Modifier le rôle" padding="0" cardClass="role-edit-card m-b-0" headerClass="p-15" actionClass="card-footer block">
+  <ng-template #headerOptionsTemplate>
+    <a class="avatar avatar-s role-edit-header" mat-dialog-close>
+      <i class="ti ti-x f-20"></i>
+    </a>
+  </ng-template>
+
+  <div class="p-20 edit-role">
+    <div class="row">
+      <div class="col-12">
+        <label for="name" class="f-w-500">Nom du rôle</label>
+        <mat-form-field appearance="outline" class="w-100 m-t-5">
+          <input type="text" matInput  placeholder="Nom du rôle" formControlName="name"  [value]="roleForm.get('name')?.value"/>
+          <mat-error *ngIf="roleForm.get('name')?.hasError('required')">
+            Ce champ est obligatoire
+          </mat-error>
+          <mat-error *ngIf="roleForm.get('name')?.hasError('minlength')">
+            Minimum 3 caractères
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #actionTemplate>
+    <div class="flex align-item-center justify-content-between">
+      <button mat-icon-button color="warn" (click)="onDelete()" *ngIf="data.role.name !== 'SUPER_ADMIN'">
+        <i class="ti ti-trash f-18"></i>
+      </button>
+      <div class="flex-grow-1 text-end">
+        <button mat-button mat-dialog-close class="m-r-10">Annuler</button>
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="roleForm.invalid || isSubmitting">
+          <span *ngIf="!isSubmitting">Enregistrer</span>
+          <mat-spinner *ngIf="isSubmitting" diameter="20"></mat-spinner>
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</app-card>

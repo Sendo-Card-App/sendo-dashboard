@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule }      from '@angular/common';
-import { SharedModule }      from 'src/app/demo/shared/shared.module';
-import { ActivatedRoute }    from '@angular/router';
-import { MeResponse } from 'src/app/@theme/models';
-import { UserService }       from 'src/app/@theme/services/users.service';
+import { CommonModule } from '@angular/common';
+import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { ActivatedRoute } from '@angular/router';
+import { MeResponse, RemoveRoleRequest } from 'src/app/@theme/models';
+import { UserService } from 'src/app/@theme/services/users.service';
+import { RoleAddComponent } from './roles-add/role-add.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
+import { AdminService } from 'src/app/@theme/services/admin.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-ut-infouser',
@@ -16,10 +21,15 @@ export class UtInfouserComponent implements OnInit {
   user?: MeResponse;
   isLoading = false;
   errorMessage = '';
+  dataSource = new MatTableDataSource();
+  displayedColumns: string[] = ['name', 'actions'];
 
   constructor(
     private route: ActivatedRoute,
-    private userService: UserService
+    private userService: UserService,
+    private dialog: MatDialog,
+    private adminService: AdminService,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -34,8 +44,12 @@ export class UtInfouserComponent implements OnInit {
 
     this.userService.getUserById(userId).subscribe({
       next: resp => {
-        // Si votre service wrappe dans { data: MeResponse }, faites resp.data
         this.user = resp.data;
+
+        console.log('Utilisateur récupéré:', this.user);
+        if (this.user?.roles) {
+          this.dataSource.data = this.user.roles;
+        }
         this.isLoading = false;
       },
       error: err => {
@@ -56,12 +70,11 @@ export class UtInfouserComponent implements OnInit {
   }
 
   /** Retourne la première lettre + couleur */
-  createStableAvatar(user: MeResponse): { letter: string; color: string } {
-    // si firstname est vide, on tombe sur '?'
-    const letter = (user.firstname.charAt(0).toUpperCase() || '?');
+  createStableAvatar(user?: MeResponse): { letter: string; color: string } | null {
+    if (!user) return null;
 
-    // concaténation simple : toujours une string
-    const name = user.firstname + user.lastname;
+    const letter = (user.firstname?.charAt(0)?.toUpperCase() || '?');
+    const name = (user.firstname || '') + (user.lastname || '');
 
     return {
       letter,
@@ -69,11 +82,43 @@ export class UtInfouserComponent implements OnInit {
     };
   }
 
-
   /** Copie le matricule du wallet dans le presse-papier */
   copyMatricule(): void {
     if (!this.user?.wallet?.matricule) { return; }
     navigator.clipboard.writeText(this.user.wallet.matricule)
       .catch(() => {/* silently fail */});
+  }
+
+  openAddRoleDialog(user: MeResponse): void {
+    if (!user) return;
+    console.log('Ouverture du dialogue d\'ajout de rôle pour l\'utilisateur', user);
+
+    const dialogRef = this.dialog.open(RoleAddComponent, {
+      width: '450px',
+      data: { user }
+    });
+
+    dialogRef.afterClosed().subscribe(success => {
+      if (success) {
+        // Recharger les données utilisateur
+        this.ngOnInit();
+      }
+    });
+  }
+
+  onRemoveRole(userId: number, roleId: number): void {
+    const request: RemoveRoleRequest = { userId, roleId };
+
+    this.adminService.removeUserRole(request).subscribe({
+      next: (response) => {
+        console.log('Rôle retiré:', response);
+        this.snackBar.open('Rôle supprimer avec succes', 'Fermer', { duration: 3000 });
+        this.ngOnInit(); // Actualiser les données
+      },
+      error: (error) => {
+        console.error('Erreur:', error);
+        this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 }
