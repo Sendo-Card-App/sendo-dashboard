@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { BaseResponse, ChangeUserStatusRequest } from '../models';
+import { BaseResponse, ChangeUserStatusRequest, RemoveRoleRequest } from '../models';
 
 export interface Role {
   id: number;
@@ -92,9 +92,19 @@ export class AdminService {
   }
 
   changeUserStatus(payload: ChangeUserStatusRequest): Observable<BaseResponse> {
-    return this.http.patch<BaseResponse>(
-      '/admin/users/change-status',
-      payload
+    return this.http.put<BaseResponse>(
+      `${this.apiUrl}/users/change-status `,
+      payload,
+      this.getConfigAuthorized()
+    );
+  }
+
+  removeUserRole(request: RemoveRoleRequest): Observable<BaseResponse> {
+    return this.http.delete<BaseResponse>(
+      `${this.apiUrl}/users/remove-role `,
+      {  ...this.getConfigAuthorized(),
+        body: request
+       }, // Note: pour DELETE avec body
     );
   }
 

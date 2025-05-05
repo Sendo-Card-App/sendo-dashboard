@@ -83,3 +83,8 @@ export interface ChangeUserStatusRequest {
   email: string;
   status: 'ACTIVE' | 'SUSPENDED';
 }
+
+export interface RemoveRoleRequest {
+  userId: number;
+  roleId: number;
+}

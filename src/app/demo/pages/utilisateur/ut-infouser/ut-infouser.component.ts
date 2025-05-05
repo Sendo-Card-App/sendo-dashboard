@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
-import { MeResponse, RoleUser } from 'src/app/@theme/models';
+import { MeResponse, RemoveRoleRequest, RoleUser } from 'src/app/@theme/models';
 import { UserService } from 'src/app/@theme/services/users.service';
 import { RoleAddComponent } from './roles-add/role-add.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
+import { AdminService } from 'src/app/@theme/services/admin.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-ut-infouser',
@@ -25,7 +27,9 @@ export class UtInfouserComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private adminService: AdminService,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
@@ -102,8 +106,19 @@ export class UtInfouserComponent implements OnInit {
     });
   }
 
-  deleteRole(roleId: number): void {
-    // Implémentez la logique de suppression ici
-    console.log('Suppression du rôle', roleId);
+  onRemoveRole(userId: number, roleId: number): void {
+    const request: RemoveRoleRequest = { userId, roleId };
+
+    this.adminService.removeUserRole(request).subscribe({
+      next: (response) => {
+        console.log('Rôle retiré:', response);
+        this.snackBar.open('Rôle supprimer avec succes', 'Fermer', { duration: 3000 });
+        this.ngOnInit(); // Actualiser les données
+      },
+      error: (error) => {
+        console.error('Erreur:', error);
+        this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 }
