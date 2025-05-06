@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { BaseResponse, ChangeUserStatusRequest, RemoveRoleRequest } from '../models';
-import { query } from '@angular/animations';
 
 export interface Role {
   id: number;
