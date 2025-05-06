@@ -50,30 +50,33 @@ export const menus: Navigation[] = [
             // target: true,
             breadcrumbs: true
           },
-          // {
-          //   id: 'error-500',
-          //   title: 'Error 500',
-          //   type: 'item',
-          //   url: '/maintenance/error-500',
-          //   target: true,
-          //   breadcrumbs: false
-          // },
-          // {
-          //   id: 'under-constructor',
-          //   title: 'Under Construction',
-          //   type: 'item',
-          //   url: '/maintenance/under-constructor',
-          //   target: true,
-          //   breadcrumbs: false
-          // },
-          // {
-          //   id: 'coming-soon',
-          //   title: 'Coming Soon',
-          //   type: 'item',
-          //   url: '/maintenance/coming-soon',
-          //   target: true,
-          //   breadcrumbs: false
-          // }
+
+        ]
+      },
+      {
+        id: 'transaction',
+        title: 'transactions',
+        type: 'collapse',
+        icon: '#custom-flag',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'alltransaction',
+            title: 'liste des transactions',
+            type: 'item',
+            url: '/transactions/alltransactions',
+            // target: true,
+            breadcrumbs: true
+          },
+          {
+            id: 'addtransaction',
+            title: 'creer une transaction',
+            type: 'item',
+            url: '/transactions/addtransaction',
+            // target: true,
+            breadcrumbs: true
+          },
+
         ]
       },
       // {

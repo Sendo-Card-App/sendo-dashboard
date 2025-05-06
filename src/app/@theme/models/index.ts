@@ -88,3 +88,37 @@ export interface RemoveRoleRequest {
   userId: number;
   roleId: number;
 }
+
+// src/app/models/transaction.model.ts
+
+export interface Transactions {
+  id: number;
+  transactionId: string;
+
+  amount: number;
+  type: 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  userId: number;
+  receiverId?: number | null;
+
+  user: MeResponse;
+
+  currency: string;
+  virtualCardId?: number;
+  totalAmount: number;
+  exchangeRates?: number;
+  sendoFees?: number;
+  tva?: number;
+  partnerFees?: number;
+  description?: string;
+
+  method?: 'MOBILE_MONEY' | 'BANK_TRANSFER' | null;
+  provider?: 'MTN' | 'ORANGE' | null;
+  transactionReference?: string | null;
+  bankName?: string | null;
+  accountNumber?: string | null;
+
+  createdAt: string;  // ISO date-time
+  updatedAt: string;  // ISO date-time
+}
+

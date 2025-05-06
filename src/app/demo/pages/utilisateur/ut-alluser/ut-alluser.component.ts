@@ -158,6 +158,7 @@ export class UtAlluserComponent implements AfterViewInit {
       if (confirm) {
         const newStatus = currentStatus === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
         const payload: ChangeUserStatusRequest = { email, status: newStatus };
+        console.log('Payload:', payload);
 
         this.isLoading = true;
         this.adminService.changeUserStatus(payload).subscribe({

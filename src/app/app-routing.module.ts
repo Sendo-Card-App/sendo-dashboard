@@ -78,6 +78,32 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'transactions',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'alltransactions',
+        loadComponent: () => import('./demo/pages/transaction/tr-alltransaction/tr-alltransaction.component').then((c) => c.TrAllTransactionComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: 'addtransaction',
+        loadComponent: () => import('./demo/pages/transaction/tr-addtransaction/tr-addtransaction.component').then((c) => c.TrAddtransactionComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+
+      // {
+      //   path: 'components',
+      //   loadChildren: () => import('src/app/demo/layout/component/component.module').then((m) => m.ComponentModule)
+      // },
+      // {
+      //   path: 'maintenance',
+      //   loadChildren: () => import('./demo/pages/maintenance/maintenance.module').then((m) => m.MaintenanceModule)
+      // }
+    ]
+  },
+  {
     path: '',
     component: AdminComponent,
     canActivateChild: [RoleGuard],
