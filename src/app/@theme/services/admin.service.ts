@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -91,11 +91,20 @@ export class AdminService {
     );
   }
 
-  changeUserStatus(payload: ChangeUserStatusRequest): Observable<BaseResponse> {
+  changeUserStatus(request: ChangeUserStatusRequest): Observable<BaseResponse> {
+    // 1) On construit les query params
+    const params = new HttpParams()
+      .set('email', request.email)
+      .set('status', request.status);
+
+    // 2) On appelle PUT sans body (null) et avec options qui fusionnent headers + params
     return this.http.put<BaseResponse>(
-      `${this.apiUrl}/users/change-status `,
-      payload,
-      this.getConfigAuthorized()
+      `${this.apiUrl}/users/change-status`, // veillez à bien utiliser le bon chemin
+      null,
+      {
+        ...this.getConfigAuthorized(),
+        params
+      }
     );
   }
 
