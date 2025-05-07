@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { TransactionsService } from 'src/app/@theme/services/transactions.service';
-import { BaseResponse, Transactions } from 'src/app/@theme/models';
+import { BaseResponse, MeResponse, Transactions } from 'src/app/@theme/models';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -95,12 +95,12 @@ export class TransactionDetailComponent implements OnInit {
   //     });
   // }
 
-  getUserInitials(user: any): string {
+  getUserInitials(user: MeResponse): string {
     if (!user) return '?';
     return `${user.firstname?.charAt(0) || ''}${user.lastname?.charAt(0) || ''}`.toUpperCase() || '?';
   }
 
-  getUserColor(user: any): string {
+  getUserColor(): string {
     // Implémentez une logique de génération de couleur stable si nécessaire
     return '#3f51b5'; // Couleur par défaut
   }
