@@ -151,9 +151,9 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button mat-menu-item>
+              <button mat-menu-item (click)="viewDetails(transaction.transactionId)">
                 <mat-icon>visibility</mat-icon>
-                View Details
+                Voir le détail
               </button>
             </mat-menu>
           </td>

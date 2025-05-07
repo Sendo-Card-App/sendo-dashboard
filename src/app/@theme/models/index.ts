@@ -5,10 +5,10 @@ export interface LoginResponse {
     deviceId: string;
 }
 
-export interface BaseResponse {
+export interface BaseResponse<T = unknown> {
     status: number;
     message: string;
-    data: unknown;
+    data: T;
 }
 
 

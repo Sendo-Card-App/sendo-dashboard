@@ -1,0 +1,158 @@
+<!-- transaction-detail.component.html -->
+<div class="transaction-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="transaction" class="transaction-layout">
+    <!-- Header Section -->
+    <div class="transaction-header">
+      <h1 class="transaction-title">
+        <button mat-icon-button routerLink="/transactions" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        Détails de la transaction
+      </h1>
+      <div class="transaction-id">Réf: {{ transaction.transactionId }}</div>
+    </div>
+
+    <!-- Two-column Layout -->
+    <div class="transaction-content">
+      <!-- User Profile Column -->
+      <div class="user-profile-column">
+        <mat-card class="user-card">
+          <div class="user-avatar" [style.background]="getUserColor(transaction.user)">
+            {{ getUserInitials(transaction.user) }}
+          </div>
+
+          <div class="user-info">
+            <h2 class="user-name">{{ transaction.user?.firstname }} {{ transaction.user?.lastname }}</h2>
+            <p class="user-email">{{ transaction.user?.email }}</p>
+
+            <mat-divider></mat-divider>
+
+            <div class="user-details">
+              <div class="detail-row">
+                <mat-icon>phone</mat-icon>
+                <span>{{ transaction.user?.phone || 'Non renseigné' }}</span>
+              </div>
+
+              <div class="detail-row">
+                <mat-icon>account_balance_wallet</mat-icon>
+                <span>{{ transaction.user?.wallet?.matricule || 'N/A' }}</span>
+                <button mat-icon-button (click)="copyToClipboard(transaction.user?.wallet?.matricule)">
+                  <mat-icon>content_copy</mat-icon>
+                </button>
+              </div>
+
+              <div class="detail-row">
+                <mat-icon>payments</mat-icon>
+                <span>{{ transaction.user?.wallet?.balance | currency:transaction.user?.wallet?.currency:'symbol':'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Transaction Details Column -->
+      <div class="transaction-details-column">
+        <!-- Transaction Summary -->
+        <mat-card class="summary-card">
+          <div class="summary-grid">
+            <div class="summary-item">
+              <span class="summary-label">Montant</span>
+              <span class="summary-value highlight">
+                {{ transaction.amount | currency:transaction.currency:'symbol':'1.2-2' }}
+              </span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Type</span>
+              <span class="summary-value">
+                <span class="type-badge" [ngClass]="getTypeClass(transaction.type)">
+                  {{ formatType(transaction.type) | titlecase }}
+                </span>
+              </span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Statut</span>
+              <span class="summary-value">
+                <span class="status-badge" [ngClass]="getStatusClass(transaction.status)">
+                  {{ transaction.status | titlecase }}
+                </span>
+              </span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Date</span>
+              <span class="summary-value">{{ formatDate(transaction.createdAt) }}</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Méthode</span>
+              <span class="summary-value">{{ transaction.method ? (transaction.method | lowercase | titlecase) : 'N/A' }}</span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Référence</span>
+              <span class="summary-value">{{ transaction.transactionReference || 'N/A' }}</span>
+            </div>
+          </div>
+        </mat-card>
+
+        <!-- Status Update Section -->
+        <mat-card class="status-card">
+          <div class="status-header">
+            <h3>Modification du statut</h3>
+            <button mat-stroked-button (click)="toggleEdit()">
+              {{ isEditing ? 'Annuler' : 'Modifier' }}
+            </button>
+          </div>
+
+          <div *ngIf="isEditing" class="status-form">
+            <mat-form-field appearance="outline" class="status-select">
+              <mat-label>Nouveau statut</mat-label>
+              <mat-select formControlName="status">
+                <mat-option *ngFor="let status of statusOptions" [value]="status">
+                  {{ status | titlecase }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-raised-button
+                    color="primary"
+                    (click)="updateStatus()"
+                    [disabled]="!statusForm.valid || statusForm.pristine">
+              Confirmer
+            </button>
+          </div>
+        </mat-card>
+
+        <!-- Additional Information -->
+        <mat-card class="additional-info-card">
+          <h3>Informations complémentaires</h3>
+
+          <div class="additional-info-grid">
+            <div class="info-item">
+              <span class="info-label">Banque</span>
+              <p class="info-value">{{ transaction.bankName || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Compte</span>
+              <p class="info-value">{{ transaction.accountNumber || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item full-width">
+              <span class="info-label">Description</span>
+              <p class="info-value">{{ transaction.description || 'Aucune description fournie' }}</p>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
