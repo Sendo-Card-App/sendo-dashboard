@@ -106,6 +106,15 @@
   <!-- Colonne de droite - Détails -->
   <div class="col-lg-8 col-xxl-9">
     <!-- Carte A propos -->
+    <mat-card class="status-card">
+      <div class="status-header">
+        <h3>Voir toutes les transactions</h3>
+        <button mat-stroked-button (click)="viewTransactions(user?.id)">
+          <mat-icon>visibility</mat-icon>
+          Autres transactions
+        </button>
+      </div>
+    </mat-card>
     <app-card cardTitle="A propos">
       <p class="m-b-0" *ngIf="user?.profession; else noInfo">
         {{ user.profession }} basé à {{ user.city || 'ville non spécifiée' }}.

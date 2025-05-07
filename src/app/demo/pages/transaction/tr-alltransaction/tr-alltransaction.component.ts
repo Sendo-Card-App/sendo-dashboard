@@ -159,4 +159,7 @@ export class TrAllTransactionComponent implements OnInit {
   viewDetails(transactionId: string): void {
     this.router.navigate(['/transactions', transactionId]);
   }
+  viewTransactions(transactionId: number): void {
+    this.router.navigate(['/transactions/user', transactionId]);
+  }
 }

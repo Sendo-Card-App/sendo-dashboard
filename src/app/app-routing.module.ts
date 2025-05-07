@@ -97,6 +97,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/transaction/transaction-detail/transaction-detail.component').then((c) => c.TransactionDetailComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
+      {
+        path: 'user/:userId',
+        loadComponent: () => import('./demo/pages/transaction/transaction-list/transaction-list.component').then((c) => c.TransactionListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
 
       // {
       //   path: 'components',
