@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { BaseResponse, Transactions } from '../models';
+import { BaseResponse, Transactions, TransactionStatus } from '../models';
 
 interface PaginatedData<T> {
   page: number;
@@ -53,6 +53,29 @@ export class TransactionsService {
     return this.http.get<BaseResponse<Transactions>>(
       `${this.apiUrl}/transactions/${transactionId}`,
       this.getConfigAuthorized()
+    );
+  }
+
+   /**
+   * PUT /admin/transaction/change-status
+   * @param transactionId Identifiant externe de la transaction
+   * @param status Nouveau statut à appliquer
+   */
+   updateTransactionStatus(
+    transactionId: string,
+    status: TransactionStatus
+  ): Observable<BaseResponse> {
+    const params = new HttpParams()
+      .set('transactionId', transactionId)
+      .set('status', status);
+
+    return this.http.put<BaseResponse>(
+      `${this.apiUrl}/admin/transaction/change-status`,
+      null, // pas de corps, tout passe en query
+      {
+        ...this.getConfigAuthorized(),
+        params
+      }
     );
   }
 
