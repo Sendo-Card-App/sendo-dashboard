@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MeResponse, RemoveRoleRequest } from 'src/app/@theme/models';
 import { UserService } from 'src/app/@theme/services/users.service';
 import { RoleAddComponent } from './roles-add/role-add.component';
@@ -30,6 +30,7 @@ export class UtInfouserComponent implements OnInit {
     private dialog: MatDialog,
     private adminService: AdminService,
     private snackBar: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -120,5 +121,9 @@ export class UtInfouserComponent implements OnInit {
         this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
       }
     });
+  }
+
+  viewTransactions(transactionId: number): void {
+    this.router.navigate(['/transactions/user', transactionId]);
   }
 }

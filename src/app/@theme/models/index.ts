@@ -122,3 +122,4 @@ export interface Transactions {
   updatedAt: string;  // ISO date-time
 }
 
+export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED';

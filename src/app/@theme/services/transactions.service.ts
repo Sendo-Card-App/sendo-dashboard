@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { BaseResponse, Transactions } from '../models';
+import { BaseResponse, Transactions, TransactionStatus } from '../models';
 
 interface PaginatedData<T> {
   page: number;
@@ -53,6 +53,69 @@ export class TransactionsService {
     return this.http.get<BaseResponse<Transactions>>(
       `${this.apiUrl}/transactions/${transactionId}`,
       this.getConfigAuthorized()
+    );
+  }
+
+   /**
+   * PUT /admin/transaction/change-status
+   * @param transactionId Identifiant externe de la transaction
+   * @param status Nouveau statut à appliquer
+   */
+   updateTransactionStatus(
+    transactionId: string,
+    status: TransactionStatus
+  ): Observable<BaseResponse> {
+    const params = new HttpParams()
+      .set('transactionId', transactionId)
+      .set('status', status);
+
+    return this.http.put<BaseResponse>(
+      `${this.apiUrl}/admin/transaction/change-status`,
+      null, // pas de corps, tout passe en query
+      {
+        ...this.getConfigAuthorized(),
+        params
+      }
+    );
+  }
+
+  /**
+   * Récupère toutes les transactions d’un utilisateur, avec pagination et filtres facultatifs
+   * @param userId Identifiant de l’utilisateur
+   * @param page Numéro de page (défaut : 1)
+   * @param limit Nombre d’éléments par page (défaut : 10)
+   * @param type Filtrer par type de transaction (DEPOSIT | WITHDRAWAL | TRANSFER)
+   * @param status Filtrer par statut (PENDING | COMPLETED | FAILED | BLOCKED)
+   * @param method Filtrer par méthode (MOBILE_MONEY | BANK_TRANSFER)
+   * @param startDate Date de début (ISO string)
+   * @param endDate Date de fin (ISO string)
+   */
+  getUserTransactions(
+    userId: number,
+    page: number = 1,
+    limit: number = 10,
+    type?: 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER',
+    status?: 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED',
+    method?: 'MOBILE_MONEY' | 'BANK_TRANSFER',
+    startDate?: string,
+    endDate?: string
+  ): Observable<TransactionsResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    if (type)       { params = params.set('type', type); }
+    if (status)     { params = params.set('status', status); }
+    if (method)     { params = params.set('method', method); }
+    if (startDate)  { params = params.set('startDate', startDate); }
+    if (endDate)    { params = params.set('endDate', endDate); }
+
+    return this.http.get<TransactionsResponse>(
+      `${this.apiUrl}/transactions/users/${userId}`,
+      {
+        ...this.getConfigAuthorized(),
+        params
+      }
     );
   }
 

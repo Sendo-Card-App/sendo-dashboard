@@ -167,3 +167,30 @@
     }
   }
 }
+
+.status-card {
+  padding: 24px;
+  margin-bottom: 24px;
+
+  .status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  .status-form {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    .status-select {
+      flex-grow: 1;
+    }
+  }
+}

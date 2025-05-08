@@ -112,7 +112,7 @@
             </button>
           </div>
 
-          <div *ngIf="isEditing" class="status-form">
+          <div *ngIf="isEditing" class="status-form" [formGroup]="statusForm">
             <mat-form-field appearance="outline" class="status-select">
               <mat-label>Nouveau statut</mat-label>
               <mat-select formControlName="status">
