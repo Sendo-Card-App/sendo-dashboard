@@ -123,3 +123,33 @@ export interface Transactions {
 }
 
 export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED';
+
+/** Modèle minimal d’un document KYC */
+export interface KycDocument {
+  id: number;
+  userId: number;
+  user: MeResponse;
+  type: string;
+  status: string;
+  createdAt: string;
+  // etc.
+}
+
+
+export interface PaginatedData<T> {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  items: T[];
+}
+
+export interface UserKycData {
+  kyc: KycDocument[];
+  user: MeResponse;
+}
+
+export interface UserKycResponse {
+  status: number;
+  message: string;
+  data: UserKycData;
+}

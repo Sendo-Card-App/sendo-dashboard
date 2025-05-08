@@ -4,7 +4,7 @@
 
 import packageInfo from '../../package.json';
 
-export const apiUrl = 'http://api.sf-e.ca/api'
+export const apiUrl = 'https://api.sf-e.ca/api'
 const authUrl = '/auth'
 export const environment = {
   appVersion: packageInfo.version,

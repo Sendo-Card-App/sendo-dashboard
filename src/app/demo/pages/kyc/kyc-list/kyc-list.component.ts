@@ -1,0 +1,199 @@
+import { Component, effect, OnInit, output, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { BulkReviewItem, KycService } from 'src/app/@theme/services/kyc.service';
+import { KycDocument, MeResponse } from 'src/app/@theme/models';
+import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { CommonModule } from '@angular/common';
+import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service';
+
+@Component({
+  selector: 'app-kyc-list',
+  templateUrl: './kyc-list.component.html',
+  styleUrls: ['./kyc-list.component.scss'],
+  imports: [SharedModule, CommonModule],
+})
+export class KycListComponent implements OnInit {
+  displayedColumns: string[] = ['user', 'type', 'status', 'createdAt', 'action'];
+  dataSource: MatTableDataSource<KycDocument> = new MatTableDataSource<KycDocument>([]);
+  isLoading = false;
+  totalItems = 0;
+  currentPage = 1;
+  itemsPerPage = 10;
+  searchText = '';
+  readonly HeaderBlur = output();
+  direction: string = 'ltr';
+
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  constructor(private kycService: KycService,private themeService: ThemeLayoutService) {
+    effect(() => {
+      this.isRtlTheme(this.themeService.directionChange());
+    });
+  }
+
+  private isRtlTheme(direction: string) {
+    this.direction = direction;
+  }
+  ngOnInit(): void {
+    this.loadDocuments();
+  }
+
+  loadDocuments(): void {
+    this.isLoading = true;
+    this.kycService.getPendingDocuments(this.currentPage, this.itemsPerPage)
+      .subscribe({
+        next: (response) => {
+          console.log('Documents:', response);
+          if (response?.data?.items) {
+            this.dataSource.data = response.data.items;
+            this.totalItems = response.data.totalItems;
+          }
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Error loading documents:', err);
+        }
+      });
+  }
+
+  applyFilter(filterValue: string): void {
+    this.searchText = filterValue;
+    this.currentPage = 1;
+    this.loadDocuments();
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage = event.pageIndex + 1;
+    this.itemsPerPage = event.pageSize;
+    this.loadDocuments();
+  }
+
+  formatType(type: string): string {
+    const types: { [key: string]: string } = {
+      'ID_PROOF': 'Pièce d\'identité',
+      'ADDRESS_PROOF': 'Justificatif de domicile',
+      'SELFIE': 'Selfie'
+    };
+    return types[type] || type;
+  }
+
+  formatStatus(status: string): string {
+    return status.charAt(0) + status.slice(1).toLowerCase();
+  }
+
+  downloadDocument(url: string): void {
+    window.open(url, '_blank');
+  }
+
+ // Dans votre classe component
+userKycDocuments: KycDocument[] = [];
+userInfo: MeResponse ;
+isLoadingDocuments = false;
+showRejectionForm = false;
+rejectionReason = '';
+selectedDocument : KycDocument | null = null;
+
+// Méthode pour charger les documents d'un utilisateur
+loadUserDocuments(userId: number): void {
+  this.isLoadingDocuments = true;
+  this.kycService.getUserKyc(userId).subscribe({
+    next: (response) => {
+      this.userKycDocuments = response.data.kyc;
+      this.userInfo = response.data.user;
+      this.isLoadingDocuments = false;
+    },
+    error: (err) => {
+      console.error('Error loading user documents:', err);
+      this.isLoadingDocuments = false;
+    }
+  });
+}
+
+
+
+// Méthode pour approuver un document spécifique
+approveSingleDocument(documentId: number): void {
+  this.kycService.reviewKyc(documentId,{ status: 'APPROVED' }).subscribe({
+    next: () => {
+      this.loadUserDocuments(this.userInfo.id);
+      this.loadDocuments(); // Rafraîchir la liste principale
+    },
+    error: (err) => console.error('Error approving document:', err)
+  });
+}
+
+// Méthode pour rejeter un document spécifique
+rejectSingleDocument(documentId: number, reason: string): void {
+  this.kycService.reviewKyc(documentId,{
+    status: 'REJECTED',
+    rejectionReason: reason
+  }).subscribe({
+    next: () => {
+      this.loadUserDocuments(this.userInfo.id);
+      this.loadDocuments(); // Rafraîchir la liste principale
+    },
+    error: (err) => console.error('Error approving document:', err)
+  });
+}
+
+
+
+// Méthode pour approuver tous les documents
+approveAllDocuments(): void {
+
+ const docsToApprove: BulkReviewItem[] = this.userKycDocuments.map(doc => ({
+    id: doc.id,
+    status: 'APPROVED'
+  }));
+
+  this.kycService.bulkReview({ documents: docsToApprove }).subscribe({
+    next: () => {
+      this.loadUserDocuments(this.userInfo.id);
+      this.loadDocuments(); // Rafraîchir la liste principale
+    },
+    error: (err) => console.error('Error approving all documents:', err)
+  });
+}
+onRejectConfirm(): void {
+  if (this.selectedDocument) {
+    // Rejet d'un document spécifique
+    this.rejectSingleDocument(this.selectedDocument.id, this.rejectionReason);
+  }
+  this.showRejectionForm = false;
+  this.rejectionReason = '';
+}
+
+openRejectionForm(): void {
+  this.rejectionReason = '';
+  this.showRejectionForm = true;
+
+  const docsToReject: BulkReviewItem[] = this.userKycDocuments.map(doc => ({
+  id: doc.id,
+  status: 'REJECTED',
+  rejectionReason: this.rejectionReason
+}));
+
+  this.kycService.bulkReview({ documents: docsToReject }).subscribe({
+    next: () => {
+      this.loadUserDocuments(this.userInfo.id);
+      this.loadDocuments();
+    },
+    error: (err) => console.error('Error approving all documents:', err)
+  });
+
+}
+
+
+  headerBlur1(userId: number): void {
+    this.HeaderBlur.emit();
+    this.loadUserDocuments(userId)
+  }
+  headerBlur() {
+    this.HeaderBlur.emit();
+  }
+}

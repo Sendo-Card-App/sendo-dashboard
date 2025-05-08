@@ -114,6 +114,33 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'kyc',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'kyc-pending',
+        loadComponent: () => import('./demo/pages/kyc/kyc-list/kyc-list.component').then((c) => c.KycListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: 'kyc-all',
+        loadComponent: () => import('./demo/pages/kyc/kyc-all/kyc-all.component').then((c) => c.KycAllComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+
+
+      // {
+      //   path: 'components',
+      //   loadChildren: () => import('src/app/demo/layout/component/component.module').then((m) => m.ComponentModule)
+      // },
+      // {
+      //   path: 'maintenance',
+      //   loadChildren: () => import('./demo/pages/maintenance/maintenance.module').then((m) => m.MaintenanceModule)
+      // }
+    ]
+  },
+  {
     path: '',
     component: AdminComponent,
     canActivateChild: [RoleGuard],
