@@ -169,7 +169,6 @@ onRejectConfirm(): void {
 }
 
 openRejectionForm(): void {
-  this.selectedDocument;
   this.rejectionReason = '';
   this.showRejectionForm = true;
 
