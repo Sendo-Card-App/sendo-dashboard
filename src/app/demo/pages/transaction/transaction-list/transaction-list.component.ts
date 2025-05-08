@@ -139,7 +139,7 @@ export class TransactionListComponent implements OnInit {
     this.loadTransactions();
   }
 
-  viewDetails(transactionId: string): void {
+  viewDetails(): void {
     // Implémentez la navigation vers la page de détail
   }
 
