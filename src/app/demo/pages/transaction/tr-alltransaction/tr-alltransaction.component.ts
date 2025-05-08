@@ -9,6 +9,7 @@ import { FormBuilder } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tr-all-transaction',
@@ -37,7 +38,8 @@ export class TrAllTransactionComponent implements OnInit {
 
   constructor(
     private transactionsService: TransactionsService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -153,5 +155,8 @@ export class TrAllTransactionComponent implements OnInit {
       case 'BLOCKED': return 'status-failed';
       default: return '';
     }
+  }
+  viewDetails(transactionId: string): void {
+    this.router.navigate(['/transactions', transactionId]);
   }
 }

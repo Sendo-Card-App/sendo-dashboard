@@ -1,0 +1,261 @@
+/* transaction-detail.component.scss */
+.transaction-detail-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.transaction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .transaction-title {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: 24px;
+
+    .back-button {
+      margin-right: 12px;
+    }
+  }
+
+  .transaction-id {
+    background: #f5f5f5;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.transaction-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+}
+
+.user-profile-column {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+}
+
+.user-card {
+  padding: 24px;
+  text-align: center;
+
+  .user-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: white;
+    font-size: 36px;
+    font-weight: bold;
+  }
+
+  .user-name {
+    margin: 0 0 4px;
+    font-size: 18px;
+  }
+
+  .user-email {
+    margin: 0 0 16px;
+    color: #666;
+  }
+
+  .user-details {
+    text-align: left;
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+
+      mat-icon {
+        margin-right: 12px;
+        color: #666;
+      }
+
+      span {
+        flex-grow: 1;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+.summary-card {
+  margin-bottom: 24px;
+  padding: 24px;
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .summary-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 4px;
+  }
+
+  .summary-value {
+    font-size: 16px;
+    font-weight: 500;
+
+    &.highlight {
+      font-size: 18px;
+      font-weight: 600;
+      color: #3f51b5;
+    }
+  }
+
+  .type-badge, .status-badge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+
+    &.bg-primary {
+      background-color: #e3f2fd;
+      color: #1976d2;
+    }
+
+    &.bg-success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    &.bg-warning {
+      background-color: #fff8e1;
+      color: #ff8f00;
+    }
+
+    &.status-pending {
+      background-color: #fff3e0;
+      color: #e65100;
+    }
+
+    &.status-completed {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    &.status-failed {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+  }
+}
+
+.status-card {
+  padding: 24px;
+  margin-bottom: 24px;
+
+  .status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  .status-form {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    .status-select {
+      flex-grow: 1;
+    }
+  }
+}
+
+.additional-info-card {
+  padding: 24px;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 18px;
+  }
+
+  .additional-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .info-item {
+    &.full-width {
+      grid-column: span 2;
+    }
+
+    .info-label {
+      display: block;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      margin: 0;
+      font-size: 16px;
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 959px) {
+  .transaction-content {
+    grid-template-columns: 1fr;
+  }
+
+  .user-profile-column {
+    position: static;
+  }
+}
+
+@media (max-width: 599px) {
+  .summary-grid, .additional-info-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .info-item.full-width {
+    grid-column: span 1 !important;
+  }
+}

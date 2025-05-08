@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Transactions } from '../models';
+import { BaseResponse, Transactions } from '../models';
 
 interface PaginatedData<T> {
   page: number;
@@ -42,6 +42,19 @@ export class TransactionsService {
        )
      }
    }
+
+  /**
+   * Récupère une transaction par son ID
+   * @param transactionId ID de la transaction
+   * @return Observable<Transactions>
+   *
+   */
+  getTransactionById(transactionId: string): Observable<BaseResponse<Transactions>> {
+    return this.http.get<BaseResponse<Transactions>>(
+      `${this.apiUrl}/transactions/${transactionId}`,
+      this.getConfigAuthorized()
+    );
+  }
 
   /**
    * Récupère la liste paginée des transactions
