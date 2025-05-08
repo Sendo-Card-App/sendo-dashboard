@@ -15,7 +15,7 @@ export const menus: Navigation[] = [
         type: 'item',
         classes: 'nav-item',
         url: '/dashboard',
-        icon: '#custom-notification-status'
+        icon: '#custom-status-up'
       }
     ]
   },
@@ -31,7 +31,7 @@ export const menus: Navigation[] = [
         id: 'utilisateur',
         title: 'Utilisateurs',
         type: 'collapse',
-        icon: '#custom-flag',
+        icon: '#custom-user',
         role: [Role.Admin, Role.User],
         children: [
           {
@@ -57,7 +57,7 @@ export const menus: Navigation[] = [
         id: 'transaction',
         title: 'transactions',
         type: 'collapse',
-        icon: '#custom-flag',
+        icon: '#custom-presentation-chart',
         role: [Role.Admin, Role.User],
         children: [
           {
@@ -76,6 +76,33 @@ export const menus: Navigation[] = [
             // target: true,
             breadcrumbs: true
           },
+
+        ]
+      },
+      {
+        id: 'kyc',
+        title: 'KYC',
+        type: 'collapse',
+        icon: '#custom-document-filter',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'allkyc',
+            title: 'KYC en attente',
+            type: 'item',
+            url: '/kyc/kyc-pending',
+            // target: true,
+            breadcrumbs: true
+          },
+          {
+            id: 'allkyc',
+            title: 'liste des KYC',
+            type: 'item',
+            url: '/kyc/kyc-all',
+            // target: true,
+            breadcrumbs: true
+          },
+
 
         ]
       },
