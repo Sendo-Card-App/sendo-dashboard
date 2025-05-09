@@ -187,10 +187,10 @@
 
   <!-- Formulaire de rejet -->
  <!-- Formulaire de rejet - version corrigée -->
-<div class="rejection-form-container" *ngIf="showRejectionForm">
+ <div class="rejection-form-container" *ngIf="showRejectionForm">
   <div class="rejection-form">
     <h4>
-      {{ selectedDocument ? 'Rejeter le document' : 'Rejeter tous les documents' }}
+      {{ isBulkRejection ? 'Rejeter tous les documents' : 'Rejeter le document' }}
     </h4>
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Motif du rejet</mat-label>
