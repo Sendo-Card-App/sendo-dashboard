@@ -94,9 +94,9 @@ export class KycListComponent implements OnInit {
 userKycDocuments: KycDocument[] = [];
 userInfo: MeResponse ;
 isLoadingDocuments = false;
-showRejectionForm = false;
-rejectionReason = '';
-selectedDocument : KycDocument | null = null;
+// showRejectionForm = false;
+// rejectionReason = '';
+// selectedDocument : KycDocument | null = null;
 
 // Méthode pour charger les documents d'un utilisateur
 loadUserDocuments(userId: number): void {
@@ -116,6 +116,51 @@ loadUserDocuments(userId: number): void {
 
 
 
+// Ajoutez ces propriétés
+showRejectionForm = false;
+rejectionReason = '';
+selectedDocument: KycDocument | null = null;
+isBulkRejection = false;
+
+// Méthode pour ouvrir le formulaire de rejet
+openRejectionForm(document?: KycDocument): void {
+  this.selectedDocument = document || null;
+  this.isBulkRejection = !document;
+  this.rejectionReason = '';
+  this.showRejectionForm = true;
+}
+
+// Méthode pour confirmer le rejet
+onRejectConfirm(): void {
+  if (!this.rejectionReason) return;
+
+  if (this.isBulkRejection) {
+    this.rejectAllDocuments();
+  } else if (this.selectedDocument) {
+    this.rejectSingleDocument(this.selectedDocument.id, this.rejectionReason);
+  }
+
+  this.showRejectionForm = false;
+  this.rejectionReason = '';
+}
+
+// Méthode pour rejeter tous les documents
+rejectAllDocuments(): void {
+  const docsToReject = this.userKycDocuments.map(doc => ({
+    id: doc.id,
+    status: 'REJECTED' as const,
+    rejectionReason: this.rejectionReason
+  }));
+
+  this.kycService.bulkReview({ documents: docsToReject }).subscribe({
+    next: () => {
+      this.loadUserDocuments(this.userInfo.id);
+      this.loadDocuments();
+    },
+    error: (err) => console.error('Error rejecting all documents:', err)
+  });
+}
+
 // Méthode pour approuver un document spécifique
 approveSingleDocument(documentId: number): void {
   this.kycService.reviewKyc(documentId,{ status: 'APPROVED' }).subscribe({
@@ -127,65 +172,35 @@ approveSingleDocument(documentId: number): void {
   });
 }
 
+// Méthode pour approuver tous les documents
+approveAllDocuments(): void {
+
+  const docsToApprove: BulkReviewItem[] = this.userKycDocuments.map(doc => ({
+     id: doc.id,
+     status: 'APPROVED'
+   }));
+
+   this.kycService.bulkReview({ documents: docsToApprove }).subscribe({
+     next: () => {
+       this.loadUserDocuments(this.userInfo.id);
+       this.loadDocuments(); // Rafraîchir la liste principale
+     },
+     error: (err) => console.error('Error approving all documents:', err)
+   });
+ }
+
 // Méthode pour rejeter un document spécifique
 rejectSingleDocument(documentId: number, reason: string): void {
-  this.kycService.reviewKyc(documentId,{
+  this.kycService.reviewKyc(documentId, {
     status: 'REJECTED',
     rejectionReason: reason
   }).subscribe({
     next: () => {
       this.loadUserDocuments(this.userInfo.id);
-      this.loadDocuments(); // Rafraîchir la liste principale
-    },
-    error: (err) => console.error('Error approving document:', err)
-  });
-}
-
-
-
-// Méthode pour approuver tous les documents
-approveAllDocuments(): void {
-
- const docsToApprove: BulkReviewItem[] = this.userKycDocuments.map(doc => ({
-    id: doc.id,
-    status: 'APPROVED'
-  }));
-
-  this.kycService.bulkReview({ documents: docsToApprove }).subscribe({
-    next: () => {
-      this.loadUserDocuments(this.userInfo.id);
-      this.loadDocuments(); // Rafraîchir la liste principale
-    },
-    error: (err) => console.error('Error approving all documents:', err)
-  });
-}
-onRejectConfirm(): void {
-  if (this.selectedDocument) {
-    // Rejet d'un document spécifique
-    this.rejectSingleDocument(this.selectedDocument.id, this.rejectionReason);
-  }
-  this.showRejectionForm = false;
-  this.rejectionReason = '';
-}
-
-openRejectionForm(): void {
-  this.rejectionReason = '';
-  this.showRejectionForm = true;
-
-  const docsToReject: BulkReviewItem[] = this.userKycDocuments.map(doc => ({
-  id: doc.id,
-  status: 'REJECTED',
-  rejectionReason: this.rejectionReason
-}));
-
-  this.kycService.bulkReview({ documents: docsToReject }).subscribe({
-    next: () => {
-      this.loadUserDocuments(this.userInfo.id);
       this.loadDocuments();
     },
-    error: (err) => console.error('Error approving all documents:', err)
+    error: (err) => console.error('Error rejecting document:', err)
   });
-
 }
 
 
