@@ -22,7 +22,6 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
 })
 export class TransactionListComponent implements OnInit {
   displayedColumns: string[] = [
-    'username',
     'transactionId',
     'amount',
     'type',
@@ -139,8 +138,8 @@ export class TransactionListComponent implements OnInit {
     this.loadTransactions();
   }
 
-  viewDetails(): void {
-    // Implémentez la navigation vers la page de détail
+   viewDetails(transactionId: string): void {
+    this.router.navigate(['/transactions', transactionId]);
   }
 
   getStatusClass(status: string): string {

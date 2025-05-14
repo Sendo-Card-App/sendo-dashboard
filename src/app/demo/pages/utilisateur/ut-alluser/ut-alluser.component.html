@@ -1,4 +1,35 @@
 <div class="row p-t-25">
+   <div class="filter-section">
+    <form [formGroup]="filterForm">
+      <div class="row">
+        <!-- Search Field -->
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+              <input matInput placeholder="Search…" (keyup)="applyFilter($event.target.value)" />
+            </mat-form-field>
+        </div>
+
+        <!-- Role Filter -->
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="">Tous</mat-option>
+              <mat-option value="ADMIN">Admin</mat-option>
+              <mat-option value="USER">User</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="col-md-2">
+          <button mat-stroked-button (click)="resetFilters()" type="button" class="w-100">
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
   <div class="col-12">
     <app-card cardTitle="Liste des utilisateurs" padding="0" cardClass="sm-block">
       <ng-template #headerOptionsTemplate>
@@ -13,11 +44,11 @@
       </ng-template>
       <div class="p-b-15">
         <div class="table-containe table-reponsive">
-          <div class="table-search p-t-15 p-x-15">
+          <!-- <div class="table-search p-t-15 p-x-15">
             <mat-form-field appearance="outline" class="w-100 px-3 pt-3">
               <input matInput placeholder="Search…" (keyup)="applyFilter($event.target.value)" />
             </mat-form-field>
-          </div>
+          </div> -->
           <div class="table-responsive">
             <div *ngIf="isLoading" class="loading-spinner text-center p-3">
               <mat-spinner diameter="50"></mat-spinner>

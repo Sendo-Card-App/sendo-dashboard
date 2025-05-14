@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { RolePayload } from '../ut-updateuser/ut-updateuser.component';
 import { AdminService } from 'src/app/@theme/services/admin.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-ut-alluser',
@@ -24,25 +25,43 @@ import { AdminService } from 'src/app/@theme/services/admin.service';
 export class UtAlluserComponent implements AfterViewInit {
   displayedColumns = ['name', 'email', 'role', 'phone', 'status', 'createdAt', 'action'];
   dataSource = new MatTableDataSource<MeResponse>();
-  isLoading  = false;
+  filteredData: MeResponse[] = []; // Nouvelle propriété pour stocker les données filtrées
+  isLoading = false;
   totalItems = 0;
   currentPage = 1;
   itemsPerPage = 10;
+  searchText = '';
+  filterForm: FormGroup;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort)      sort!: MatSort;
+  @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private userService: UserService, private dialog: MatDialog,
-    private snackBar: MatSnackBar,private adminService: AdminService) {
+  constructor(
+    private userService: UserService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private adminService: AdminService,
+    private fb: FormBuilder
+  ) {
+    this.filterForm = this.fb.group({
+      status: [''], // Pour le filtre de rôle
+    });
+
     this.loadUsers();
+    this.setupFilterListeners();
+  }
+
+  private setupFilterListeners(): void {
+    // Écoute les changements du formulaire de filtrage
+    this.filterForm.valueChanges.subscribe(() => {
+      this.applyRoleFilter();
+    });
   }
 
   ngAfterViewInit() {
-    // lie pagination + tri
     this.dataSource.paginator = this.paginator;
-    this.dataSource.sort      = this.sort;
+    this.dataSource.sort = this.sort;
 
-    // on définit le predicate de filtrage
     this.dataSource.filterPredicate = (user, filter) => {
       const dataStr = [
         user.firstname,
@@ -59,20 +78,58 @@ export class UtAlluserComponent implements AfterViewInit {
     this.userService.getUsers(page, limit)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(resp => {
-        this.dataSource.data = resp.data.items;
-        this.totalItems      = resp.data.totalItems;
-        this.currentPage     = resp.data.page;
+        this.filteredData = resp.data.items; // Stocke les données originales
+        this.dataSource.data = this.filteredData; // Initialise avec toutes les données
+        this.totalItems = resp.data.totalItems;
+        this.currentPage = resp.data.page;
+        this.applyRoleFilter(); // Applique le filtre après le chargement
       });
   }
 
   applyFilter(value: string) {
-    const filterValue = value.trim().toLowerCase();
-    this.dataSource.filter = filterValue;
-    // remise à la première page si paginé
+    this.searchText = value.trim().toLowerCase();
+    this.dataSource.filter = this.searchText;
     if (this.paginator) {
       this.paginator.firstPage();
     }
   }
+
+  applyRoleFilter(): void {
+    const roleFilter = this.filterForm.get('status')?.value;
+
+    console.log('Role filter:', roleFilter);
+
+
+    if (!roleFilter) {
+      this.dataSource.data = this.filteredData;
+    } else {
+      console.log('Filtered data:', this.dataSource.data);
+      this.dataSource.data = this.filteredData.filter(user => {
+        // console.log('User roles:', this.filteredData);
+        if (roleFilter === 'ADMIN') {
+          // Un admin est défini comme ayant plus d'un rôle
+          return user.roles && user.roles.length > 1;
+        } else if (roleFilter === 'USER') {
+          // Un user est défini comme ayant exactement un rôle
+          return user.roles && user.roles.length === 1;
+        }
+        return true;
+      });
+    }
+
+    // Mise à jour de la pagination
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+  }
+
+  resetFilters(): void {
+    this.filterForm.reset({ status: '' });
+    this.searchText = '';
+    this.applyFilter('');
+  }
+
+
 
   onPageChange(e: PageEvent) {
     this.itemsPerPage = e.pageSize;
