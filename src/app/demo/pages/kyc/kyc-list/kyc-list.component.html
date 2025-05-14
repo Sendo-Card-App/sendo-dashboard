@@ -142,7 +142,9 @@
     <div *ngIf="!isLoadingDocuments && userKycDocuments.length > 0" class="documents-list">
       <div *ngFor="let doc of userKycDocuments" class="document-card">
         <div class="document-header">
-          <span class="document-type">{{ formatType(doc.type) }}</span>
+          <span class="document-type">{{ formatType(doc.type) }} <span> <a href="javascript:" (click)="downloadDocument(doc.url)" class="avatar avatar-xs text-muted">
+                          <i class="ti ti-download f-18"></i>
+                        </a></span></span>
           <span class="document-status" [ngClass]="'status-' + doc.status.toLowerCase()">
             {{ formatStatus(doc.status) }}
           </span>
@@ -152,7 +154,7 @@
           <img [src]="doc.url"
                alt="Document KYC"
                class="document-image"
-               (click)="zoomImage($event)">
+               (click)="openImageDialog(doc.url)">
         </div>
 
         <div class="document-actions">

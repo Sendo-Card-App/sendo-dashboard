@@ -7,6 +7,8 @@ import { KycDocument, MeResponse } from 'src/app/@theme/models';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service';
+import { ImageDialogComponent } from 'src/app/@theme/components/image-dialog/image-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-kyc-list',
@@ -29,7 +31,7 @@ export class KycListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private kycService: KycService,private themeService: ThemeLayoutService) {
+  constructor(private kycService: KycService,private themeService: ThemeLayoutService,private dialog: MatDialog) {
     effect(() => {
       this.isRtlTheme(this.themeService.directionChange());
     });
@@ -211,4 +213,13 @@ rejectSingleDocument(documentId: number, reason: string): void {
   headerBlur() {
     this.HeaderBlur.emit();
   }
+
+  openImageDialog(imageUrl: string): void {
+  this.dialog.open(ImageDialogComponent, {
+    data: { imageUrl },
+    panelClass: 'image-dialog-container',
+    maxWidth: '90vw',
+    maxHeight: '90vh'
+  });
+}
 }
