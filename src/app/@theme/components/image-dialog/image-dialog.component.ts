@@ -160,6 +160,7 @@ export class ImageDialogComponent {
   }
 
   onImageClick(event: MouseEvent): void {
+    event.preventDefault();
     if (this.zoomLevel === 1) {
       this.onClose();
     }
