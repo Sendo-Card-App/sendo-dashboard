@@ -167,7 +167,7 @@ closeDetails(): void {
 
     this.requestService.updateRequestStatus(this.currentRequest.id, newStatus)
       .subscribe({
-        next: (response: BaseResponse) => {
+        next: () => {
           this.snackBar.open('Statut mis à jour avec succès', 'Fermer', {
             duration: 3000,
             panelClass: ['success-snackbar']
@@ -181,7 +181,7 @@ closeDetails(): void {
 
           this.isUpdatingStatus = false;
         },
-        error: (error) => {
+        error: () => {
           this.snackBar.open('Échec de la mise à jour du statut', 'Fermer', {
             duration: 3000,
             panelClass: ['error-snackbar']
