@@ -140,6 +140,7 @@ export interface PaginatedData<T> {
   page: number;
   totalPages: number;
   totalItems: number;
+   total: number;
   items: T[];
 }
 
@@ -153,3 +154,38 @@ export interface UserKycResponse {
   message: string;
   data: UserKycData;
 }
+
+export interface KycPendingResponse {
+  status: number;
+  message: string;
+  data: PaginatedData<KycDocument>;
+}
+
+export interface RequestItem {
+  id: number;
+  type: string;
+  status: RequestStatus;
+  reviewedById: number | null;
+  userId: number;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: number;
+    firstname: string;
+    lastname: string;
+  };
+  reviewedBy: null | {
+    id: number;
+    firstname: string;
+    lastname: string;
+  };
+}
+
+export interface RequestsListResponse {
+  status: number;
+  message: string;
+  data: PaginatedData<RequestItem>;
+}
+
+export type RequestStatus = 'PROCESSED' | 'UNPROCESSED' | 'REJECTED';

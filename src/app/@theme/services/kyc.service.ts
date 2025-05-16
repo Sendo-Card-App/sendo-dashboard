@@ -4,16 +4,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { BaseResponse, KycDocument, PaginatedData, UserKycResponse } from '../models';
+import { BaseResponse, KycDocument, KycPendingResponse, PaginatedData, UserKycResponse } from '../models';
 
 
 
 /** Response spécifique KYC pending */
-interface KycPendingResponse {
-  status: number;
-  message: string;
-  data: PaginatedData<KycDocument>;
-}
+
 
 export interface ReviewKycRequest {
   status: 'APPROVED' | 'REJECTED';
