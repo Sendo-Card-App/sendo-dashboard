@@ -67,14 +67,6 @@ const routes: Routes = [
         data: { roles: ['SUPER_ADMIN'] }
       },
 
-      // {
-      //   path: 'components',
-      //   loadChildren: () => import('src/app/demo/layout/component/component.module').then((m) => m.ComponentModule)
-      // },
-      // {
-      //   path: 'maintenance',
-      //   loadChildren: () => import('./demo/pages/maintenance/maintenance.module').then((m) => m.MaintenanceModule)
-      // }
     ]
   },
   {
@@ -130,14 +122,19 @@ const routes: Routes = [
       },
 
 
-      // {
-      //   path: 'components',
-      //   loadChildren: () => import('src/app/demo/layout/component/component.module').then((m) => m.ComponentModule)
-      // },
-      // {
-      //   path: 'maintenance',
-      //   loadChildren: () => import('./demo/pages/maintenance/maintenance.module').then((m) => m.MaintenanceModule)
-      // }
+    ]
+  },
+  {
+    path: 'requests',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'allrequests',
+        loadComponent: () => import('./demo/pages/niu-request/all-request-niu/all-request-niu.component').then((c) => c.AllRequestNiuComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+
     ]
   },
   {

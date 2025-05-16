@@ -28,7 +28,7 @@ export const menus: Navigation[] = [
     role: [Role.Admin, Role.User],
     children: [
       {
-        id: 'utilisateur',
+        id: 'Utilisateur',
         title: 'Utilisateurs',
         type: 'collapse',
         icon: '#custom-user',
@@ -54,7 +54,7 @@ export const menus: Navigation[] = [
         ]
       },
       {
-        id: 'transaction',
+        id: 'Transaction',
         title: 'transactions',
         type: 'collapse',
         icon: '#custom-presentation-chart',
@@ -81,7 +81,7 @@ export const menus: Navigation[] = [
       },
       {
         id: 'kyc',
-        title: 'KYC',
+        title: 'KYC request',
         type: 'collapse',
         icon: '#custom-document-filter',
         role: [Role.Admin, Role.User],
@@ -106,16 +106,25 @@ export const menus: Navigation[] = [
 
         ]
       },
-      // {
-      //   id: 'contact-us',
-      //   title: 'Contact Us',
-      //   type: 'item',
-      //   classes: 'nav-item',
-      //   url: '/contact-us',
-      //   icon: '#custom-24-support',
-      //   target: true,
-      //   breadcrumbs: false
-      // }
+      {
+        id: 'Request',
+        title: 'Requests',
+        type: 'collapse',
+        icon: '#custom-document-filter',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'allkyc',
+            title: 'liste des demandes',
+            type: 'item',
+            url: '/requests/allrequests',
+            // target: true,
+            breadcrumbs: true
+          },
+
+
+        ]
+      },
     ]
   },
   // {
