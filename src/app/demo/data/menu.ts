@@ -110,7 +110,7 @@ export const menus: Navigation[] = [
         id: 'Request',
         title: 'Requests',
         type: 'collapse',
-        icon: '#custom-document-filter',
+        icon: '#custom-bill',
         role: [Role.Admin, Role.User],
         children: [
           {
@@ -122,6 +122,33 @@ export const menus: Navigation[] = [
             breadcrumbs: true
           },
 
+
+        ]
+      },
+    ]
+  },
+   {
+    id: 'Paramettres',
+    title: 'Paramettres',
+    type: 'group',
+    icon: 'icon-navigation',
+    role: [Role.Admin, Role.User],
+    children: [
+      {
+        id: 'configuration',
+        title: 'Configuration',
+        type: 'collapse',
+        icon: '#custom-setting-2',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'allconfiguration',
+            title: 'liste des configs',
+            type: 'item',
+            url: '/configuration/allconfiguration',
+            // target: true,
+            breadcrumbs: true
+          },
 
         ]
       },

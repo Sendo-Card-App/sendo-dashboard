@@ -138,6 +138,19 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'configuration',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'allconfiguration',
+        loadComponent: () => import('./demo/pages/conigs/list-config/list-config.component').then((c) => c.ListConfigComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+
+    ]
+  },
+  {
     path: '',
     component: AdminComponent,
     canActivateChild: [RoleGuard],
@@ -148,7 +161,7 @@ const routes: Routes = [
         data: { roles: ['SUPER_ADMIN'] }
       },
       {
-        path: 'application',
+        path: '',
         loadChildren: () => import('./demo/pages/application/application.module').then((m) => m.ApplicationModule),
         data: { roles: ['SUPER_ADMIN'] }
       },

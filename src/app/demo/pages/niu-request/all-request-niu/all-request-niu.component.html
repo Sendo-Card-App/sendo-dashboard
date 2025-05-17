@@ -164,6 +164,19 @@
           <span class="detail-label">Date de création:</span>
           <span>{{ currentRequest.createdAt | date:'medium' }}</span>
         </div>
+
+      </div>
+      <div class="detail-section">
+        <h3>Informations du responsable</h3>
+        <div class="detail-row">
+          <span class="detail-label">ID:</span>
+          <span>{{ currentRequest.reviewedBy?.id || 'Non disponible'  }}   </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Utilisateur:</span>
+          <span>{{ currentRequest.reviewedBy?.firstname || 'Non disponible' }} {{ currentRequest.reviewedBy?.lastname || '' }}</span>
+        </div>
+
       </div>
 
       <div class="action-section" *ngIf="currentRequest.status === 'UNPROCESSED'">
@@ -184,7 +197,7 @@
               <span *ngIf="!isUpdatingStatus">Mettre à jour</span>
               <mat-spinner diameter="20" *ngIf="isUpdatingStatus"></mat-spinner>
             </button>
-            <button mat-stroked-button (click)="closeDrawer()">Annuler</button>
+            <button mat-stroked-button (click)="closeDetails(); drawer.toggle()">Annuler</button>
           </div>
         </form>
       </div>

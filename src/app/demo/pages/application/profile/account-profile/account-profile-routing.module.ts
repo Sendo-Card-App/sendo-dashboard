@@ -16,7 +16,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/application/profile/account/profile',
+        redirectTo: '/profile/account/profile',
         pathMatch: 'full'
       },
       {

@@ -27,19 +27,19 @@ export class AccountProfileComponent implements OnInit {
     this.navLinks = [
       {
         label: 'Profil',
-        link: '/application/profile/account/profile',
+        link: '/profile/account/profile',
         icon: 'ti ti-user',
         index: 0
       },
       {
         label: 'Mot de passe',
-        link: '/application/profile/account/password',
+        link: '/profile/account/password',
         icon: 'ti ti-lock',
         index: 1
       },
       {
         label: 'Roles',
-        link: '/application/profile/account/role',
+        link: '/profile/account/role',
         icon: 'ti ti-file-text',
         index: 2
       },
