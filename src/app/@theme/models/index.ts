@@ -189,3 +189,12 @@ export interface RequestsListResponse {
 }
 
 export type RequestStatus = 'PROCESSED' | 'UNPROCESSED' | 'REJECTED';
+
+export interface Config {
+  id: number;
+  name: string;
+  value: number;
+  description: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+}

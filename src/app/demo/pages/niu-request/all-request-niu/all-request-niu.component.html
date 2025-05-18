@@ -1,5 +1,5 @@
 <div class="request-container">
- <div class="filter-section">
+  <div class="filter-section">
     <form [formGroup]="filterForm">
       <div class="row">
         <!-- Search Field -->
@@ -74,7 +74,7 @@
           <td mat-cell *matCellDef="let request">
             <span class="status-badge" [ngClass]="getStatusClass(request.status)">
               {{ request.status === 'UNPROCESSED' ? 'En attente' :
-                 request.status === 'PROCESSED' ? 'Approuvé' : 'Rejeté' }}
+              request.status === 'PROCESSED' ? 'Approuvé' : 'Rejeté' }}
             </span>
           </td>
         </ng-container>
@@ -96,9 +96,9 @@
             </button>
             <mat-menu #menu="matMenu">
               <button mat-button (click)="openDetails(request); drawer.toggle()">
-  <mat-icon>visibility</mat-icon>
-  Voir détails
-</button>
+                <mat-icon>visibility</mat-icon>
+                Voir détails
+              </button>
             </mat-menu>
           </td>
         </ng-container>
@@ -120,11 +120,8 @@
       </table>
     </div>
 
-    <mat-paginator [length]="totalItems"
-                   [pageSize]="itemsPerPage"
-                   [pageSizeOptions]="[5, 10, 25, 100]"
-                   (page)="onPageChange($event)"
-                   showFirstLastButtons>
+    <mat-paginator [length]="totalItems" [pageSize]="itemsPerPage" [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPageChange($event)" showFirstLastButtons>
     </mat-paginator>
   </div>
 </div>
@@ -132,9 +129,9 @@
 <mat-drawer #drawer position="end" style="z-index: 9999;" class="notification-status sidenav" mode="over">
   <div class="drawer-header">
     <div class="f-16 f-w-600">Traitement des requests</div>
-   <button type="button" mat-icon-button class="close-drawer" (click)="closeDetails(); drawer.toggle()">
-  <mat-icon>close</mat-icon>
-</button>
+    <button type="button" mat-icon-button class="close-drawer" (click)="closeDetails(); drawer.toggle()">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
 
   <ng-scrollbar style="height: calc(100vh - 88px)" visibility="hover" [dir]="direction">
@@ -157,7 +154,7 @@
           <span class="detail-label">Statut actuel:</span>
           <span class="status-badge" [ngClass]="getStatusClass(currentRequest.status)">
             {{ currentRequest.status === 'UNPROCESSED' ? 'En attente' :
-               currentRequest.status === 'PROCESSED' ? 'Traité' : 'Rejeté' }}
+            currentRequest.status === 'PROCESSED' ? 'Traité' : 'Rejeté' }}
           </span>
         </div>
         <div class="detail-row">
@@ -170,11 +167,12 @@
         <h3>Informations du responsable</h3>
         <div class="detail-row">
           <span class="detail-label">ID:</span>
-          <span>{{ currentRequest.reviewedBy?.id || 'Non disponible'  }}   </span>
+          <span>{{ currentRequest.reviewedBy?.id || 'Non disponible' }} </span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Utilisateur:</span>
-          <span>{{ currentRequest.reviewedBy?.firstname || 'Non disponible' }} {{ currentRequest.reviewedBy?.lastname || '' }}</span>
+          <span>{{ currentRequest.reviewedBy?.firstname || 'Non disponible' }} {{ currentRequest.reviewedBy?.lastname ||
+            '' }}</span>
         </div>
 
       </div>
@@ -191,9 +189,7 @@
           </mat-form-field>
 
           <div class="action-buttons">
-            <button mat-raised-button color="primary"
-                    (click)="updateRequestStatus()"
-                    [disabled]="isUpdatingStatus">
+            <button mat-raised-button color="primary" (click)="updateRequestStatus()" [disabled]="isUpdatingStatus">
               <span *ngIf="!isUpdatingStatus">Mettre à jour</span>
               <mat-spinner diameter="20" *ngIf="isUpdatingStatus"></mat-spinner>
             </button>
