@@ -136,7 +136,7 @@ export class ListConfigComponent implements OnInit, OnDestroy {
         this.isUpdatingConfig = false;
         this.closeDrawer();
       },
-      error: (error) => {
+      error: () => {
         this.snackBar.open('Échec de la mise à jour', 'Fermer', {
           duration: 3000,
           panelClass: ['error-snackbar']
