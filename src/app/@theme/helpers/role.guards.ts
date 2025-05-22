@@ -23,7 +23,9 @@ export class RoleGuard implements CanActivate, CanActivateChild {
 
     // 1. Vérification de la connexion
     if (!user) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: route.url } });
+      this.router.events.subscribe(e => console.log(e));
+
+      this.router.navigate(['/']);
       return false;
     }
 

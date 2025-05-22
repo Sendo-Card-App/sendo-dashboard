@@ -15,6 +15,7 @@ export class AlreadyLoggedInGuard implements CanActivate {
       this.router.navigate(['/dashboard']); // Redirige vers la page d'accueil
       return false; // Bloque l'accès à la route
     }
+    this.router.events.subscribe(e => console.log(e));
     return true; // Autorise l'accès
   }
 }
