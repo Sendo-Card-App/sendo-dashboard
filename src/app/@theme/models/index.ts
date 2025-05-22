@@ -123,6 +123,16 @@ export interface Transactions {
 }
 
 export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED';
+type TransactionType = 'DEPOSIT' | 'TRANSFER' | 'PAYMENT';
+
+export interface RecentTransactions{
+  transactionId: string;
+  amount: number;
+  currency: string;
+  type: TransactionType;
+  status: TransactionStatus;
+  createdAt: string;
+}
 
 /** Modèle minimal d’un document KYC */
 export interface KycDocument {

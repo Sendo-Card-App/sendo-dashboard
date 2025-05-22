@@ -1,27 +1,32 @@
 <app-card [showHeader]="false" [padding]="24">
   <div class="flex align-item-start justify-content-between">
     <div>
-      <div class="f-16 f-w-600 m-b-5">Statistics</div>
-      <p class="text-muted f-w-500 m-b-10">Revenue and Sales</p>
+      <div class="f-16 f-w-600 m-b-5">Statistiques des Transactions</div>
+      <p class="text-muted f-w-500 m-b-10">Répartition par type</p>
     </div>
     <select class="form-select-sm" [(ngModel)]="selectType" (change)="onOptionSelected()">
-      <option value="today">Today</option>
-      <option value="week">Weekly</option>
-      <option value="month">Monthly</option>
+      <option value="5days">5 derniers jours</option>
+      <option value="7days">7 derniers jours</option>
     </select>
   </div>
-  <div id="chart">
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <div class="spinner"></div>
+    Chargement des données...
+  </div>
+
+  <div id="chart" *ngIf="!isLoading">
     <apx-chart
       [series]="chartOptions.series"
       [chart]="chartOptions.chart"
       [dataLabels]="chartOptions.dataLabels"
-      [legend]="chartOptions.legend"
       [xaxis]="chartOptions.xaxis"
+      [yaxis]="chartOptions.yaxis"
       [colors]="chartOptions.colors"
+      [legend]="chartOptions.legend"
       [stroke]="chartOptions.stroke"
-      [grid]="chartOptions.grid"
       [tooltip]="chartOptions.tooltip"
-      [markers]="chartOptions.markers"
+      [plotOptions]="chartOptions.plotOptions"
       [fill]="chartOptions.fill"
     ></apx-chart>
   </div>

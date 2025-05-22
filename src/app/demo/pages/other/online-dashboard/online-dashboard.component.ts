@@ -1,5 +1,5 @@
 // angular import
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // project import
@@ -14,6 +14,8 @@ import { activityData } from 'src/app/fake-data/activity_data';
 import { VisitorsBarChartComponent } from './visitors-bar-chart/visitors-bar-chart.component';
 import { EarningCoursesLineChartComponent } from './earning-courses-line-chart/earning-courses-line-chart.component';
 import { courseStatesData } from 'src/app/fake-data/courseStates_data';
+import { AdminService } from 'src/app/@theme/services/admin.service'; // Importez votre service
+import { DashboardSummaryItem, RequestStats, StatisticsData, StatisticsResponse, TransactionStats, WalletStats, WalletTop } from 'src/app/@theme/models/statistics'; // Importez votre interface
 
 export interface activity_Data {
   image: string;
@@ -40,7 +42,6 @@ const courseStates_data = courseStatesData;
     CommonModule,
     StatisticsChartComponent,
     InvitesGoalChartComponent,
-    CourseReportBarChartComponent,
     TotalRevenueLineChartComponent,
     StudentStatesChartComponent,
     ActivityLineChartComponent,
@@ -50,7 +51,8 @@ const courseStates_data = courseStatesData;
   templateUrl: './online-dashboard.component.html',
   styleUrl: './online-dashboard.component.scss'
 })
-export class OnlineDashboardComponent {
+export class OnlineDashboardComponent implements OnInit {
+
   // public props
   selected: Date | null;
 
@@ -59,42 +61,130 @@ export class OnlineDashboardComponent {
 
   courseStates: string[] = ['Name', 'Teacher', 'Rating', 'Earning', 'Sale', 'Action'];
   courseSource = courseStates_data;
+   dashboard_summary: DashboardSummaryItem[] = [];
+    walletStats: WalletStats;
+  topWallets: WalletTop[] = [];
+  currencySymbol = 'XAF';
 
-  // public methods
-  dashboard_summary = [
-    {
-      icon: '#custom-profile-2user-outline',
-      background: 'bg-primary-50 text-primary-500',
-      title: 'New Students',
-      value: '400+',
-      percentage: '30.6%',
-      color: 'text-success'
-    },
-    {
-      icon: '#book',
-      background: 'bg-warning-50 text-warning-500',
-      title: 'Total Course',
-      value: '520+',
-      percentage: '30.6%',
-      color: 'text-warning-500'
-    },
-    {
-      icon: '#custom-eye',
-      background: 'bg-success-50 text-success-500',
-      title: 'New Visitor',
-      value: '800+',
-      percentage: '30.6%',
-      color: 'text-success-500'
-    },
-    {
-      icon: '#custom-card',
-      background: 'bg-warn-50 text-warn-500',
-      title: 'Total sale',
-      value: '1065',
-      percentage: '30.6%',
-      color: 'text-warn-500'
-    }
-  ];
+  constructor(
+    private statisticsService: AdminService // Injectez le service dans le constructeur
+  ) {
+    this.selected = new Date();
+  }
+
+  ngOnInit(): void {
+     this.loadStatistics();
+     this.loadWalletData();
+  }
+
+ // Dans votre composant.ts
+loadStatistics(): void {
+    this.statisticsService.getStatistics().subscribe({
+      next: (response: StatisticsResponse) => {
+        this.updateDashboardSummary(response.data);
+        // Vous pouvez aussi mettre à jour d'autres parties du dashboard ici
+      },
+      error: (err) => console.error('Failed to load statistics', err)
+    });
+  }
+
+    private loadWalletData() {
+    this.statisticsService.getStatistics().subscribe({
+      next: (response) => {
+        this.walletStats = response.data.walletStats;
+        this.topWallets = this.walletStats.topWallets.map((wallet: WalletTop) => ({
+          ...wallet,
+          formattedBalance: this.formatCurrency(wallet.balance)
+        }));
+      },
+      error: (err) => console.error('Failed to load wallet data', err)
+    });
+  }
+
+  private formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: this.currencySymbol,
+      minimumFractionDigits: 0
+    }).format(amount);
+  }
+
+  getFormattedTotalBalance(): string {
+    return this.formatCurrency(this.walletStats?.totalBalance || 0);
+  }
+
+  getFormattedAverageBalance(): string {
+    return this.formatCurrency(this.walletStats?.averageBalance || 0);
+  }
+
+  private updateDashboardSummary(data: StatisticsData): void {
+    this.dashboard_summary = [
+      {
+        icon: '#custom-profile-2user-outline',
+        background: 'bg-primary-50 text-primary-500',
+        title: 'Total Users',
+        value: `${data.userStats.totalUsers}`,
+        percentage: this.calculateUserGrowth(data.userStats.dailyRegistrations),
+        color: 'text-success'
+      },
+      {
+        icon: '#custom-card',
+        background: 'bg-warning-50 text-warning-500',
+        title: 'Total Wallets',
+        value: `${data.walletStats.totalWallets}`,
+        percentage: this.calculateWalletGrowth(data.walletStats),
+        color: 'text-warning-500'
+      },
+      {
+        icon: '#custom-eye',
+        background: 'bg-success-50 text-success-500',
+        title: 'Total Transactions',
+        value: `${data.transactionStats.totalTransactions}`,
+        percentage: this.calculateTransactionGrowth(data.transactionStats),
+        color: 'text-success-500'
+      },
+      {
+        icon: '#book',
+        background: 'bg-warn-50 text-warn-500',
+        title: 'Total Requests',
+        value: `${data.requestStats.totalRequests}`,
+        percentage: this.calculateRequestGrowth(data.requestStats),
+        color: 'text-warn-500'
+      }
+    ];
+  }
+
+  private calculateUserGrowth(dailyRegistrations: { date: string; count: number }[]): string {
+    if (!dailyRegistrations || dailyRegistrations.length < 2) return '0%';
+
+    const recent = dailyRegistrations[dailyRegistrations.length - 1].count;
+    const previous = dailyRegistrations[dailyRegistrations.length - 2].count;
+
+    return this.calculateGrowthPercentage(recent, previous);
+  }
+
+  private calculateWalletGrowth(walletStats: WalletStats): string {
+
+    return '12.5%'; // Remplacez par votre logique réelle
+  }
+
+  private calculateTransactionGrowth(transactionStats: TransactionStats): string {
+
+    const total = transactionStats.totalTransactions;
+    const avg = transactionStats.averageAmount;
+    return '8.3%'; // Remplacez par votre logique réelle
+  }
+
+  private calculateRequestGrowth(requestStats: RequestStats): string {
+
+    return '5.2%'; // Remplacez par votre logique réelle
+  }
+
+  private calculateGrowthPercentage(current: number, previous: number): string {
+    if (previous === 0) return '100%';
+    const growth = ((current - previous) / previous) * 100;
+    return `${growth.toFixed(1)}%`;
+  }
 
   course_list = [
     {

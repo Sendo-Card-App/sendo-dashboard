@@ -1,43 +1,86 @@
-// angular import
-import { Component, OnInit } from '@angular/core';
-
-// project import
+import { Component, OnInit, inject } from '@angular/core';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { AdminService } from 'src/app/@theme/services/admin.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
-// apexChart
-import { NgApexchartsModule, ApexStroke, ApexGrid, ApexNonAxisChartSeries, ApexChart, ApexPlotOptions } from 'ng-apexcharts';
+import {
+  ApexChart,
+  ApexStroke,
+  ApexGrid,
+  ApexPlotOptions
+} from 'ng-apexcharts';
 
+// votre nouveau type :
 export type ChartOptions = {
-  series: ApexNonAxisChartSeries;
+  series: number[];
   chart: ApexChart;
   colors: string[];
   stroke: ApexStroke;
   grid: ApexGrid;
   plotOptions: ApexPlotOptions;
+  labels?: string[];
 };
 
 @Component({
   selector: 'app-invites-goal-chart',
-  imports: [SharedModule, NgApexchartsModule],
+  imports: [SharedModule, NgApexchartsModule, MatMenuModule, CommonModule],
   templateUrl: './invites-goal-chart.component.html',
-  styleUrl: './invites-goal-chart.component.scss'
+  styleUrls: ['./invites-goal-chart.component.scss']
 })
 export class InvitesGoalChartComponent implements OnInit {
-  // public props
+  private adminService = inject(AdminService);
+  private router = inject(Router);
 
   chartOptions!: Partial<ChartOptions>;
 
-  // life cycle
+  // Données dynamiques
+  totalRequests = 0;
+  processedRequests = 0;
+  unprocessedRequests = 0;
+  rejectedRequests = 0;
+  todayRequests = 0;
+
   ngOnInit(): void {
+    this.loadRequestStats();
+  }
+
+  private loadRequestStats() {
+    this.adminService.getStatistics().subscribe({
+      next: (response) => {
+        const requestStats = response.data.requestStats;
+
+        // Récupération des données
+        this.totalRequests = requestStats.totalRequests;
+        this.processedRequests = requestStats.statusDistribution.find(s => s.status === 'PROCESSED')?.count || 0;
+        this.unprocessedRequests = requestStats.statusDistribution.find(s => s.status === 'UNPROCESSED')?.count || 0;
+        this.rejectedRequests = requestStats.statusDistribution.find(s => s.status === 'REJECTED')?.count || 0;
+
+        // Calcul des requêtes aujourd'hui
+        const today = new Date().toISOString().split('T')[0];
+        this.todayRequests = requestStats.recentRequests.filter(req =>
+          req.createdAt.split('T')[0] === today
+        ).length;
+
+        // Initialisation du graphique
+        this.initChart();
+      },
+      error: (err) => console.error('Erreur lors du chargement des statistiques', err)
+    });
+  }
+
+  private initChart() {
+    
+
     this.chartOptions = {
-      series: [76],
+      series: [0],
       chart: {
         type: 'radialBar',
         height: '345px',
         offsetY: -20,
-        sparkline: {
-          enabled: true
-        }
+        sparkline: { enabled: true }
       },
       colors: ['var(--primary-500)'],
       plotOptions: {
@@ -54,24 +97,21 @@ export class InvitesGoalChartComponent implements OnInit {
             margin: 20
           },
           dataLabels: {
-            name: {
-              show: false
-            },
+            name: { show: false },
             value: {
               offsetY: 0,
-              fontSize: '20px'
+              fontSize: '20px',
+              formatter: (val: number) => `${val}%`
             }
           }
         }
       },
-      grid: {
-        padding: {
-          top: 10
-        }
-      },
-      stroke: {
-        lineCap: 'round'
-      }
+      grid: { padding: { top: 10 } },
+      stroke: { lineCap: 'round' }
     };
+  }
+
+  navigateToKycAll() {
+    this.router.navigate(['/kyc/kyc-all']);
   }
 }

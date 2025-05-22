@@ -29,6 +29,7 @@
     "@ngx-translate/core": "16.0.4",
     "animate.css": "4.1.1",
     "apexcharts": "^4.7.0",
+    "date-fns": "^4.1.0",
     "lodash": "4.17.21",
     "moment": "2.30.1",
     "ng-apexcharts": "^1.15.0",

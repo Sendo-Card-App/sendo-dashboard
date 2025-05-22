@@ -1,6 +1,6 @@
 <div class="row">
   @for (summary of dashboard_summary; track summary) {
-    <div class="col-lg-3 col-md-6">
+    <div  class="col-lg-3 col-md-6">
       <app-card [showHeader]="false" [padding]="20">
         <div class="flex align-item-center">
           <div class="flex-shrink-0">
@@ -28,27 +28,57 @@
     <app-invites-goal-chart />
   </div>
   <div class="col-lg-5 col-md-12">
-    <app-card cardTitle="Upcoming Course" [padding]="0" cardClass="upcoming-course">
-      <ul class="list-group list-group-flush">
-        @for (item of course_list; track item) {
-          <li class="list-group-item">
-            <div class="flex align-item-center">
-              <div class="flex-shrink-0 flex">
-                <img src="{{ item.image }}" alt="img" class="wid-40" />
-              </div>
-              <div class="flex-grow-1 m-x-15">{{ item.title }}</div>
-              <div class="flex-shrink-0">
-                <a href="javascript:" class="avatar avatar-s hover text-accent-500">
-                  <i class="ti ti-chevron-right f-20"></i>
-                </a>
+  <app-card cardTitle="Portefeuilles Top Clients" [padding]="0" cardClass="top-wallets">
+    <div class="p-3 border-bottom">
+      <div class="row text-center">
+        <div class="col-6">
+          <p class="m-b-5 text-muted">Total Solde</p>
+          <h4 class="f-w-600">{{ getFormattedTotalBalance() }}</h4>
+        </div>
+        <div class="col-6">
+          <p class="m-b-5 text-muted">Moyenne/Portefeuille</p>
+          <h4 class="f-w-600">{{ getFormattedAverageBalance() }}</h4>
+        </div>
+      </div>
+    </div>
+
+    <ul class="list-group list-group-flush">
+      @for (wallet of topWallets; track wallet.userId) {
+        <li class="list-group-item">
+          <div class="flex align-item-center">
+            <div class="flex-shrink-0">
+              <div class="avatar avatar-s bg-primary-50 text-primary-500">
+                {{ wallet.user.name.charAt(0) }}
               </div>
             </div>
-          </li>
-        }
-      </ul>
+            <div class="flex-grow-1 m-x-15">
+              <h6 class="m-b-0">{{ wallet.user.name }}</h6>
+              <p class="m-b-0 text-muted">{{ wallet.user.email }}</p>
+            </div>
+            <div class="flex-shrink-0">
+              <span class="f-w-600">{{ wallet.formattedBalance }}</span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </app-card>
+</div>
+<div class="col-lg-7 col-md-12">
+    <app-card [showHeader]="false">
+      <div class="flex align-item-center justify-content-between m-b-15">
+        <div class="f-16 f-w-600 m-b-0">Informations sur les users</div>
+        <a [matMenuTriggerFor]="menu" class="avatar avatar-s hover"><i class="ti ti-dots-vertical f-18"></i></a>
+        <mat-menu #menu="matMenu">
+          <a mat-menu-item>Today</a>
+          <a mat-menu-item>Weekly</a>
+          <a mat-menu-item>Monthly</a>
+        </mat-menu>
+      </div>
+      <app-student-states-chart />
     </app-card>
   </div>
-  <div class="col-lg-7 col-md-12">
+  <!-- <div class="col-lg-7 col-md-12">
     <app-card [showHeader]="false">
       <div class="flex align-item-center justify-content-between">
         <div class="f-16 f-w-600">Courses</div>
@@ -62,7 +92,7 @@
       <p class="text-muted">Sales from 1-12 Dec, 2023</p>
       <app-course-report-bar-chart />
     </app-card>
-  </div>
+  </div> -->
   <div class="col-lg-4 col-md-6">
     <app-card [showHeader]="false" [padding]="20">
       <p class="text-muted m-b-5">Total Revenue</p>
@@ -87,20 +117,7 @@
       <app-total-revenue-line-chart [values]="[20, 10, 25, 18, 18, 10, 12]" [color]="['#ff4d4f']" />
     </app-card>
   </div>
-  <div class="col-lg-4 col-md-6">
-    <app-card [showHeader]="false">
-      <div class="flex align-item-center justify-content-between m-b-15">
-        <div class="f-16 f-w-600 m-b-0">Student States</div>
-        <a [matMenuTriggerFor]="menu" class="avatar avatar-s hover"><i class="ti ti-dots-vertical f-18"></i></a>
-        <mat-menu #menu="matMenu">
-          <a mat-menu-item>Today</a>
-          <a mat-menu-item>Weekly</a>
-          <a mat-menu-item>Monthly</a>
-        </mat-menu>
-      </div>
-      <app-student-states-chart />
-    </app-card>
-  </div>
+
   <div class="col-lg-4 col-md-6">
     <app-card [showHeader]="false">
       <div class="flex align-item-center justify-content-between m-b-15">
