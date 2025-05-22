@@ -14,7 +14,7 @@ import { VisitorsBarChartComponent } from './visitors-bar-chart/visitors-bar-cha
 import { EarningCoursesLineChartComponent } from './earning-courses-line-chart/earning-courses-line-chart.component';
 import { courseStatesData } from 'src/app/fake-data/courseStates_data';
 import { AdminService } from 'src/app/@theme/services/admin.service'; // Importez votre service
-import { DashboardSummaryItem, StatisticsData, StatisticsResponse, TransactionStats, WalletStats, WalletTop } from 'src/app/@theme/models/statistics'; // Importez votre interface
+import { DashboardSummaryItem, StatisticsData, StatisticsResponse, WalletStats, WalletTop } from 'src/app/@theme/models/statistics'; // Importez votre interface
 
 export interface activity_Data {
   image: string;
