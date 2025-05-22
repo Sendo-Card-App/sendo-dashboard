@@ -42,7 +42,6 @@ const courseStates_data = courseStatesData;
     CommonModule,
     StatisticsChartComponent,
     InvitesGoalChartComponent,
-    CourseReportBarChartComponent,
     TotalRevenueLineChartComponent,
     StudentStatesChartComponent,
     ActivityLineChartComponent,
@@ -165,7 +164,7 @@ loadStatistics(): void {
   }
 
   private calculateWalletGrowth(walletStats: WalletStats): string {
-    
+
     return '12.5%'; // Remplacez par votre logique réelle
   }
 
