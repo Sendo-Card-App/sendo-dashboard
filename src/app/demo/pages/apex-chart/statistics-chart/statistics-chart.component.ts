@@ -1,6 +1,6 @@
-import { Component, OnInit, effect, inject, input } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
-import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service';
+// import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service';
 import { AdminService } from 'src/app/@theme/services/admin.service';
 import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -46,7 +46,7 @@ export type FilledTransaction =
   providers: [DatePipe]
 })
 export class StatisticsChartComponent implements OnInit {
-  private themeService = inject(ThemeLayoutService);
+  // private themeService = inject(ThemeLayoutService);
   private statisticsService = inject(AdminService);
   private datePipe = inject(DatePipe);
 
