@@ -14,7 +14,7 @@ import { VisitorsBarChartComponent } from './visitors-bar-chart/visitors-bar-cha
 import { EarningCoursesLineChartComponent } from './earning-courses-line-chart/earning-courses-line-chart.component';
 import { courseStatesData } from 'src/app/fake-data/courseStates_data';
 import { AdminService } from 'src/app/@theme/services/admin.service'; // Importez votre service
-import { DashboardSummaryItem, RequestStats, StatisticsData, StatisticsResponse, TransactionStats, WalletStats, WalletTop } from 'src/app/@theme/models/statistics'; // Importez votre interface
+import { DashboardSummaryItem, StatisticsData, StatisticsResponse, TransactionStats, WalletStats, WalletTop } from 'src/app/@theme/models/statistics'; // Importez votre interface
 
 export interface activity_Data {
   image: string;
@@ -139,7 +139,7 @@ loadStatistics(): void {
         background: 'bg-success-50 text-success-500',
         title: 'Total Transactions',
         value: `${data.transactionStats.totalTransactions}`,
-        percentage: this.calculateTransactionGrowth(data.transactionStats),
+        percentage: this.calculateTransactionGrowth(),
         color: 'text-success-500'
       },
       {
@@ -167,7 +167,7 @@ loadStatistics(): void {
     return '12.5%'; // Remplacez par votre logique réelle
   }
 
-  private calculateTransactionGrowth(transactionStats: TransactionStats): string {
+  private calculateTransactionGrowth(): string {
 
     // const total = transactionStats.totalTransactions;
     // const avg = transactionStats.averageAmount;
