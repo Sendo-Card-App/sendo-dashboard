@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { BaseResponse, ChangeUserStatusRequest, RemoveRoleRequest } from '../models';
+import { StatisticsResponse } from '../models/statistics';
 
 export interface Role {
   id: number;
@@ -114,6 +115,17 @@ export class AdminService {
       {  ...this.getConfigAuthorized(),
         body: request
        }, // Note: pour DELETE avec body
+    );
+  }
+
+  /**
+   * GET /admin/statistics
+   * Récupère toutes les statistiques du système
+   */
+  getStatistics(): Observable<StatisticsResponse> {
+    return this.http.get<StatisticsResponse>(
+      `${this.apiUrl}/statistics`,
+      this.getConfigAuthorized()
     );
   }
 

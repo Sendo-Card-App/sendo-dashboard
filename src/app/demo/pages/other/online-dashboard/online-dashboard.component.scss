@@ -7,3 +7,21 @@
     }
   }
 }
+.top-wallets {
+  .list-group-item {
+    padding: 1rem;
+    border-left: 0;
+    border-right: 0;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+}

@@ -1,95 +1,101 @@
-// angular project
 import { Component, OnInit, effect, inject } from '@angular/core';
-
-// project import
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service';
-
-// third party
+import { AdminService } from 'src/app/@theme/services/admin.service';
 import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
+import { CommonModule } from '@angular/common';
+import { UserStats } from 'src/app/@theme/models/statistics';
 
 @Component({
   selector: 'app-student-states-chart',
-  imports: [SharedModule, NgApexchartsModule],
+  imports: [SharedModule, NgApexchartsModule, CommonModule],
   templateUrl: './student-states-chart.component.html',
-  styleUrl: './student-states-chart.component.scss'
+  styleUrls: ['./student-states-chart.component.scss']
 })
 export class StudentStatesChartComponent implements OnInit {
   private themeService = inject(ThemeLayoutService);
+  private adminService = inject(AdminService);
 
-  // public props
   chartOptions!: Partial<ApexOptions>;
+  isLoading = true;
 
-  // constructor
   constructor() {
     effect(() => {
       this.updateChartColors(this.themeService.color());
     });
   }
 
-  // life cycle
   ngOnInit() {
-    this.chartOptions = {
-      chart: {
-        height: 275,
-        type: 'donut'
-      },
-      dataLabels: {
-        enabled: false
-      },
-      plotOptions: {
-        pie: {
-          donut: {
-            size: '65%'
-          }
-        }
-      },
-      labels: ['Total Signups', 'Active Student'],
-      series: [76.7, 30],
-      legend: {
-        show: true,
-        position: 'bottom'
-      },
-      fill: {
-        opacity: [1, 0.5]
-      },
-      colors: ['#4680ff', '#4680ff']
-    };
+    this.loadUserStats();
   }
 
+  private loadUserStats() {
+    this.adminService.getStatistics().subscribe({
+      next: (response) => {
+        const userStats = response.data.userStats;
+        this.initChart(userStats);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load user statistics', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private initChart(userStats: UserStats) {
+  const totalUsers      = userStats.totalUsers;
+  // Ici, on précise que s est un objet { status: string; count: number }
+  const activeUsers     = userStats.statusDistribution
+    .find((s: { status: string; count: number }) => s.status === 'ACTIVE')
+    ?.count || 0;
+
+  const verifiedUsers   = userStats.verificationStats.kyc;
+
+  this.chartOptions = {
+    chart: { height: 275, type: 'donut' },
+    dataLabels: { enabled: false },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '65%',
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: 'Total Utilisateurs',
+              formatter: () => totalUsers.toString()
+            }
+          }
+        }
+      }
+    },
+    labels: ['Utilisateurs Actifs', 'KYC Vérifiés'],
+    series: [activeUsers, verifiedUsers],
+    legend: {
+      show: true,
+      position: 'bottom',
+      // Donnons aussi un type à opts
+      formatter: (seriesName: string, opts: { seriesIndex: number }) => {
+        // opts.seriesIndex nous permet de récupérer la bonne valeur dans series
+        const val = this.chartOptions.series?.[opts.seriesIndex] ?? 0;
+        return `${seriesName}: ${val}`;
+      }
+    },
+    fill: { opacity: [1, 0.7] },
+    colors: ['#4680ff', '#2ca87f']
+  };
+}
+
+
   private updateChartColors(theme: string) {
+    // Conservez votre logique existante ou adaptez-la
     switch (theme) {
       case 'blue-theme':
       default:
-        this.chartOptions.colors = ['#4680ff', '#4680ff'];
+        this.chartOptions.colors = ['#4680ff', '#2ca87f'];
         break;
-      case 'indigo-theme':
-        this.chartOptions.colors = ['#6610f2', '#6610f2'];
-        break;
-      case 'purple-theme':
-        this.chartOptions.colors = ['#673ab7', '#673ab7'];
-        break;
-      case 'pink-theme':
-        this.chartOptions.colors = ['#e83e8c', '#e83e8c'];
-        break;
-      case 'red-theme':
-        this.chartOptions.colors = ['#dc2626', '#dc2626'];
-        break;
-      case 'orange-theme':
-        this.chartOptions.colors = ['#fd7e14', '#fd7e14'];
-        break;
-      case 'yellow-theme':
-        this.chartOptions.colors = ['#e58a00', '#e58a00'];
-        break;
-      case 'green-theme':
-        this.chartOptions.colors = ['#2ca87f', '#2ca87f'];
-        break;
-      case 'teal-theme':
-        this.chartOptions.colors = ['#20c997', '#20c997'];
-        break;
-      case 'cyan-theme':
-        this.chartOptions.colors = ['#3ec9d6', '#3ec9d6'];
-        break;
+      // ... autres thèmes
     }
   }
 }
