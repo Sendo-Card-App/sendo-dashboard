@@ -53,7 +53,7 @@ export interface CardStats {
   totalCards: number;
   statusDistribution: { status: string; count: number }[];
   averageExpenditureCeiling: number;
-  recentCards: any[]; // à typer si vous avez la structure
+  recentCards: []; // à typer si vous avez la structure
 }
 
 /** Statistiques de demandes NIU */

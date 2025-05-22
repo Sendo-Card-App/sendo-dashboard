@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { StatisticsChartComponent } from '../../../pages/apex-chart/statistics-chart/statistics-chart.component';
 import { InvitesGoalChartComponent } from './invites-goal-chart/invites-goal-chart.component';
-import { CourseReportBarChartComponent } from './course-report-bar-chart/course-report-bar-chart.component';
 import { TotalRevenueLineChartComponent } from './total-revenue-line-chart/total-revenue-line-chart.component';
 import { StudentStatesChartComponent } from './student-states-chart/student-states-chart.component';
 import { ActivityLineChartComponent } from './activity-line-chart/activity-line-chart.component';
@@ -132,7 +131,7 @@ loadStatistics(): void {
         background: 'bg-warning-50 text-warning-500',
         title: 'Total Wallets',
         value: `${data.walletStats.totalWallets}`,
-        percentage: this.calculateWalletGrowth(data.walletStats),
+        percentage: this.calculateWalletGrowth(),
         color: 'text-warning-500'
       },
       {
@@ -148,7 +147,7 @@ loadStatistics(): void {
         background: 'bg-warn-50 text-warn-500',
         title: 'Total Requests',
         value: `${data.requestStats.totalRequests}`,
-        percentage: this.calculateRequestGrowth(data.requestStats),
+        percentage: this.calculateRequestGrowth(),
         color: 'text-warn-500'
       }
     ];
@@ -163,19 +162,19 @@ loadStatistics(): void {
     return this.calculateGrowthPercentage(recent, previous);
   }
 
-  private calculateWalletGrowth(walletStats: WalletStats): string {
+  private calculateWalletGrowth(): string {
 
     return '12.5%'; // Remplacez par votre logique réelle
   }
 
   private calculateTransactionGrowth(transactionStats: TransactionStats): string {
 
-    const total = transactionStats.totalTransactions;
-    const avg = transactionStats.averageAmount;
+    // const total = transactionStats.totalTransactions;
+    // const avg = transactionStats.averageAmount;
     return '8.3%'; // Remplacez par votre logique réelle
   }
 
-  private calculateRequestGrowth(requestStats: RequestStats): string {
+  private calculateRequestGrowth(): string {
 
     return '5.2%'; // Remplacez par votre logique réelle
   }
