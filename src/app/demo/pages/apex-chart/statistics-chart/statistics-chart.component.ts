@@ -147,7 +147,7 @@ private filterTransactionsByPeriod(
       const transactionDate = new Date(transaction.createdAt);
       return transactionDate >= cutoffDate;
     } catch (e) {
-      console.error('Date invalide:', transaction.createdAt);
+      console.error('Date invalide:',e, transaction.createdAt);
       return false;
     }
   });
