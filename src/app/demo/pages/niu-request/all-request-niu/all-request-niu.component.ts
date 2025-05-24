@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, output, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnDestroy, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -15,16 +15,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   selector: 'app-all-request-niu',
   templateUrl: './all-request-niu.component.html',
   styleUrls: ['./all-request-niu.component.scss'],
-  imports: [
-        CommonModule,
-        SharedModule
-      ],
+  imports: [CommonModule, SharedModule,FormsModule,ReactiveFormsModule],
+  standalone: true
 })
 export class AllRequestNiuComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @Output() HeaderBlur = new EventEmitter<void>();
+  
 
   filterForm: FormGroup;
+  rejectionForm: FormGroup;
+  selectedFile: File | null = null;
   isLoading = false;
   dataSource = new MatTableDataSource<RequestItem>();
   displayedColumns: string[] = ['id', 'user', 'description', 'status', 'createdAt', 'actions'];
@@ -32,11 +34,10 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   itemsPerPage = 10;
   currentPage = 1;
   private destroy$ = new Subject<void>();
-  readonly HeaderBlur = output();
-   direction: string = 'ltr';
+  direction: string = 'ltr';
 
-   currentRequest: RequestItem | null = null;
-  statusForm: FormGroup;
+  currentRequest: RequestItem | null = null;
+  selectedAction: 'approve' | 'reject' | null = null;
   isUpdatingStatus = false;
 
   constructor(
@@ -44,16 +45,15 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
     private requestService: NiuService,
     private snackBar: MatSnackBar
   ) {
-      this.filterForm = this.fb.group({
-    search: [''],
-    status: ['UNPROCESSED'],
-    type: ['NIU_REQUEST']
-  });
+    this.filterForm = this.fb.group({
+      search: [''],
+      status: ['UNPROCESSED'],
+      type: ['NIU_REQUEST']
+    });
 
-  // Ajoutez cette initialisation
-  this.statusForm = this.fb.group({
-    newStatus: ['PROCESSED']
-  });
+    this.rejectionForm = this.fb.group({
+      reason: ['', Validators.required]
+    });
   }
 
   ngOnInit(): void {
@@ -66,14 +66,14 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+
+
   private setupFormListeners(): void {
-    // Écoute les changements avec debounce pour éviter trop de requêtes
     this.filterForm.valueChanges
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
+        takeUntil(this.destroy$))
       .subscribe(() => {
         this.currentPage = 1;
         if (this.paginator) {
@@ -96,7 +96,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
       this.itemsPerPage,
       typeValue,
       statusValue,
-      searchValue // Ajout du paramètre de recherche
+      searchValue
     ).subscribe({
       next: (response: RequestsListResponse) => {
         this.dataSource.data = response.data.items;
@@ -121,8 +121,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
       search: '',
       status: 'UNPROCESSED',
       type: 'NIU_REQUEST'
-    }, { emitEvent: false }); // emitEvent: false pour éviter de déclencher valueChanges
-
+    }, { emitEvent: false });
     this.currentPage = 1;
     if (this.paginator) {
       this.paginator.firstPage();
@@ -130,72 +129,110 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
     this.loadRequests();
   }
 
- getStatusClass(status: RequestStatus): string {
-  switch (status) {
-    case 'UNPROCESSED': return 'status-unprocessed';
-    case 'PROCESSED': return 'status-processed'; // Changé de 'APPROVED' à 'PROCESSED'
-    case 'REJECTED': return 'status-rejected';
-    default: return '';
-  }
-}
-
-  viewDetails(requestId: number): void {
-    // Implémentez la navigation vers les détails de la demande
-    console.log('View details for request:', requestId);
+  getStatusClass(status: RequestStatus): string {
+    switch (status) {
+      case 'UNPROCESSED': return 'status-unprocessed';
+      case 'PROCESSED': return 'status-processed';
+      case 'REJECTED': return 'status-rejected';
+      default: return '';
+    }
   }
 
- // Pour ouvrir le drawer
-openDetails(request: RequestItem): void {
-  this.currentRequest = request;
-  this.statusForm.patchValue({
-    newStatus: request.status === 'UNPROCESSED' ? 'PROCESSED' : request.status
-  });
-  this.HeaderBlur.emit();
-}
+  openDetails(request: RequestItem): void {
+    this.currentRequest = request;
+    this.selectedAction = null;
+    this.selectedFile = null;
+    this.rejectionForm.reset();
+    this.HeaderBlur.emit();
+  }
 
-// Pour fermer le drawer
-closeDetails(): void {
-  this.currentRequest = null;
-  this.HeaderBlur.emit();
-}
+  closeDetails(): void {
+    this.currentRequest = null;
+    this.selectedAction = null;
+    this.HeaderBlur.emit();
+  }
+
+  onActionChange(): void {
+    this.selectedFile = null;
+    this.rejectionForm.reset();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
 
   updateRequestStatus(): void {
     if (!this.currentRequest || this.isUpdatingStatus) return;
 
-    const newStatus = this.statusForm.get('newStatus')?.value as RequestStatus;
     this.isUpdatingStatus = true;
+    let status: RequestStatus;
+    let reason: string | undefined;
+    let file: File | undefined;
 
-    this.requestService.updateRequestStatus(this.currentRequest.id, newStatus)
-      .subscribe({
-        next: () => {
-          this.snackBar.open('Statut mis à jour avec succès', 'Fermer', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
+    console.log('Selected action:', this.selectedAction);
+    console.log('Selected request:', this.currentRequest);
+    console.log('Selected file:', this.selectedFile);
+    console.log('Rejection reason:', this.rejectionForm.get('reason')?.value);
 
-          // Mettre à jour la requête locale
-          if (this.currentRequest) {
-            this.currentRequest.status = newStatus;
-            this.updateRequestInList(this.currentRequest);
-          }
+    if (this.selectedAction === 'approve') {
+      status = 'PROCESSED';
+      if (!this.selectedFile) {
+        this.snackBar.open('Veuillez sélectionner un fichier', 'Fermer', { duration: 3000 });
+        this.isUpdatingStatus = false;
+        return;
+      }
 
-          this.isUpdatingStatus = false;
-        },
-        error: () => {
-          this.snackBar.open('Échec de la mise à jour du statut', 'Fermer', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-          this.isUpdatingStatus = false;
-        }
-      });
+      file = this.selectedFile;
+      console.log('Selected file:', file);
+      console.log('Selected status:', status);
+    } else if (this.selectedAction === 'reject') {
+      status = 'REJECTED';
+      if (this.rejectionForm.invalid) {
+        this.snackBar.open('Veuillez saisir une raison de rejet', 'Fermer', { duration: 3000 });
+        this.isUpdatingStatus = false;
+        return;
+      }
+      reason = this.rejectionForm.get('reason')?.value;
+    } else {
+      this.isUpdatingStatus = false;
+      return;
+    }
+
+    this.requestService.updateRequestStatus(
+      this.currentRequest.id,
+      status,
+      reason,
+      file
+    ).subscribe({
+      next: () => {
+        this.snackBar.open('Statut mis à jour avec succès', 'Fermer', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        this.currentRequest!.status = status;
+        this.updateRequestInList(this.currentRequest!);
+        this.closeDetails();
+        this.isUpdatingStatus = false;
+      },
+      error: (err) => {
+        this.snackBar.open('Échec de la mise à jour du statut', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        console.error('Error updating request status:', err);
+        this.isUpdatingStatus = false;
+      }
+    });
   }
-   private updateRequestInList(updatedRequest: RequestItem): void {
+
+  private updateRequestInList(updatedRequest: RequestItem): void {
     const index = this.dataSource.data.findIndex(r => r.id === updatedRequest.id);
     if (index !== -1) {
       this.dataSource.data[index] = updatedRequest;
-      this.dataSource._updateChangeSubscription(); // Force la mise à jour de la table
+      this.dataSource._updateChangeSubscription();
     }
   }
-
 }

@@ -1,37 +1,55 @@
-// tr-all-transaction.component.ts
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { TransactionsService } from 'src/app/@theme/services/transactions.service';
-import { Transactions } from 'src/app/@theme/models/index';
+import { Transactions, TransactionType, TransactionStatus } from 'src/app/@theme/models/index';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-tr-all-transaction',
   templateUrl: './tr-alltransaction.component.html',
   imports: [CommonModule, SharedModule],
-  styleUrls: ['./tr-alltransaction.component.scss']
+  styleUrls: ['./tr-alltransaction.component.scss'],
+  providers: [DatePipe]
 })
-export class TrAllTransactionComponent implements OnInit {
-  displayedColumns: string[] = ['transactionId','username', 'amount', 'type', 'status', 'method', 'createdAt', 'actions'];
-  dataSource = new MatTableDataSource<Transactions>();
-  allTransactions: Transactions[] = [];
+export class TrAllTransactionComponent implements OnInit, AfterViewInit {
+  displayedColumns: string[] = ['transactionId', 'username', 'amount', 'type', 'status', 'method', 'createdAt', 'actions'];
+  dataSource = new MatTableDataSource<Transactions>([]);
   isLoading = false;
+  totalItems = 0;
+  currentPage = 0; // Changé à 0 pour correspondre à l'index Material
+  itemsPerPage = 10;
+  currentSort: { active: string; direction: 'asc' | 'desc' | '' } = { active: '', direction: '' };
 
-  filterForm = this.fb.group({
-    search: [''],
-    status: [''],
-    type: [''],
-    method: [''],
-    provider: [''],
-    minAmount: [''],
-    maxAmount: ['']
-  });
+  filterForm: FormGroup;
+
+  // Options for filters
+  statusOptions = [
+    { value: '', label: 'All' },
+    { value: 'PENDING', label: 'Pending' },
+    { value: 'COMPLETED', label: 'Completed' },
+    { value: 'FAILED', label: 'Failed' }
+  ];
+
+  typeOptions = [
+    { value: '', label: 'All' },
+    { value: 'DEPOSIT', label: 'Deposit' },
+    { value: 'WITHDRAWAL', label: 'Withdrawal' },
+    { value: 'TRANSFER', label: 'Transfer' }
+  ];
+
+  methodOptions = [
+    { value: '', label: 'All' },
+    { value: 'MOBILE_MONEY', label: 'Mobile Money' },
+    { value: 'BANK_TRANSFER', label: 'Bank Transfer' }
+  ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -39,31 +57,66 @@ export class TrAllTransactionComponent implements OnInit {
   constructor(
     private transactionsService: TransactionsService,
     private fb: FormBuilder,
-    private router: Router
-  ) {}
+    private router: Router,
+    private datePipe: DatePipe
+  ) {
+    this.filterForm = this.fb.group({
+      search: [''],
+      status: [''],
+      type: [''],
+      method: [''],
+      minAmount: [''],
+      maxAmount: [''],
+      startDate: [''],
+      endDate: ['']
+    });
+  }
 
   ngOnInit(): void {
-    this.loadAllTransactions();
+    this.loadTransactions();
     this.setupFilterListeners();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+
+    this.sort.sortChange.subscribe(sort => {
+      this.currentSort.active = sort.active;
+      this.currentSort.direction = sort.direction || 'asc'; // Valeur par défaut si vide
+      this.loadTransactions();
+    });
   }
 
-  loadAllTransactions(): void {
+  loadTransactions(): void {
     this.isLoading = true;
-    this.transactionsService.getTransactions().subscribe({
+
+    const formValues = this.filterForm.value;
+    const startDate = formValues.startDate ? this.datePipe.transform(formValues.startDate, 'yyyy-MM-dd') : '';
+    const endDate = formValues.endDate ? this.datePipe.transform(formValues.endDate, 'yyyy-MM-dd') : '';
+
+    // Note: +1 car l'API attend probablement page=1 pour la première page
+    const apiPage = this.currentPage + 1;
+
+    this.transactionsService.getTransactions(
+      apiPage,
+      this.itemsPerPage,
+      formValues.type as TransactionType,
+      formValues.status as TransactionStatus,
+      formValues.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
+      startDate || undefined,
+      endDate || undefined
+    ).subscribe({
       next: (response) => {
-        console.log('Transactions loaded:', response);
-        this.allTransactions = response.data.items;
-        this.dataSource.data = this.allTransactions;
+        this.dataSource.data = response.data.items;
+        this.totalItems = response.data.totalItems; // Assurez-vous que c'est le bon champ
         this.isLoading = false;
 
-        console.log('All transactions:', this.allTransactions);
-        console.log('Data source:', this.dataSource.data);
-        this.applyFilters(); // Applique les filtres initiaux
+        // Synchronisez le paginator après le chargement
+        if (this.paginator) {
+          this.paginator.length = this.totalItems;
+          this.paginator.pageIndex = this.currentPage;
+        }
       },
       error: (error) => {
         console.error('Error loading transactions:', error);
@@ -76,75 +129,40 @@ export class TrAllTransactionComponent implements OnInit {
     this.filterForm.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
-        this.applyFilters();
+        this.currentPage = 0; // Réinitialise à la première page
+        if (this.paginator) {
+          this.paginator.firstPage();
+        }
+        this.loadTransactions();
       });
   }
 
-  applyFilters(): void {
-    const filters = this.filterForm.value;
-    let filteredData = [...this.allTransactions];
+  onPageChange(event: PageEvent): void {
+    this.currentPage = event.pageIndex;
+    this.itemsPerPage = event.pageSize;
+    this.loadTransactions();
 
-    // Filtre de recherche
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      filteredData = filteredData.filter(transaction=>
-        transaction.transactionId.toLowerCase().includes(searchTerm) ||
-        transaction.amount.toString().includes(searchTerm) ||
-        (transaction.description?.toLowerCase().includes(searchTerm) || false
-      ));
-    }
-
-    // Filtres simples (string)
-    if (filters.status) {
-      filteredData = filteredData.filter(transaction => transaction.status === filters.status);
-    }
-
-    if (filters.type) {
-      filteredData = filteredData.filter(transaction => transaction.type === filters.type);
-    }
-
-    if (filters.method) {
-      filteredData = filteredData.filter(transaction => transaction.method === filters.method);
-    }
-
-    if (filters.provider) {
-      filteredData = filteredData.filter(transaction => transaction.provider === filters.provider);
-    }
-
-    // Filtres numériques avec vérification de null/undefined
-    if (filters.minAmount !== null && filters.minAmount !== undefined && filters.minAmount !== '') {
-      const minAmount = Number(filters.minAmount);
-      if (!isNaN(minAmount)) {
-        filteredData = filteredData.filter(transaction => transaction.amount >= minAmount);
-      }
-    }
-
-    if (filters.maxAmount !== null && filters.maxAmount !== undefined && filters.maxAmount !== '') {
-      const maxAmount = Number(filters.maxAmount);
-      if (!isNaN(maxAmount)) {
-        filteredData = filteredData.filter(transaction => transaction.amount <= maxAmount);
-      }
-    }
-
-    this.dataSource.data = filteredData;
-
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
+    // Optionnel: Faites défiler vers le haut pour une meilleure UX
+    window.scrollTo(0, 0);
   }
 
   resetFilters(): void {
     this.filterForm.reset();
-    this.dataSource.data = this.allTransactions;
+    this.currentPage = 0;
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+    this.loadTransactions();
   }
 
-  // Fonctions utilitaires pour l'affichage
+  onDateChange(type: 'startDate' | 'endDate', event: MatDatepickerInputEvent<Date>): void {
+    this.filterForm.get(type)?.setValue(event.value);
+    this.currentPage = 0;
+    this.loadTransactions();
+  }
+
   formatType(type: string): string {
     return type ? type.toLowerCase().replace('_', ' ') : '';
-  }
-
-  formatStatus(status: string): string {
-    return status ? status.charAt(0) + status.slice(1).toLowerCase() : '';
   }
 
   getStatusClass(status: string): string {
@@ -156,10 +174,8 @@ export class TrAllTransactionComponent implements OnInit {
       default: return '';
     }
   }
+
   viewDetails(transactionId: string): void {
     this.router.navigate(['/transactions', transactionId]);
-  }
-  viewTransactions(transactionId: number): void {
-    this.router.navigate(['/transactions/user', transactionId]);
   }
 }

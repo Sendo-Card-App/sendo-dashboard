@@ -134,69 +134,92 @@
     </button>
   </div>
 
-  <ng-scrollbar style="height: calc(100vh - 88px)" visibility="hover" [dir]="direction">
-    <div class="drawer-content" *ngIf="currentRequest">
-      <div class="detail-section">
-        <h3>Informations générales</h3>
-        <div class="detail-row">
-          <span class="detail-label">ID:</span>
-          <span>{{ currentRequest.id }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Utilisateur:</span>
-          <span>{{ currentRequest.user.firstname }} {{ currentRequest.user.lastname }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Description:</span>
-          <span>{{ currentRequest.description }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Statut actuel:</span>
-          <span class="status-badge" [ngClass]="getStatusClass(currentRequest.status)">
-            {{ currentRequest.status === 'UNPROCESSED' ? 'En attente' :
-            currentRequest.status === 'PROCESSED' ? 'Traité' : 'Rejeté' }}
-          </span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Date de création:</span>
-          <span>{{ currentRequest.createdAt | date:'medium' }}</span>
-        </div>
-
+<ng-scrollbar style="height: calc(100vh - 88px)" visibility="hover" [dir]="direction">
+  <div class="drawer-content" *ngIf="currentRequest">
+    <div class="detail-section">
+      <h3>Informations générales</h3>
+      <div class="detail-row">
+        <span class="detail-label">ID:</span>
+        <span>{{ currentRequest.id }}</span>
       </div>
-      <div class="detail-section">
-        <h3>Informations du responsable</h3>
-        <div class="detail-row">
-          <span class="detail-label">ID:</span>
-          <span>{{ currentRequest.reviewedBy?.id || 'Non disponible' }} </span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Utilisateur:</span>
-          <span>{{ currentRequest.reviewedBy?.firstname || 'Non disponible' }} {{ currentRequest.reviewedBy?.lastname ||
-            '' }}</span>
-        </div>
-
+      <div class="detail-row">
+        <span class="detail-label">Utilisateur:</span>
+        <span>{{ currentRequest.user.firstname }} {{ currentRequest.user.lastname }}</span>
       </div>
-
-      <div class="action-section" *ngIf="currentRequest.status === 'UNPROCESSED'">
-        <h3>Modifier le statut</h3>
-        <form [formGroup]="statusForm">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Nouveau statut</mat-label>
-            <mat-select formControlName="newStatus">
-              <mat-option value="PROCESSED">Traité</mat-option>
-              <mat-option value="REJECTED">Rejeté</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <div class="action-buttons">
-            <button mat-raised-button color="primary" (click)="updateRequestStatus()" [disabled]="isUpdatingStatus">
-              <span *ngIf="!isUpdatingStatus">Mettre à jour</span>
-              <mat-spinner diameter="20" *ngIf="isUpdatingStatus"></mat-spinner>
-            </button>
-            <button mat-stroked-button (click)="closeDetails(); drawer.toggle()">Annuler</button>
-          </div>
-        </form>
+      <div class="detail-row">
+        <span class="detail-label">Description:</span>
+        <span>{{ currentRequest.description }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Statut actuel:</span>
+        <span class="status-badge" [ngClass]="getStatusClass(currentRequest.status)">
+          {{ currentRequest.status === 'UNPROCESSED' ? 'En attente' :
+             currentRequest.status === 'PROCESSED' ? 'Traité' : 'Rejeté' }}
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Date de création:</span>
+        <span>{{ currentRequest.createdAt | date:'medium' }}</span>
       </div>
     </div>
-  </ng-scrollbar>
+
+    <div class="detail-section">
+      <h3>Informations du responsable</h3>
+      <div class="detail-row">
+        <span class="detail-label">ID:</span>
+        <span>{{ currentRequest.reviewedBy?.id || 'Non disponible' }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Utilisateur:</span>
+        <span>{{ currentRequest.reviewedBy?.firstname || 'Non disponible' }} {{ currentRequest.reviewedBy?.lastname || '' }}</span>
+      </div>
+    </div>
+
+    <div class="action-section" *ngIf="currentRequest.status === 'UNPROCESSED'">
+      <h3>Traiter la demande</h3>
+
+      <!-- Par ceci -->
+<mat-form-field appearance="outline" class="w-100">
+  <mat-label>Action</mat-label>
+  <mat-select [(ngModel)]="selectedAction" (selectionChange)="onActionChange()">
+    <mat-option value="approve">Approuver</mat-option>
+    <mat-option value="reject">Rejeter</mat-option>
+  </mat-select>
+</mat-form-field>
+
+      <!-- Section fichier pour approbation -->
+      <div *ngIf="selectedAction === 'approve'" class="file-upload-section">
+        <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden>
+        <label for="fileInput" class="file-upload-label">
+          <mat-icon>attach_file</mat-icon>
+          <span>{{ selectedFile?.name || 'Sélectionner un fichier' }}</span>
+        </label>
+        <small *ngIf="!selectedFile" class="file-hint">Un fichier est requis pour l'approbation</small>
+      </div>
+
+      <!-- Section raison pour rejet -->
+      <div *ngIf="selectedAction === 'reject'">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Raison du rejet</mat-label>
+          <textarea matInput formControlName="reason" rows="3" required></textarea>
+          <mat-error *ngIf="rejectionForm.get('reason')?.hasError('required')">
+            La raison du rejet est obligatoire
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="action-buttons">
+        <button mat-raised-button color="primary"
+                (click)="updateRequestStatus()"
+                [disabled]="isUpdatingStatus ||
+                          (selectedAction === 'approve' && !selectedFile) ||
+                          (selectedAction === 'reject' && rejectionForm.invalid)">
+          <span *ngIf="!isUpdatingStatus">Valider</span>
+          <mat-spinner diameter="20" *ngIf="isUpdatingStatus"></mat-spinner>
+        </button>
+        <button mat-stroked-button (click)="closeDetails()">Annuler</button>
+      </div>
+    </div>
+  </div>
+</ng-scrollbar>
 </mat-drawer>

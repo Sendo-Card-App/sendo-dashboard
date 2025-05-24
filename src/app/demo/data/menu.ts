@@ -36,7 +36,7 @@ export const menus: Navigation[] = [
         children: [
           {
             id: 'alluser',
-            title: 'liste des utilisateurs',
+            title: 'Liste des utilisateurs',
             type: 'item',
             url: '/users/alluser',
             // target: true,
@@ -44,7 +44,7 @@ export const menus: Navigation[] = [
           },
           {
             id: 'adduser',
-            title: 'creer un utilisateur',
+            title: 'Creer un utilisateur',
             type: 'item',
             url: '/users/adduser',
             // target: true,
@@ -55,14 +55,14 @@ export const menus: Navigation[] = [
       },
       {
         id: 'Transaction',
-        title: 'transactions',
+        title: 'Transactions',
         type: 'collapse',
         icon: '#custom-presentation-chart',
         role: [Role.Admin, Role.User],
         children: [
           {
             id: 'alltransaction',
-            title: 'liste des transactions',
+            title: 'Liste des transactions',
             type: 'item',
             url: '/transactions/alltransactions',
             // target: true,
@@ -70,7 +70,7 @@ export const menus: Navigation[] = [
           },
           {
             id: 'addtransaction',
-            title: 'creer une transaction',
+            title: 'Creer une transaction',
             type: 'item',
             url: '/transactions/addtransaction',
             // target: true,
@@ -96,7 +96,7 @@ export const menus: Navigation[] = [
           },
           {
             id: 'allkyc',
-            title: 'liste des KYC',
+            title: 'Liste des KYC',
             type: 'item',
             url: '/kyc/kyc-all',
             // target: true,
@@ -115,7 +115,7 @@ export const menus: Navigation[] = [
         children: [
           {
             id: 'allkyc',
-            title: 'liste des demandes',
+            title: 'Liste des demandes',
             type: 'item',
             url: '/requests/allrequests',
             // target: true,
@@ -143,7 +143,7 @@ export const menus: Navigation[] = [
         children: [
           {
             id: 'allconfiguration',
-            title: 'liste des configs',
+            title: 'Liste des configs',
             type: 'item',
             url: '/configuration/allconfiguration',
             // target: true,

@@ -123,7 +123,7 @@ export interface Transactions {
 }
 
 export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED';
-type TransactionType = 'DEPOSIT' | 'TRANSFER' | 'PAYMENT';
+export type TransactionType = 'DEPOSIT' | 'TRANSFER' | 'PAYMENT';
 
 export interface RecentTransactions{
   transactionId: string;

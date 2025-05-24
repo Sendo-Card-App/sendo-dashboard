@@ -5,6 +5,7 @@ import { Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationErr
 // project import
 import { BuyNowLinkService } from './@theme/services/buy-now-link.service';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { AutoLogoutService } from './@theme/helpers/Auto-logout.guard';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,10 @@ export class AppComponent implements OnInit {
   // public props
   isSpinnerVisible = true;
   mainUrl: string;
+
+  constructor(private readonly autoLogout: AutoLogoutService) {
+    void this.autoLogout;
+  }
 
   ngOnInit() {
     // Use ngOnInit instead of ngAfterViewInit

@@ -114,9 +114,12 @@ export class TransactionListComponent implements OnInit {
       endDate
     ).subscribe({
       next: (response) => {
-        this.dataSource.data = response.data.items;
-        this.totalItems       = response.data.totalItems;
+        this.dataSource.data = response.data.transactions.items;
+        this.totalItems       = response.data.transactions.totalItems;
         this.isLoading        = false;
+
+        console.log('Transactions loaded:', response.data.transactions.items);
+        console.log('Total items:', this.totalItems);
       },
       error: (error) => {
         console.error('Error loading transactions:', error);

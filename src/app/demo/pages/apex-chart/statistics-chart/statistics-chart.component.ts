@@ -135,91 +135,120 @@ export class StatisticsChartComponent implements OnInit {
   }
 
 
-  private filterTransactionsByPeriod(
-    transactions: Transaction[],
-    period: '5days' | '7days'
-  ): Transaction[] {
-    const now = new Date();
-    const cutoffDate = subDays(now, period === '5days' ? 5 : 7);
+private filterTransactionsByPeriod(
+  transactions: Transaction[],
+  period: '5days' | '7days'
+): Transaction[] {
+  const now = new Date();
+  const cutoffDate = subDays(now, period === '5days' ? 5 : 7);
 
-    return transactions.filter(transaction => {
+  return transactions.filter(transaction => {
+    try {
       const transactionDate = new Date(transaction.createdAt);
       return transactionDate >= cutoffDate;
-    });
-  }
+    } catch (e) {
+      console.error('Date invalide:',e, transaction.createdAt);
+      return false;
+    }
+  });
+}
 
-  private prepareChartData(transactions: Transaction[]): void {
-    const completeData = this.fillMissingDates(transactions, this.selectType);
-    const groupedData = this.groupTransactionsByDateAndType(completeData);
+ private prepareChartData(transactions: Transaction[]): void {
+  // D'abord, on s'assure qu'on a bien toutes les transactions
+  console.log('Transactions reçues:', transactions);
 
-    const series = [
-      { name: 'Dépôts', data: [] as number[] },
-      { name: 'Transferts', data: [] as number[] },
-      { name: 'Paiements', data: [] as number[] }
-    ];
+  // Ensuite, on filtre par période
+  const filtered = this.filterTransactionsByPeriod(transactions, this.selectType);
+  console.log('Transactions filtrées:', filtered);
 
-    const categories: string[] = [];
+  // On groupe correctement les données
+  const groupedData = this.groupTransactionsByDateAndType(filtered);
+  console.log('Données groupées:', groupedData);
 
-    Object.keys(groupedData).forEach(date => {
-      categories.push(date);
-      series[0].data.push(groupedData[date].DEPOSIT);
-      series[1].data.push(groupedData[date].TRANSFER);
-      series[2].data.push(groupedData[date].PAYMENT);
-    });
+  // Préparation des séries pour le graphique
+  const series = [
+    { name: 'Dépôts', data: [] as number[] },
+    { name: 'Transferts', data: [] as number[] },
+    { name: 'Paiements', data: [] as number[] }
+  ];
 
-    this.chartOptions.series = series;
-    this.chartOptions.xaxis = {
+  const categories: string[] = Object.keys(groupedData).sort((a, b) => {
+    return new Date(a).getTime() - new Date(b).getTime();
+  });
+
+  categories.forEach(date => {
+    series[0].data.push(groupedData[date].DEPOSIT || 0);
+    series[1].data.push(groupedData[date].TRANSFER || 0);
+    series[2].data.push(groupedData[date].PAYMENT || 0);
+  });
+
+  // Mise à jour des options du graphique
+  this.chartOptions = {
+    ...this.chartOptions,
+    series,
+    xaxis: {
       ...this.chartOptions.xaxis,
       categories
-    };
-  }
+    }
+  };
+}
 
-  private fillMissingDates(
-    transactions: Transaction[],
-    period: '5days' | '7days'
-  ): FilledTransaction[] {
-    const days = period === '5days' ? 5 : 7;
-    const result: FilledTransaction[] = [];
-    const now = new Date();
+private groupTransactionsByDateAndType(transactions: Transaction[]): GroupedTransactions {
+  const result: GroupedTransactions = {};
 
-    for (let i = 0; i < days; i++) {
-      const currentDate = subDays(now, i);
-      const dateStr = this.formatTransactionDate(currentDate.toISOString());
+  transactions.forEach(transaction => {
+    const date = this.formatTransactionDate(transaction.createdAt);
 
-      const existingData = transactions.find(t =>
-        this.formatTransactionDate(t.createdAt) === dateStr
-      );
-
-      result.unshift({
-        createdAt: currentDate.toISOString(),
-        type: existingData?.type || null,
-        ...existingData
-      });
+    if (!result[date]) {
+      result[date] = { DEPOSIT: 0, TRANSFER: 0, PAYMENT: 0 };
     }
 
-    return result;
-  }
+    // On s'assure que le type est valide avant d'incrémenter
+    if (['DEPOSIT', 'TRANSFER', 'PAYMENT'].includes(transaction.type)) {
+      result[date][transaction.type] += 1;
+    }
+  });
 
-  private groupTransactionsByDateAndType(transactions: FilledTransaction[]): GroupedTransactions {
-    return transactions.reduce((acc: GroupedTransactions, transaction) => {
-      if (!transaction.type) return acc;
+  return result;
+}
 
-      const date = this.formatTransactionDate(transaction.createdAt);
-      const type = transaction.type;
-
-      if (!acc[date]) {
-        acc[date] = { DEPOSIT: 0, TRANSFER: 0, PAYMENT: 0 };
-      }
-
-      acc[date][type] += 1;
-      return acc;
-    }, {} as GroupedTransactions);
-  }
-
-  private formatTransactionDate(dateString: string): string {
+private formatTransactionDate(dateString: string): string {
+  try {
     const date = new Date(dateString);
-    return this.datePipe.transform(date, 'dd MMM') || '';
+    return this.datePipe.transform(date, 'dd MMM') || dateString;
+  } catch (e) {
+    console.error('Erreur de format de date:', dateString, e);
+    return dateString;
   }
+}
+
+  // private fillMissingDates(
+  //   transactions: Transaction[],
+  //   period: '5days' | '7days'
+  // ): FilledTransaction[] {
+  //   const days = period === '5days' ? 5 : 7;
+  //   const result: FilledTransaction[] = [];
+  //   const now = new Date();
+
+  //   for (let i = 0; i < days; i++) {
+  //     const currentDate = subDays(now, i);
+  //     const dateStr = this.formatTransactionDate(currentDate.toISOString());
+
+  //     const existingData = transactions.find(t =>
+  //       this.formatTransactionDate(t.createdAt) === dateStr
+  //     );
+
+  //     result.unshift({
+  //       createdAt: currentDate.toISOString(),
+  //       type: existingData?.type || null,
+  //       ...existingData
+  //     });
+  //   }
+
+  //   return result;
+  // }
+
+
 
   private formatDateLabel(value: string): string {
     return value;
