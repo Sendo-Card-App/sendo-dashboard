@@ -222,31 +222,31 @@ private formatTransactionDate(dateString: string): string {
   }
 }
 
-  private fillMissingDates(
-    transactions: Transaction[],
-    period: '5days' | '7days'
-  ): FilledTransaction[] {
-    const days = period === '5days' ? 5 : 7;
-    const result: FilledTransaction[] = [];
-    const now = new Date();
+  // private fillMissingDates(
+  //   transactions: Transaction[],
+  //   period: '5days' | '7days'
+  // ): FilledTransaction[] {
+  //   const days = period === '5days' ? 5 : 7;
+  //   const result: FilledTransaction[] = [];
+  //   const now = new Date();
 
-    for (let i = 0; i < days; i++) {
-      const currentDate = subDays(now, i);
-      const dateStr = this.formatTransactionDate(currentDate.toISOString());
+  //   for (let i = 0; i < days; i++) {
+  //     const currentDate = subDays(now, i);
+  //     const dateStr = this.formatTransactionDate(currentDate.toISOString());
 
-      const existingData = transactions.find(t =>
-        this.formatTransactionDate(t.createdAt) === dateStr
-      );
+  //     const existingData = transactions.find(t =>
+  //       this.formatTransactionDate(t.createdAt) === dateStr
+  //     );
 
-      result.unshift({
-        createdAt: currentDate.toISOString(),
-        type: existingData?.type || null,
-        ...existingData
-      });
-    }
+  //     result.unshift({
+  //       createdAt: currentDate.toISOString(),
+  //       type: existingData?.type || null,
+  //       ...existingData
+  //     });
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
 
 
