@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { BaseResponse, Transactions, TransactionStatus } from '../models';
+import { BaseResponse, Transactions, TransactionStatus,TransactionType } from '../models';
 
 interface PaginatedData<T> {
   page: number;
@@ -17,6 +17,21 @@ interface TransactionsResponse {
   status: number;
   message: string;
   data: PaginatedData<Transactions>;
+}
+
+export interface TransactionsUserResponse {
+  status: number;
+  message: string;
+  data: {
+    user: {
+        firstName?: string;
+        lastName?: string;
+        id: string;
+        email: string;
+        phone: string;
+      };
+    transactions: PaginatedData<Transactions>;
+  };
 }
 
 @Injectable({
@@ -99,7 +114,7 @@ export class TransactionsService {
     method?: 'MOBILE_MONEY' | 'BANK_TRANSFER',
     startDate?: string,
     endDate?: string
-  ): Observable<TransactionsResponse> {
+  ): Observable<TransactionsUserResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
@@ -110,7 +125,7 @@ export class TransactionsService {
     if (startDate)  { params = params.set('startDate', startDate); }
     if (endDate)    { params = params.set('endDate', endDate); }
 
-    return this.http.get<TransactionsResponse>(
+    return this.http.get<TransactionsUserResponse>(
       `${this.apiUrl}/transactions/users/${userId}`,
       {
         ...this.getConfigAuthorized(),
@@ -124,16 +139,31 @@ export class TransactionsService {
    * @param page numéro de page (défaut : 1)
    * @param limit nombre d’éléments par page (défaut : 10)
    */
-  getTransactions(page: number = 1, limit: number = 10): Observable<TransactionsResponse> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+  getTransactions(
+    page: number = 1,
+    limit: number = 10,
+    type?: TransactionType,
+    status?: TransactionStatus,
+    method?: 'MOBILE_MONEY' | 'BANK_TRANSFER',
+    startDate?: string,   // format YYYY-MM-DD
+    endDate?: string      // format YYYY-MM-DD
+  ): Observable<TransactionsResponse> {
+    let params = new HttpParams()
+      .set('page',   page.toString())
+      .set('limit',  limit.toString());
 
-    const config = this.getConfigAuthorized();
+    if (type)      { params = params.set('type',      type); }
+    if (status)    { params = params.set('status',    status); }
+    if (method)    { params = params.set('method',    method); }
+    if (startDate) { params = params.set('startDate', startDate); }
+    if (endDate)   { params = params.set('endDate',   endDate); }
 
     return this.http.get<TransactionsResponse>(
       `${this.apiUrl}/transactions`,
-      { ...config, params }
+      {
+        ...this.getConfigAuthorized(),
+        params
+      }
     );
   }
 }
