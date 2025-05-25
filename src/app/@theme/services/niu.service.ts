@@ -10,7 +10,7 @@ export class NiuService {
 
   constructor(private http: HttpClient) { }
 
-  private getConfigAuthorized() {
+  private getConfigAuthorized(contentType: string = 'application/json') {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'
     const data = JSON.parse(dataRegistered)
     return {
@@ -18,7 +18,7 @@ export class NiuService {
         {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-          "Content-Type": "application/json",
+          "Content-Type": `${contentType}`,
           'Authorization': `Bearer ${data.accessToken}`
         }
       )
@@ -65,7 +65,7 @@ export class NiuService {
   /**
    * PUT /requests/{id}
    * Met à jour le statut d’une demande, avec raison et fichier en multipart/form-data
-   *
+   *yt
    * @param id     Identifiant de la demande
    * @param status Nouveau statut (PROCESSED | UNPROCESSED | REJECTED)
    * @param reason Motif du rejet (uniquement si status === 'REJECTED')
@@ -86,11 +86,13 @@ export class NiuService {
     if (file) {
       formData.append('request', file, file.name);
     }
-
+    console.log('data to send : ', formData)
     return this.http.put<RequestsListResponse>(
       `${this.apiUrl}/requests/${id}`,
       formData,
-      this.getConfigAuthorized()
+      {
+        ...this.getConfigAuthorized('multipart/form-data')
+      }
     );
   }
 }
