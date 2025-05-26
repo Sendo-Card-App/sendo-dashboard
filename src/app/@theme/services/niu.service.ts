@@ -10,20 +10,24 @@ export class NiuService {
 
   constructor(private http: HttpClient) { }
 
-  private getConfigAuthorized() {
-    const dataRegistered = localStorage.getItem('login-sendo') || '{}'
-    const data = JSON.parse(dataRegistered)
-    return {
-      headers: new HttpHeaders(
-        {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-          "Content-Type": "application/json",
-          'Authorization': `Bearer ${data.accessToken}`
-        }
-      )
+ private getConfigAuthorized(contentType?: string) {
+    const dataRegistered = localStorage.getItem('login-sendo') || '{}';
+    const data = JSON.parse(dataRegistered);
+
+    // Création des headers de base
+    const headers: { [key: string]: string } = {
+      'Authorization': `Bearer ${data.accessToken}`
+    };
+
+    // Ajout du Content-Type seulement si spécifié et pas pour FormData
+    if (contentType && contentType !== 'multipart/form-data') {
+      headers['Content-Type'] = contentType;
     }
-  }
+
+    return {
+      headers: new HttpHeaders(headers)
+    };
+}
 
   /**
    * GET /requests/list
@@ -71,26 +75,27 @@ export class NiuService {
    * @param reason Motif du rejet (uniquement si status === 'REJECTED')
    * @param file   Fichier binaire à joindre (ex. pièce justificative)
    */
-  updateRequestStatus(
-    id: number,
-    status: RequestStatus,
-    reason?: string,
-    file?: File
-  ): Observable<RequestsListResponse> {
-    const formData = new FormData();
-    formData.append('status', status);
+ updateRequestStatus(
+  id: number,
+  status: RequestStatus,
+  reason?: string,
+  file?: File
+): Observable<RequestsListResponse> {
+  const formData = new FormData();
+  formData.append('status', status);
 
-    if (reason) {
-      formData.append('reason', reason);
-    }
-    if (file) {
-      formData.append('request', file, file.name);
-    }
-
-    return this.http.put<RequestsListResponse>(
-      `${this.apiUrl}/requests/${id}`,
-      formData,
-      this.getConfigAuthorized()
-    );
+  if (reason) {
+    formData.append('reason', reason);
   }
+  if (file) {
+  formData.append('request', file, file.name); // ✅ Correspond à Swagger
+}
+
+  // Ne pas spécifier 'multipart/form-data', le navigateur le fera automatiquement
+  return this.http.put<RequestsListResponse>(
+    `${this.apiUrl}/requests/${id}`,
+    formData,
+    this.getConfigAuthorized() // Pas de Content-Type spécifié
+  );
+}
 }
