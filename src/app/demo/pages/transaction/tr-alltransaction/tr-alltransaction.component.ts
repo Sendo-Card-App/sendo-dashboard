@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef } from '@angular/core';
 import { TransactionsService } from 'src/app/@theme/services/transactions.service';
 import { Transactions, TransactionType, TransactionStatus } from 'src/app/@theme/models/index';
 import { MatTableDataSource } from '@angular/material/table';
@@ -11,6 +11,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-tr-all-transaction',
@@ -29,6 +31,7 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit {
   currentSort: { active: string; direction: 'asc' | 'desc' | '' } = { active: '', direction: '' };
 
   filterForm: FormGroup;
+  maxDate = new Date();
 
   // Options for filters
   statusOptions = [
@@ -58,7 +61,9 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit {
     private transactionsService: TransactionsService,
     private fb: FormBuilder,
     private router: Router,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
   ) {
     this.filterForm = this.fb.group({
       search: [''],
@@ -178,4 +183,180 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit {
   viewDetails(transactionId: string): void {
     this.router.navigate(['/transactions', transactionId]);
   }
+
+ // Ajoutez ces propriétés à votre classe
+exportStartDate: Date | null = null;
+exportEndDate: Date | null = null;
+isExporting = false;
+
+exportToCSV(): void {
+  if (!this.exportStartDate || !this.exportEndDate) {
+    this.snackBar.open('Veuillez sélectionner une plage de dates valide', 'Fermer', {
+      duration: 3000,
+      panelClass: ['error-snackbar']
+    });
+    return;
+  }
+
+  if (this.exportStartDate > this.exportEndDate) {
+    this.snackBar.open('La date de début doit être antérieure à la date de fin', 'Fermer', {
+      duration: 3000,
+      panelClass: ['error-snackbar']
+    });
+    return;
+  }
+
+  this.isExporting = true;
+
+  const startDate = this.datePipe.transform(this.exportStartDate, 'yyyy-MM-dd')!;
+  const endDate = this.datePipe.transform(this.exportEndDate, 'yyyy-MM-dd')!;
+
+  // D'abord obtenir le nombre total de transactions
+  this.transactionsService.getTransactions(
+    1,
+    1, // On ne récupère qu'un seul élément pour connaître le total
+    this.filterForm.value.type as TransactionType,
+    this.filterForm.value.status as TransactionStatus,
+    this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
+    startDate,
+    endDate
+  ).subscribe({
+    next: (initialResponse) => {
+      const totalItems = initialResponse.data.totalItems;
+
+      if (totalItems > 10000) {
+        const confirmExport = confirm(`Vous êtes sur le point d'exporter ${totalItems} transactions. Cela peut prendre du temps. Souhaitez-vous continuer ?`);
+        if (!confirmExport) {
+          this.isExporting = false;
+          return;
+        }
+      }
+
+      // Maintenant récupérer toutes les données
+      this.getAllTransactionsForExport(
+        startDate,
+        endDate,
+        totalItems
+      );
+      this.exportDialogRef?.close();
+    },
+    error: (error) => {
+      console.error('Error getting transaction count:', error);
+      this.isExporting = false;
+      this.snackBar.open('Erreur lors de la récupération des données', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
+
+private getAllTransactionsForExport(
+  startDate: string,
+  endDate: string,
+  totalItems: number,
+  currentPage: number = 1,
+  accumulatedData: Transactions[] = []
+): void {
+  const pageSize = 500; // Nombre d'éléments par requête
+  const totalPages = Math.ceil(totalItems / pageSize);
+
+  this.transactionsService.getTransactions(
+    currentPage,
+    pageSize,
+    this.filterForm.value.type as TransactionType,
+    this.filterForm.value.status as TransactionStatus,
+    this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
+    startDate,
+    endDate
+  ).subscribe({
+    next: (response) => {
+      const newData = [...accumulatedData, ...response.data.items];
+
+      if (currentPage >= totalPages) {
+        // Toutes les données sont récupérées, générer le CSV
+        this.generateCSV(newData, startDate, endDate);
+        this.isExporting = false;
+      } else {
+        // Passer à la page suivante
+        setTimeout(() => {
+          this.getAllTransactionsForExport(
+            startDate,
+            endDate,
+            totalItems,
+            currentPage + 1,
+            newData
+          );
+        }, 200); // Petit délai pour éviter de surcharger le serveur
+      }
+    },
+    error: (error) => {
+      console.error('Error during export:', error);
+      this.isExporting = false;
+      this.snackBar.open('Erreur lors de la récupération des données', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
+
+private generateCSV(transactions: Transactions[], startDate: string, endDate: string): void {
+  // Entêtes CSV
+  const headers = [
+    'ID Transaction',
+    'Utilisateur',
+    'Montant',
+    'Devise',
+    'Type',
+    'Statut',
+    'Méthode',
+    'Date',
+    'Description'
+  ];
+
+  // Préparation des données
+  const rows = transactions.map(t => [
+    t.transactionId,
+    t.user ? `${t.user.firstname} ${t.user.lastname}` : 'N/A',
+    t.amount.toFixed(2),
+    t.currency,
+    t.type,
+    t.status,
+    t.method || 'N/A',
+    this.datePipe.transform(t.createdAt, 'yyyy-MM-dd HH:mm:ss') || '',
+    t.description || ''
+  ]);
+
+  // Création du contenu CSV
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row =>
+      row.map(field =>
+        `"${field.toString().replace(/"/g, '""')}"`
+      ).join(',')
+    )
+  ].join('\n');
+
+  // Téléchargement du fichier
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `transactions_${startDate}_${endDate}_${new Date().getTime()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+exportDialogRef?: MatDialogRef<void>;
+
+openExportDialog(templateRef: TemplateRef<void>): void {
+  this.exportDialogRef = this.dialog.open(templateRef, {
+    // width: '600px',
+    disableClose: true
+  });
+}
+
+
 }
