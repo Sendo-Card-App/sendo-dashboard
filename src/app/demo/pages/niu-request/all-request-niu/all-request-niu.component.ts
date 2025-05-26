@@ -102,6 +102,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
         this.dataSource.data = response.data.items;
         this.totalItems = response.data.total;
         this.isLoading = false;
+        console.log('request : ', this.dataSource.data)
       },
       error: (error) => {
         console.error('Error loading requests:', error);
@@ -222,7 +223,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
-        console.error('Error updating request status:', err);
+        console.error('Error updating request status:', err.message);
         this.isUpdatingStatus = false;
       }
     });
