@@ -8,6 +8,8 @@ import { BaseResponse, MeResponse, Transactions } from 'src/app/@theme/models';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-transaction-detail',
@@ -31,6 +33,7 @@ export class TransactionDetailComponent implements OnInit {
     private router: Router,
     private transactionsService: TransactionsService,
     private fb: FormBuilder,
+     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
     this.statusForm = this.fb.group({
@@ -73,9 +76,28 @@ export class TransactionDetailComponent implements OnInit {
       });
     }
   }
+  UpdateUserStatus(): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          width: '400px',
+          data: {
+            title: 'Alerte Mise à jour',
+            message: 'Êtes-vous sûr de vouloir transferer les '+ this.transaction?.amount +' '+ this.transaction?.currency +' ?',
+            confirmText: 'Mettre à jour',
+            cancelText: 'Annuler'
+          }
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result) {
+            this.updateStatus();
+          }
+        });
+  }
 
   updateStatus(): void {
     if (!this.transaction || !this.statusForm.valid) return;
+
+
 
     this.isLoading = true;
     const newStatus = this.statusForm.get('status')?.value;

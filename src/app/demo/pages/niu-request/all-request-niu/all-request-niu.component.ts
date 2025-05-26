@@ -22,7 +22,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @Output() HeaderBlur = new EventEmitter<void>();
-  
+
 
   filterForm: FormGroup;
   rejectionForm: FormGroup;
