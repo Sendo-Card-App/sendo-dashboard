@@ -125,6 +125,25 @@ export const menus: Navigation[] = [
 
         ]
       },
+       {
+        id: 'shared',
+        title: 'Shared Expenses',
+        type: 'collapse',
+        icon: '#custom-bill',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'allshared',
+            title: 'Liste des depenses partagées',
+            type: 'item',
+            url: '/shared-expenses/all',
+            // target: true,
+            breadcrumbs: true
+          },
+
+
+        ]
+      },
     ]
   },
    {

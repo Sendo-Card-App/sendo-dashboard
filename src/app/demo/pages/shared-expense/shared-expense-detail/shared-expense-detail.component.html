@@ -1,0 +1,151 @@
+<div class="shared-expense-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="sharedExpense" class="shared-expense-layout">
+    <!-- Header Section -->
+    <div class="shared-expense-header">
+      <!-- <button mat-icon-button routerLink="/shared-expenses" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button> -->
+      <h1 class="shared-expense-title">Détails de la dépense partagée</h1>
+      <div class="shared-expense-id">Réf: #{{ sharedExpense.id }}</div>
+    </div>
+
+    <!-- Two-column Layout -->
+    <div class="shared-expense-content">
+      <!-- Initiator Column -->
+      <div class="initiator-column">
+        <mat-card class="initiator-card">
+          <div class="initiator-avatar">
+            {{ sharedExpense.initiator.firstname.charAt(0) }}{{ sharedExpense.initiator.lastname.charAt(0) }}
+          </div>
+
+          <div class="initiator-info">
+            <h2 class="initiator-name">
+              {{ sharedExpense.initiator.firstname }} {{ sharedExpense.initiator.lastname }}
+            </h2>
+            <p class="initiator-role">Initiateur</p>
+
+            <mat-divider></mat-divider>
+
+            <div class="initiator-details">
+              <div class="detail-row">
+                <mat-icon>euro</mat-icon>
+                <span>Part: {{ sharedExpense.initiatorPart | currency:'XAF':'symbol':'1.2-2' }}</span>
+              </div>
+
+              <div class="detail-row">
+                <mat-icon>date_range</mat-icon>
+                <span>Créé le: {{ formatDate(sharedExpense.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+
+        <!-- Expense Summary Card -->
+        <mat-card class="summary-card">
+          <h3 class="card-title">Résumé</h3>
+
+          <div class="summary-item">
+            <span class="summary-label">Montant total</span>
+            <span class="summary-value highlight">
+              {{ sharedExpense.totalAmount | currency:'XAF':'symbol':'1.2-2' }}
+            </span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Méthode de calcul</span>
+            <span class="summary-value">{{ sharedExpense.methodCalculatingShare }}</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Date limite</span>
+            <span class="summary-value">{{ formatDate(sharedExpense.limitDate) }}</span>
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">Montant restant</span>
+            <span class="summary-value highlight">
+              {{ calculateRemainingAmount(sharedExpense) | currency:'XAF':'symbol':'1.2-2' }}
+            </span>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Details Column -->
+      <div class="details-column">
+        <!-- Status Card -->
+        <mat-card class="status-card">
+          <div class="status-header">
+            <h3>Statut de la dépense</h3>
+            <span class="status-badge" [ngClass]="getStatusClass(sharedExpense.status)">
+              {{ sharedExpense.status }}
+            </span>
+          </div>
+
+          <div *ngIf="isEditing" class="status-form" [formGroup]="statusForm">
+            <mat-form-field appearance="outline" class="status-select">
+              <mat-label>Nouveau statut</mat-label>
+              <mat-select formControlName="status">
+                <mat-option *ngFor="let status of statusOptions" [value]="status">
+                  {{ status }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="action-buttons">
+              <button mat-stroked-button (click)="toggleEdit()">Annuler</button>
+              <button mat-raised-button
+                      color="primary"
+                      (click)="updateStatus()"
+                      [disabled]="!statusForm.valid || statusForm.pristine">
+                Confirmer
+              </button>
+            </div>
+          </div>
+
+          <button *ngIf="!isEditing" mat-stroked-button (click)="toggleEdit()" class="edit-button">
+            <mat-icon>edit</mat-icon>
+            Modifier le statut
+          </button>
+        </mat-card>
+
+        <!-- Description Card -->
+        <mat-card class="description-card">
+          <h3 class="card-title">Description</h3>
+          <p class="description-text">{{ sharedExpense.description || 'Aucune description fournie' }}</p>
+        </mat-card>
+
+        <!-- Participants Card -->
+        <mat-card class="participants-card">
+          <h3 class="card-title">Participants ({{ sharedExpense.participants.length }})</h3>
+
+          <div class="participants-list">
+            <div *ngFor="let participant of sharedExpense.participants" class="participant-item">
+              <div class="participant-avatar">
+                {{ participant.user.firstname.charAt(0) }}{{ participant.user.lastname.charAt(0) }}
+              </div>
+
+              <div class="participant-info">
+                <div class="participant-name">
+                  {{ participant.user.firstname }} {{ participant.user.lastname }}
+                </div>
+                <div class="participant-part">
+                  Part: {{ participant.part | currency:'XAF':'symbol':'1.2-2' }}
+                </div>
+              </div>
+
+              <span class="participant-status" [ngClass]="getParticipantStatusClass(participant.paymentStatus)">
+                {{ participant.paymentStatus === 'PAID' ? 'Payé' : 'En attente' }}
+              </span>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
