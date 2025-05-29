@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SharedExpenseService } from 'src/app/@theme/services/sharedexpenses.service';
-import { SharedExpense, Participant, SharedExpenseResponse } from 'src/app/@theme/models/index';
+import { SharedExpense, Participant, SharedExpenseResponse, BaseResponse } from 'src/app/@theme/models/index';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -22,7 +22,7 @@ export class SharedExpenseDetailComponent implements OnInit {
   isEditing = false;
 
   statusForm: FormGroup;
-  statusOptions = ['PENDING', 'COMPLETED', 'CANCELLED'];
+  statusOptions = ['PENDING', 'PAYED', 'LATE', 'REFUSED'];
 
   constructor(
     private route: ActivatedRoute,
@@ -46,10 +46,11 @@ export class SharedExpenseDetailComponent implements OnInit {
     const id = this.route.snapshot.params['id'];
 
     this.sharedExpenseService.getSharedExpenseById(id).subscribe({
-      next: (response: SharedExpenseResponse) => {
+      next: (response: BaseResponse<SharedExpense>) => {
         this.sharedExpense = response.data; // Accès direct à l'objet SharedExpense
         this.statusForm.patchValue({ status: this.sharedExpense?.status });
         this.isLoading = false;
+        console.log('Dépense partagée chargée avec succès:', response);
       },
       error: (error) => {
         console.error('Error loading shared expense:', error);
@@ -98,8 +99,9 @@ export class SharedExpenseDetailComponent implements OnInit {
   getStatusClass(status: string): string {
     switch (status) {
       case 'PENDING': return 'status-pending';
-      case 'COMPLETED': return 'status-completed';
-      case 'CANCELLED': return 'status-cancelled';
+      case 'PAYED': return 'status-completed';
+      case 'LATE': return 'status-cancelled';
+      case 'REFUSED': return 'status-cancelled';
       default: return '';
     }
   }

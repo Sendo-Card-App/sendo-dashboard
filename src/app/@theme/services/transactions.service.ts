@@ -4,14 +4,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { BaseResponse, Transactions, TransactionStatus,TransactionType } from '../models';
+import { BaseResponse, PaginatedData, Transactions, TransactionStatus,TransactionType } from '../models';
 
-interface PaginatedData<T> {
-  page: number;
-  totalPages: number;
-  totalItems: number;
-  items: T[];
-}
+
 
 interface TransactionsResponse {
   status: number;
