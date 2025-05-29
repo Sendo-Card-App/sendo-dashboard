@@ -1,0 +1,258 @@
+.shared-expense-detail-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1000;
+}
+
+.shared-expense-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+
+  .back-button {
+    margin-right: 16px;
+  }
+
+  .shared-expense-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #3f51b5;
+  }
+
+  .shared-expense-id {
+    position: absolute;
+    right: 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+.shared-expense-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.initiator-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.initiator-card {
+  padding: 24px;
+  text-align: center;
+
+  .initiator-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: #3f51b5;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 500;
+  }
+
+  .initiator-name {
+    margin: 0 0 4px;
+    font-size: 18px;
+  }
+
+  .initiator-role {
+    margin: 0 0 16px;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .initiator-details {
+    margin-top: 16px;
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+
+      mat-icon {
+        margin-right: 8px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #666;
+      }
+    }
+  }
+}
+
+.summary-card, .status-card, .description-card, .participants-card {
+  padding: 24px;
+  margin-bottom: 24px;
+
+  .card-title {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #3f51b5;
+  }
+}
+
+.summary-card {
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .summary-label {
+      color: #666;
+    }
+
+    .summary-value {
+      font-weight: 500;
+
+      &.highlight {
+        color: #3f51b5;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.status-card {
+  .status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .status-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .status-select {
+      width: 100%;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+  }
+
+  .edit-button {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+.description-card {
+  .description-text {
+    margin: 0;
+    line-height: 1.6;
+    color: #444;
+  }
+}
+
+.participants-card {
+  .participants-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .participant-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 4px;
+    background: #f9f9f9;
+
+    .participant-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #3f51b5;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      font-weight: 500;
+    }
+
+    .participant-info {
+      flex-grow: 1;
+
+      .participant-name {
+        font-weight: 500;
+      }
+
+      .participant-part {
+        font-size: 12px;
+        color: #666;
+      }
+    }
+
+    .participant-status {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.status-pending {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+
+  &.status-completed {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.status-cancelled {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}

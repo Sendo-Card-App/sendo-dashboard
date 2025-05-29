@@ -208,3 +208,40 @@ export interface Config {
   createdAt: string | null;
   updatedAt: string | null;
 }
+
+
+export interface Participant {
+  userId: number;
+  sharedExpenseId: number;
+  part: number;
+  paymentStatus: 'PENDING' | 'PAID'; // adapte selon tes valeurs possibles
+  user: {
+    id: number;
+    firstname: string;
+    lastname: string;
+  };
+}
+
+export interface SharedExpense {
+  id: number;
+  totalAmount: number;
+  description: string;
+  userId: number;
+  initiatorPart: number;
+  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
+  limitDate: string;
+  methodCalculatingShare: string;
+  createdAt: string;
+  updatedAt: string;
+  initiator: {
+    id: number;
+    firstname: string;
+    lastname: string;
+  };
+  participants: Participant[];
+}
+
+export interface SharedExpenseResponse {
+  message: string;
+  data: SharedExpense;
+}

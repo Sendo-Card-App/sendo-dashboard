@@ -138,6 +138,23 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'shared-expenses',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'all',
+        loadComponent: () => import('./demo/pages/shared-expense/shared-expense-list/shared-expense-list.component').then((c) => c.SharedExpenseListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./demo/pages/shared-expense/shared-expense-detail/shared-expense-detail.component').then((c) => c.SharedExpenseDetailComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+    ]
+  },
+  {
     path: 'configuration',
     component: AdminComponent,
     canActivateChild: [RoleGuard],

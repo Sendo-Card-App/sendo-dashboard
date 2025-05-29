@@ -173,10 +173,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
     let reason: string | undefined;
     let file: File | undefined;
 
-    console.log('Selected action:', this.selectedAction);
-    console.log('Selected request:', this.currentRequest);
-    console.log('Selected file:', this.selectedFile);
-    console.log('Rejection reason:', this.rejectionForm.get('reason')?.value);
+    
 
     if (this.selectedAction === 'approve') {
       status = 'PROCESSED';
