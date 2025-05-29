@@ -228,7 +228,7 @@ export interface SharedExpense {
   description: string;
   userId: number;
   initiatorPart: number;
-  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
+  status: 'PENDING' | 'PAYED' | 'LATE'| 'REFUSED';
   limitDate: string;
   methodCalculatingShare: string;
   createdAt: string;
@@ -243,5 +243,14 @@ export interface SharedExpense {
 
 export interface SharedExpenseResponse {
   message: string;
-  data: SharedExpense;
+  data: PaginatedData<SharedExpense>;
 }
+
+export interface PaginatedData<T> {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  items: T[];
+}
+
+

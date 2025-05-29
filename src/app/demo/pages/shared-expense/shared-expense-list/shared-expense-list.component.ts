@@ -5,10 +5,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { SharedExpenseService } from 'src/app/@theme/services/sharedexpenses.service';
-import { SharedExpense, SharedExpenseResponse } from 'src/app/@theme/models/index';
+import { SharedExpense } from 'src/app/@theme/models/index';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-shared-expense-list',
@@ -29,8 +30,9 @@ export class SharedExpenseListComponent implements OnInit {
   statusOptions = [
     { value: '', label: 'Tous' },
     { value: 'PENDING', label: 'En attente' },
-    { value: 'COMPLETED', label: 'Complété' },
-    { value: 'CANCELLED', label: 'Annulé' }
+    { value: 'PAYED', label: 'Complété' },
+    { value: 'LATE', label: 'En retard' },
+    { value: 'REFUSED', label: 'Annulé' }
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -40,7 +42,8 @@ export class SharedExpenseListComponent implements OnInit {
     private sharedExpenseService: SharedExpenseService,
     private fb: FormBuilder,
     private datePipe: DatePipe,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router,
   ) {
     this.filterForm = this.fb.group({
       status: [''],
@@ -60,30 +63,30 @@ export class SharedExpenseListComponent implements OnInit {
   }
 
   loadSharedExpenses(): void {
-    // this.isLoading = true;
-    // const formValues = this.filterForm.value;
+    this.isLoading = true;
+    const formValues = this.filterForm.value;
 
-    // this.sharedExpenseService.getSharedExpenses({
-    //   page: this.currentPage,
-    //   limit: this.itemsPerPage,
-    //   status: formValues.status || undefined,
-    //   startDate: formValues.startDate ? this.datePipe.transform(formValues.startDate, 'yyyy-MM-dd')! : undefined,
-    //   endDate: formValues.endDate ? this.datePipe.transform(formValues.endDate, 'yyyy-MM-dd')! : undefined
-    // }).subscribe({
-    //   next: (response) => {
-    //     this.dataSource.data = response.data;
-    //     this.totalItems = response.data.length; // Adaptez selon votre API
-    //     this.isLoading = false;
-    //   },
-    //   error: (error) => {
-    //     console.error('Error loading shared expenses:', error);
-    //     this.isLoading = false;
-    //     this.snackBar.open('Erreur lors du chargement des dépenses partagées', 'Fermer', {
-    //       duration: 3000,
-    //       panelClass: ['error-snackbar']
-    //     });
-    //   }
-    // });
+    this.sharedExpenseService.getSharedExpenses({
+      page: this.currentPage,
+      limit: this.itemsPerPage,
+      status: formValues.status || undefined,
+      startDate: formValues.startDate ? this.datePipe.transform(formValues.startDate, 'yyyy-MM-dd')! : undefined,
+      endDate: formValues.endDate ? this.datePipe.transform(formValues.endDate, 'yyyy-MM-dd')! : undefined
+    }).subscribe({
+      next: (response) => {
+        this.dataSource.data = response.data.items;
+        this.totalItems = response.data.totalItems; // Adaptez selon votre API
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading shared expenses:', error);
+        this.isLoading = false;
+        this.snackBar.open('Erreur lors du chargement des dépenses partagées', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 
   setupFilterListeners(): void {
@@ -110,13 +113,18 @@ export class SharedExpenseListComponent implements OnInit {
   getStatusClass(status: string): string {
     switch (status) {
       case 'PENDING': return 'status-pending';
-      case 'COMPLETED': return 'status-completed';
-      case 'CANCELLED': return 'status-cancelled';
+      case 'PAYED': return 'status-completed';
+      case 'LATE': return 'status-cancelled';
+      case 'REFUSED': return 'status-cancelled';
       default: return '';
     }
   }
 
   formatDate(dateString: string): string {
     return this.datePipe.transform(dateString, 'dd/MM/yyyy') || '';
+  }
+
+  viewDetails(transactionId: string): void {
+    this.router.navigate(['/shared-expenses/', transactionId]);
   }
 }

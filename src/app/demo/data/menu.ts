@@ -127,7 +127,7 @@ export const menus: Navigation[] = [
       },
        {
         id: 'shared',
-        title: 'Shared Expenses',
+        title: 'Depenses Partagées',
         type: 'collapse',
         icon: '#custom-bill',
         role: [Role.Admin, Role.User],

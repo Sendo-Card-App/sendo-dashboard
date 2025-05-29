@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs'; // adapte le chemin si nécessaire
-import { SharedExpense, SharedExpenseResponse } from '../models';
+import { BaseResponse, SharedExpense, SharedExpenseResponse } from '../models';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -38,8 +38,8 @@ export class SharedExpenseService {
    * @param idExpense ID de la dépense
    * @returns Observable<SharedExpense>
    */
-  getSharedExpenseById(idExpense: number): Observable<SharedExpenseResponse> {
-    return this.http.get<SharedExpenseResponse>(`${this.apiUrl}/shared-expense/${idExpense}`,this.getConfigAuthorized());
+  getSharedExpenseById(idExpense: number): Observable<BaseResponse<SharedExpense>> {
+    return this.http.get<BaseResponse<SharedExpense>>(`${this.apiUrl}/shared-expense/${idExpense}`,this.getConfigAuthorized());
   }
 
 
