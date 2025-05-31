@@ -1,0 +1,49 @@
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import {
+  FundRequestListResponse,
+  FundRequestQueryParams
+} from '../models/index';
+import { environment } from '../../../environments/environment'; // adapte le chemin si nécessaire
+
+@Injectable({
+  providedIn: 'root'
+})
+export class FundRequestService {
+  private apiUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient) {}
+
+  getFundRequests(params: FundRequestQueryParams): Observable<FundRequestListResponse> {
+    let queryParams = new HttpParams();
+    if (params.page) queryParams = queryParams.set('page', params.page.toString());
+    if (params.limit) queryParams = queryParams.set('limit', params.limit.toString());
+    if (params.status) queryParams = queryParams.set('status', params.status);
+    if (params.startDate) queryParams = queryParams.set('startDate', params.startDate);
+    if (params.endDate) queryParams = queryParams.set('endDate', params.endDate);
+
+    return this.http.get<FundRequestListResponse>(
+      `${this.apiUrl}/fund-requests/list`,
+      {
+        params: queryParams,
+        ...this.getConfigAuthorized() // si tu utilises une méthode pour les headers
+      }
+    );
+  }
+
+   private getConfigAuthorized() {
+      const dataRegistered = localStorage.getItem('login-sendo') || '{}'
+      const data = JSON.parse(dataRegistered)
+      return {
+        headers: new HttpHeaders(
+          {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${data.accessToken}`
+          }
+        )
+      }
+    }
+}

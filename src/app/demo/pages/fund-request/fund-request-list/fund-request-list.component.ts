@@ -4,23 +4,22 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { SharedExpenseService } from 'src/app/@theme/services/sharedexpenses.service';
-import { SharedExpense } from 'src/app/@theme/models/index';
+import { FundRequestService } from 'src/app/@theme/services/fundrequest.service';
+import { FundRequest, FundRequestStatus, FundRequestListResponse } from 'src/app/@theme/models/index';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
-import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-shared-expense-list',
-  templateUrl: './shared-expense-list.component.html',
-  styleUrls: ['./shared-expense-list.component.scss'],
+  selector: 'app-fund-request-list',
+  templateUrl: './fund-request-list.component.html',
+  styleUrls: ['./fund-request-list.component.scss'],
   providers: [DatePipe],
   imports: [CommonModule,SharedModule]
 })
-export class SharedExpenseListComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'description', 'totalAmount', 'initiatorPart', 'limitDate', 'status', 'actions'];
-  dataSource = new MatTableDataSource<SharedExpense>();
+export class FundRequestListComponent implements OnInit {
+  displayedColumns: string[] = ['reference', 'amount', 'description', 'status', 'deadline', 'recipients', 'actions'];
+  dataSource = new MatTableDataSource<FundRequest>();
   isLoading = false;
   totalItems = 0;
   currentPage = 1;
@@ -30,7 +29,8 @@ export class SharedExpenseListComponent implements OnInit {
   statusOptions = [
     { value: '', label: 'Tous' },
     { value: 'PENDING', label: 'En attente' },
-    { value: 'COMPLETED', label: 'Complété' },
+    { value: 'PARTIALLY_FUNDED', label: 'Partiellement financé' },
+    { value: 'FULLY_FUNDED', label: 'Totalement financé' },
     { value: 'CANCELLED', label: 'Annulé' }
   ];
 
@@ -38,11 +38,10 @@ export class SharedExpenseListComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    private sharedExpenseService: SharedExpenseService,
+    private fundRequestService: FundRequestService,
     private fb: FormBuilder,
     private datePipe: DatePipe,
-    private snackBar: MatSnackBar,
-    private router: Router
+    private snackBar: MatSnackBar
   ) {
     this.filterForm = this.fb.group({
       status: [''],
@@ -52,7 +51,7 @@ export class SharedExpenseListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadSharedExpenses();
+    this.loadFundRequests();
     this.setupFilterListeners();
   }
 
@@ -61,26 +60,28 @@ export class SharedExpenseListComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  loadSharedExpenses(): void {
+  loadFundRequests(): void {
     this.isLoading = true;
     const formValues = this.filterForm.value;
 
-    this.sharedExpenseService.getSharedExpenses({
+    const params = {
       page: this.currentPage,
       limit: this.itemsPerPage,
       status: formValues.status || undefined,
       startDate: formValues.startDate ? this.datePipe.transform(formValues.startDate, 'yyyy-MM-dd')! : undefined,
       endDate: formValues.endDate ? this.datePipe.transform(formValues.endDate, 'yyyy-MM-dd')! : undefined
-    }).subscribe({
+    };
+
+    this.fundRequestService.getFundRequests(params).subscribe({
       next: (response) => {
         this.dataSource.data = response.data.items;
-        this.totalItems = response.data.totalItems; // Adaptez selon votre API
+        this.totalItems = response.data.totalItems;
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error loading shared expenses:', error);
+        console.error('Error loading fund requests:', error);
         this.isLoading = false;
-        this.snackBar.open('Erreur lors du chargement des dépenses partagées', 'Fermer', {
+        this.snackBar.open('Erreur lors du chargement des demandes de fonds', 'Fermer', {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
@@ -93,35 +94,52 @@ export class SharedExpenseListComponent implements OnInit {
       .pipe(debounceTime(300), distinctUntilChanged())
       .subscribe(() => {
         this.currentPage = 1;
-        this.loadSharedExpenses();
+        this.loadFundRequests();
       });
   }
 
   onPageChange(event: PageEvent): void {
     this.currentPage = event.pageIndex + 1;
     this.itemsPerPage = event.pageSize;
-    this.loadSharedExpenses();
+    this.loadFundRequests();
   }
 
   resetFilters(): void {
     this.filterForm.reset();
     this.currentPage = 1;
-    this.loadSharedExpenses();
+    this.loadFundRequests();
   }
 
-  getStatusClass(status: string): string {
+  isDeadlinePassed(deadline: string): boolean {
+    if (!deadline) return false;
+    const deadlineDate = new Date(deadline);
+    const today = new Date();
+    return deadlineDate < today;
+  }
+
+  getStatusClass(status: FundRequestStatus): string {
     switch (status) {
       case 'PENDING': return 'status-pending';
-      case 'COMPLETED': return 'status-completed';
+      case 'PARTIALLY_FUNDED': return 'status-partial';
+      case 'FULLY_FUNDED': return 'status-completed';
       case 'CANCELLED': return 'status-cancelled';
       default: return '';
     }
   }
-  viewDetails(transactionId: string): void {
-    this.router.navigate(['/shared-expenses/', transactionId]);
-  }
 
   formatDate(dateString: string): string {
     return this.datePipe.transform(dateString, 'dd/MM/yyyy') || '';
+  }
+
+  formatDateTime(dateString: string): string {
+    return this.datePipe.transform(dateString, 'dd/MM/yyyy HH:mm') || '';
+  }
+
+  getRecipientsCount(recipients: []): string {
+    console.log('Recipients:', recipients);
+    if (!recipients || recipients.length === 0) {
+      return 'Aucun contact';
+    }
+    return `${recipients.length} contact${recipients.length > 1 ? 's' : ''}`;
   }
 }

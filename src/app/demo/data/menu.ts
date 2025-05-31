@@ -144,6 +144,25 @@ export const menus: Navigation[] = [
 
         ]
       },
+      {
+        id: 'shared',
+        title: 'Demandes de fonds',
+        type: 'collapse',
+        icon: '#custom-bill',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'allshared',
+            title: 'Liste des demandes de fonds',
+            type: 'item',
+            url: '/fund-requests/all',
+            // target: true,
+            breadcrumbs: true
+          },
+
+
+        ]
+      },
     ]
   },
    {

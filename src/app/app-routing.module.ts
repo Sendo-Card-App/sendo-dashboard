@@ -154,6 +154,23 @@ const routes: Routes = [
       },
     ]
   },
+   {
+    path: 'fund-requests',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'all',
+        loadComponent: () => import('./demo/pages/fund-request/fund-request-list/fund-request-list.component').then((c) => c.FundRequestListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./demo/pages/fund-request/fund-request-detail/fund-request-detail.component').then((c) => c.FundRequestDetailComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+    ]
+  },
   {
     path: 'configuration',
     component: AdminComponent,

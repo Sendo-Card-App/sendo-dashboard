@@ -20,6 +20,7 @@ export class SharedExpenseDetailComponent implements OnInit {
   sharedExpense: SharedExpense | null = null;
   isLoading = false;
   isEditing = false;
+  isCancelling = false;
 
   statusForm: FormGroup;
   statusOptions = ['PENDING', 'PAYED', 'LATE', 'REFUSED'];
@@ -71,27 +72,45 @@ export class SharedExpenseDetailComponent implements OnInit {
     }
   }
 
-  updateStatus(): void {
-    if (!this.sharedExpense || !this.statusForm.valid) return;
+  confirmCancel(): void {
+    if (!this.sharedExpense) return;
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {
-        title: 'Confirmer la modification',
-        message: `Voulez-vous vraiment changer le statut en "${this.statusForm.value.status}"?`
+        title: 'Confirmer l\'annulation',
+        message: `Voulez-vous vraiment annuler cette dépense partagée ? Cette action est irréversible.`,
+        confirmText: 'Oui, annuler',
+        cancelText: 'Non, garder'
       }
     });
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.isLoading = true;
-        // Implémentez ici votre appel API pour mettre à jour le statut
-        this.snackBar.open('Statut mis à jour avec succès', 'Fermer', {
+        this.cancelSharedExpense();
+      }
+    });
+  }
+
+  cancelSharedExpense(): void {
+    if (!this.sharedExpense) return;
+
+    this.isCancelling = true;
+    this.sharedExpenseService.cancelSharedExpense(this.sharedExpense.id).subscribe({
+      next: (response: BaseResponse) => {
+        this.snackBar.open(response.message || 'Dépense annulée avec succès', 'Fermer', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
-        this.sharedExpense!.status = this.statusForm.value.status;
-        this.isEditing = false;
-        this.isLoading = false;
+        this.sharedExpense!.status = 'CANCELLED';
+        this.isCancelling = false;
+      },
+      error: (error) => {
+        console.error('Error cancelling shared expense:', error);
+        this.isCancelling = false;
+        this.snackBar.open('Erreur lors de l\'annulation de la dépense', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
   }
@@ -99,9 +118,8 @@ export class SharedExpenseDetailComponent implements OnInit {
   getStatusClass(status: string): string {
     switch (status) {
       case 'PENDING': return 'status-pending';
-      case 'PAYED': return 'status-completed';
-      case 'LATE': return 'status-cancelled';
-      case 'REFUSED': return 'status-cancelled';
+      case 'COMPLETED': return 'status-completed';
+      case 'CANCELLED': return 'status-cancelled';
       default: return '';
     }
   }
@@ -112,12 +130,12 @@ export class SharedExpenseDetailComponent implements OnInit {
 
   calculateRemainingAmount(expense: SharedExpense): number {
     const paidAmount = expense.participants
-      .filter(p => p.paymentStatus === 'PAID')
+      .filter(p => p.paymentStatus === 'PAYED')
       .reduce((sum, p) => sum + p.part, 0);
     return expense.totalAmount - paidAmount;
   }
 
   getParticipantStatusClass(status: string): string {
-    return status === 'PAID' ? 'status-completed' : 'status-pending';
+    return status === 'PAYED' ? 'status-completed' : 'status-pending';
   }
 }
