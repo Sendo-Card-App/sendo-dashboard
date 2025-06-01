@@ -41,6 +41,13 @@ export class FundRequestService {
     );
   }
 
+  deleteFundRequestAsAdmin(fundRequestId: number): Observable<{ message: string }> {
+  return this.http.delete<{ message: string }>(
+    `${this.apiUrl}/fund-requests/admin/${fundRequestId}`
+    , this.getConfigAuthorized() 
+  );
+}
+
 
   private getConfigAuthorized() {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'
