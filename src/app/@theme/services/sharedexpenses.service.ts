@@ -43,7 +43,7 @@ export class SharedExpenseService {
   }
 
   cancelSharedExpense(idExpense: number): Observable<BaseResponse> {
-  const url = `${this.apiUrl}/shared-expense/${idExpense}/close`;
+  const url = `${this.apiUrl}/shared-expense/admin/${idExpense}/close`;
   return this.http.delete<BaseResponse>(url, this.getConfigAuthorized());
 }
 

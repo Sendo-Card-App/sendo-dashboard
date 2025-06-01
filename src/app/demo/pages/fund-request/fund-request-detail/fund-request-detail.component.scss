@@ -1,0 +1,239 @@
+.fund-request-detail-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1000;
+}
+
+.fund-request-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+
+  .back-button {
+    margin-right: 16px;
+  }
+
+  .fund-request-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #3f51b5;
+  }
+
+  .fund-request-reference {
+    position: absolute;
+    right: 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+.fund-request-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-card, .progress-card, .recipients-card, .actions-card {
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.card-title {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
+  color: #3f51b5;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  .info-item {
+    margin-bottom: 12px;
+
+    &.full-width {
+      grid-column: span 2;
+    }
+
+    .info-label {
+      display: block;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-weight: 500;
+
+      &.highlight {
+        color: #3f51b5;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+.progress-container {
+  margin-bottom: 16px;
+
+  .progress-text {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+.amounts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  .amount-item {
+    text-align: center;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 4px;
+
+    .amount-label {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .amount-value {
+      font-weight: 500;
+      font-size: 16px;
+    }
+  }
+}
+
+.recipients-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recipient-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 4px;
+  background: #f9f9f9;
+
+  .recipient-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #3f51b5;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: 500;
+  }
+
+  .recipient-info {
+    flex-grow: 1;
+
+    .recipient-name {
+      font-weight: 500;
+    }
+
+    .recipient-contacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 4px;
+      font-size: 12px;
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+
+        mat-icon {
+          font-size: 16px;
+          margin-right: 4px;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .recipient-status {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .action-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.status-pending {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+
+  &.status-partial {
+    background-color: #e3f2fd;
+    color: #1565c0;
+  }
+
+  &.status-completed {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.status-cancelled {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+.warning-icon {
+  color: #f44336;
+  vertical-align: middle;
+  margin-left: 4px;
+}

@@ -258,12 +258,27 @@ export interface PaginatedData<T> {
 export type FundRequestStatus = 'PENDING' | 'PARTIALLY_FUNDED' | 'FULLY_FUNDED' | 'CANCELLED';
 
 export interface FundRequest {
-  id: number;
+ id: number;
   amount: number;
+  description: string;
+  deadline: string;
   status: FundRequestStatus;
+  userId: number;
+  reference: string;
   createdAt: string;
   updatedAt: string;
-  userId: number;
+  recipients: {
+    id: number;
+    status: string;
+    recipient: {
+      id: number;
+      firstname: string;
+      lastname: string;
+      email: string;
+      phone: string;
+    };
+    payments: any[];
+  }[];
 
 }
 

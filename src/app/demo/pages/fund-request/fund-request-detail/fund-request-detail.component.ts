@@ -1,11 +1,93 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { FundRequestService } from 'src/app/@theme/services/fundrequest.service';
+import { BaseResponse, FundRequest } from 'src/app/@theme/models/index';
+import { CommonModule, DatePipe } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
+import { SharedModule } from 'src/app/demo/shared/shared.module';
+
+
 
 @Component({
   selector: 'app-fund-request-detail',
-  imports: [],
   templateUrl: './fund-request-detail.component.html',
-  styleUrl: './fund-request-detail.component.scss'
+  styleUrls: ['./fund-request-detail.component.scss'],
+  providers: [DatePipe],
+  imports: [CommonModule, SharedModule]
 })
-export class FundRequestDetailComponent {
+export class FundRequestDetailComponent implements OnInit {
+  fundRequest: FundRequest | null = null;
+  isLoading = false;
+  isDeadlinePassed = false;
 
+  constructor(
+    private route: ActivatedRoute,
+    private fundRequestService: FundRequestService,
+    private datePipe: DatePipe,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
+  ) {}
+
+  ngOnInit(): void {
+    this.loadFundRequest();
+  }
+
+  loadFundRequest(): void {
+    this.isLoading = true;
+    const id = this.route.snapshot.params['id'];
+
+    this.fundRequestService.getFundRequestById(id).subscribe({
+      next: (response) => {
+        this.fundRequest = response.data;
+        this.checkDeadline();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading fund request:', error);
+        this.isLoading = false;
+        this.snackBar.open('Erreur lors du chargement de la demande', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  checkDeadline(): void {
+    if (!this.fundRequest?.deadline) return;
+    const deadline = new Date(this.fundRequest.deadline);
+    this.isDeadlinePassed = deadline < new Date();
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'PENDING': return 'status-pending';
+      case 'PARTIALLY_FUNDED': return 'status-partial';
+      case 'FULLY_FUNDED': return 'status-completed';
+      case 'CANCELLED': return 'status-cancelled';
+      default: return '';
+    }
+  }
+
+  formatDate(dateString: string): string {
+    return this.datePipe.transform(dateString, 'dd/MM/yyyy HH:mm') || '';
+  }
+
+  formatCurrency(amount: number): string {
+    return amount.toLocaleString('fr-FR', { style: 'currency', currency: 'XAF' });
+  }
+
+  calculateFundedPercentage(): number {
+    if (!this.fundRequest) return 0;
+
+    const totalPaid = this.fundRequest.recipients.reduce((sum, recipient) => {
+      return sum + recipient.payments.reduce((paymentSum, payment) => {
+        return paymentSum + (payment.amount || 0);
+      }, 0);
+    }, 0);
+
+    return Math.round((totalPaid / this.fundRequest.amount) * 100);
+  }
 }

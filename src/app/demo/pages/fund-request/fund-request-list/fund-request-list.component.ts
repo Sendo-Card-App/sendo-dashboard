@@ -9,6 +9,7 @@ import { FundRequest, FundRequestStatus, FundRequestListResponse } from 'src/app
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-fund-request-list',
@@ -41,7 +42,8 @@ export class FundRequestListComponent implements OnInit {
     private fundRequestService: FundRequestService,
     private fb: FormBuilder,
     private datePipe: DatePipe,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) {
     this.filterForm = this.fb.group({
       status: [''],
@@ -77,6 +79,7 @@ export class FundRequestListComponent implements OnInit {
         this.dataSource.data = response.data.items;
         this.totalItems = response.data.totalItems;
         this.isLoading = false;
+        console.log('Fund requests loaded:', response.data.items[1]);
       },
       error: (error) => {
         console.error('Error loading fund requests:', error);
@@ -136,10 +139,12 @@ export class FundRequestListComponent implements OnInit {
   }
 
   getRecipientsCount(recipients: []): string {
-    console.log('Recipients:', recipients);
     if (!recipients || recipients.length === 0) {
       return 'Aucun contact';
     }
     return `${recipients.length} contact${recipients.length > 1 ? 's' : ''}`;
+  }
+  viewDetails(transactionId: string): void {
+    this.router.navigate(['/fund-requests/', transactionId]);
   }
 }
