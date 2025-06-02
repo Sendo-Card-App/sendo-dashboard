@@ -121,15 +121,19 @@
           <h2 class="card-title">Actions</h2>
 
           <div class="action-buttons">
-            <button mat-raised-button color="primary" class="action-button">
+            <!-- <button mat-raised-button color="primary" class="action-button">
               <mat-icon>send</mat-icon>
               Envoyer un rappel
-            </button>
+            </button> -->
 
-            <button mat-stroked-button color="warn" class="action-button">
-              <mat-icon>cancel</mat-icon>
-              Annuler la demande
-            </button>
+           <button mat-stroked-button
+            color="warn"
+            (click)="confirmDelete()"
+            [disabled]="isLoading"
+            class="delete-button">
+      <mat-icon>delete</mat-icon>
+      Annuler la demande
+    </button>
           </div>
         </mat-card>
       </div>

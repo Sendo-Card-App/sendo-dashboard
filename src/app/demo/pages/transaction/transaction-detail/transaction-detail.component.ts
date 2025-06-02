@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { TransactionsService } from 'src/app/@theme/services/transactions.service';
+import { ChangeTransactionStatusPayload, TransactionsService } from 'src/app/@theme/services/transactions.service';
 import { BaseResponse, MeResponse, Transactions } from 'src/app/@theme/models';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -36,9 +36,13 @@ export class TransactionDetailComponent implements OnInit {
      private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.statusForm = this.fb.group({
-      status: ['', Validators.required]
-    });
+     this.statusForm = this.fb.group({
+    status: ['', Validators.required],
+    transactionReference: ['', Validators.required],
+    bankName: ['', Validators.required],
+    accountNumber: ['', Validators.required]
+  });
+
   }
 
   ngOnInit(): void {
@@ -67,12 +71,14 @@ export class TransactionDetailComponent implements OnInit {
       }
     });
   }
-
-  toggleEdit(): void {
+ toggleEdit(): void {
     this.isEditing = !this.isEditing;
     if (this.isEditing && this.transaction) {
       this.statusForm.patchValue({
-        status: this.transaction.status
+        status: this.transaction.status,
+        transactionReference: this.transaction.transactionReference || '',
+        bankName: this.transaction.bankName || '',
+        accountNumber: this.transaction.accountNumber || ''
       });
     }
   }
@@ -97,28 +103,37 @@ export class TransactionDetailComponent implements OnInit {
   updateStatus(): void {
     if (!this.transaction || !this.statusForm.valid) return;
 
-
-
     this.isLoading = true;
-    const newStatus = this.statusForm.get('status')?.value;
+    const formValue = this.statusForm.value;
+    const newStatus = formValue.status as 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED';
 
-    this.transactionsService.updateTransactionStatus(this.transaction.transactionId, newStatus)
-      .subscribe({
-        next: () => {
-          if (this.transaction) {
-            this.transaction.status = newStatus;
-          }
-          this.snackBar.open('Statut mis à jour avec succès', 'Fermer', { duration: 3000 });
-          this.isEditing = false;
-          this.isLoading = false;
-          this.statusForm.markAsPristine();
-        },
-        error: () => {
-          this.snackBar.open('Erreur lors de la mise à jour du statut', 'Fermer', { duration: 3000 });
-          this.isLoading = false;
-        }
-      });
+    const payload: ChangeTransactionStatusPayload = {
+      transactionReference: formValue.transactionReference!,
+      bankName: formValue.bankName!,
+      accountNumber: formValue.accountNumber!
+    };
+
+    this.transactionsService.updateTransactionStatus(
+      this.transaction.transactionId,
+      newStatus,
+      payload
+    ).subscribe({
+       next: () => {
+      if (this.transaction) {
+        this.transaction.status = newStatus;
+      }
+      this.snackBar.open('Statut mis à jour avec succès', 'Fermer', { duration: 3000 });
+      this.isEditing = false;
+      this.isLoading = false;
+      this.statusForm.markAsPristine();
+    },
+    error: () => {
+      this.snackBar.open('Erreur lors de la mise à jour du statut', 'Fermer', { duration: 3000 });
+      this.isLoading = false;
+    }
+    });
   }
+
 
   getUserInitials(user: MeResponse): string {
     if (!user) return '?';

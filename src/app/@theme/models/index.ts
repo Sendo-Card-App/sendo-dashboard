@@ -97,7 +97,7 @@ export interface Transactions {
 
   amount: number;
   type: 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER';
-  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED';
   userId: number;
   receiverId?: number | null;
 

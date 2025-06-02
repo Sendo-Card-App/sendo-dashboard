@@ -104,32 +104,89 @@
         </mat-card>
 
         <!-- Status Update Section -->
-        <mat-card class="status-card">
-          <div class="status-header">
-            <h3>Modification du statut</h3>
-            <button mat-stroked-button (click)="toggleEdit()">
-              {{ isEditing ? 'Annuler' : 'Modifier' }}
-            </button>
-          </div>
+<mat-card class="status-card">
+  <div class="status-header">
+    <h3>Modification du statut</h3>
+    <button mat-stroked-button
+            (click)="toggleEdit()"
+            *ngIf="transaction?.type === 'TRANSFER'">
+      {{ isEditing ? 'Annuler' : 'Modifier' }}
+    </button>
+    <div *ngIf="transaction?.type !== 'TRANSFER'" class="not-allowed-message">
+      Modification du statut non disponible pour ce type de transaction
+    </div>
+  </div>
 
-          <div *ngIf="isEditing" class="status-form" [formGroup]="statusForm">
-            <mat-form-field appearance="outline" class="status-select">
-              <mat-label>Nouveau statut</mat-label>
-              <mat-select formControlName="status">
-                <mat-option *ngFor="let status of statusOptions" [value]="status">
-                  {{ status | titlecase }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+  <div *ngIf="isEditing && transaction?.type === 'TRANSFER'" class="status-form" [formGroup]="statusForm">
+    <!-- Le reste du formulaire reste inchangé -->
+   <div class="form-grid">
+      <!-- Colonne gauche -->
+      <div class="form-column">
+        <mat-form-field appearance="outline">
+          <mat-label>Nouveau statut</mat-label>
+          <mat-select formControlName="status" required>
+            <mat-option *ngFor="let status of statusOptions" [value]="status">
+              {{ status | titlecase }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="statusForm.get('status')?.hasError('required')">
+            Statut requis
+          </mat-error>
+        </mat-form-field>
 
-            <button mat-raised-button
-                    color="primary"
-                    (click)="UpdateUserStatus()"
-                    [disabled]="!statusForm.valid || statusForm.pristine">
-              Confirmer
-            </button>
-          </div>
-        </mat-card>
+        <mat-form-field appearance="outline">
+          <mat-label>Référence transaction</mat-label>
+          <input matInput formControlName="transactionReference" required>
+          <mat-error *ngIf="statusForm.get('transactionReference')?.hasError('required')">
+            Référence requise
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Colonne droite -->
+      <div class="form-column">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom de la banque</mat-label>
+          <input matInput formControlName="bankName" required>
+          <mat-error *ngIf="statusForm.get('bankName')?.hasError('required')">
+            Nom de banque requis
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Numéro de compte</mat-label>
+          <input matInput formControlName="accountNumber" required>
+          <mat-error *ngIf="statusForm.get('accountNumber')?.hasError('required')">
+            Numéro de compte requis
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+     <div class="form-actions">
+      <button mat-raised-button
+              color="primary"
+              (click)="updateStatus()"
+              [disabled]="!statusForm.valid || statusForm.pristine">
+        <mat-icon>save</mat-icon> Confirmer
+      </button>
+    </div>
+  </div>
+
+ <!-- Aperçu du statut actuel -->
+  <div *ngIf="!isEditing" class="current-status">
+    <div class="status-display">
+      <span class="status-label">Statut actuel:</span>
+      <span class="status-value" [ngClass]="getStatusClass(transaction.status)">
+        {{ transaction.status | titlecase }}
+      </span>
+    </div>
+    <div *ngIf="transaction.transactionReference" class="reference-display">
+      <span class="info-label">Référence:</span>
+      <span class="info-value">{{ transaction.transactionReference }}</span>
+    </div>
+  </div>
+</mat-card>
+
 
         <!-- Additional Information -->
         <mat-card class="additional-info-card">

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FundRequestService } from 'src/app/@theme/services/fundrequest.service';
 import { BaseResponse, FundRequest } from 'src/app/@theme/models/index';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -27,7 +27,8 @@ export class FundRequestDetailComponent implements OnInit {
     private fundRequestService: FundRequestService,
     private datePipe: DatePipe,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router:Router
   ) {}
 
   ngOnInit(): void {
@@ -90,4 +91,49 @@ export class FundRequestDetailComponent implements OnInit {
 
     return Math.round((totalPaid / this.fundRequest.amount) * 100);
   }
+
+  // Dans fund-request-detail.component.ts
+confirmDelete(): void {
+  if (!this.fundRequest) return;
+
+  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    data: {
+      title: 'Confirmer la suppression',
+      message: `Voulez-vous vraiment supprimer définitivement la demande ${this.fundRequest.reference} ?`,
+      confirmText: 'Oui, supprimer',
+      cancelText: 'Non, annuler',
+      confirmColor: 'warn'
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(confirmed => {
+    if (confirmed) {
+      this.deleteFundRequest();
+    }
+  });
+}
+
+deleteFundRequest(): void {
+  if (!this.fundRequest) return;
+
+  this.isLoading = true;
+  this.fundRequestService.deleteFundRequestAsAdmin(this.fundRequest.id).subscribe({
+    next: (response) => {
+      this.snackBar.open(response.message || 'Demande supprimée avec succès', 'Fermer', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      });
+      // Rediriger vers la liste après suppression
+      this.router.navigate(['/fund-requests/all']);
+    },
+    error: (error) => {
+      console.error('Error deleting fund request:', error);
+      this.isLoading = false;
+      this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
 }

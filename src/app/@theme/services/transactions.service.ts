@@ -14,6 +14,12 @@ interface TransactionsResponse {
   data: PaginatedData<Transactions>;
 }
 
+export interface ChangeTransactionStatusPayload {
+  transactionReference: string;
+  bankName: string;
+  accountNumber: string;
+}
+
 export interface TransactionsUserResponse {
   status: number;
   message: string;
@@ -71,23 +77,25 @@ export class TransactionsService {
    * @param transactionId Identifiant externe de la transaction
    * @param status Nouveau statut à appliquer
    */
-   updateTransactionStatus(
-    transactionId: string,
-    status: TransactionStatus
-  ): Observable<BaseResponse> {
-    const params = new HttpParams()
-      .set('transactionId', transactionId)
-      .set('status', status);
+  updateTransactionStatus(
+  transactionId: string,
+  status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED',
+  payload: ChangeTransactionStatusPayload
+): Observable<BaseResponse> {
+  const params = new HttpParams()
+    .set('transactionId', transactionId)
+    .set('status', status);
 
-    return this.http.put<BaseResponse>(
-      `${this.apiUrl}/admin/transaction/change-status`,
-      null, // pas de corps, tout passe en query
-      {
-        ...this.getConfigAuthorized(),
-        params
-      }
-    );
-  }
+  return this.http.put<BaseResponse>(
+    `${this.apiUrl}/admin/transaction/change-status`,
+    payload, // <-- le corps JSON
+    {
+      ...this.getConfigAuthorized(),
+      params,
+    }
+  );
+}
+
 
   /**
    * Récupère toutes les transactions d’un utilisateur, avec pagination et filtres facultatifs

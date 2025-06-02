@@ -237,3 +237,17 @@
   vertical-align: middle;
   margin-left: 4px;
 }
+
+
+.delete-button {
+  border-color: #f44336;
+  color: #f44336;
+
+  &:hover {
+    background-color: #ffebee;
+  }
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
