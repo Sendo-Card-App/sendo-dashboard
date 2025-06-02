@@ -42,6 +42,12 @@ export class SharedExpenseService {
     return this.http.get<BaseResponse<SharedExpense>>(`${this.apiUrl}/shared-expense/${idExpense}`,this.getConfigAuthorized());
   }
 
+  cancelSharedExpense(idExpense: number): Observable<BaseResponse> {
+  const url = `${this.apiUrl}/shared-expense/admin/${idExpense}/close`;
+  return this.http.delete<BaseResponse>(url, this.getConfigAuthorized());
+}
+
+
 
   private getConfigAuthorized() {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'

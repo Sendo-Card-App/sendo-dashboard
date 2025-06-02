@@ -1,0 +1,138 @@
+<div class="fund-request-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="fundRequest" class="fund-request-layout">
+    <!-- Header Section -->
+    <div class="fund-request-header">
+      <h1 class="fund-request-title">Détails de la demande de fonds</h1>
+      <div class="fund-request-reference">Réf: {{ fundRequest.reference }}</div>
+    </div>
+
+    <!-- Two-column Layout -->
+    <div class="fund-request-content">
+      <!-- Summary Column -->
+      <div class="summary-column">
+        <!-- Basic Info Card -->
+        <mat-card class="info-card">
+          <h2 class="card-title">Informations principales</h2>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Montant demandé</span>
+              <span class="info-value highlight">{{ formatCurrency(fundRequest.amount) }}</span>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Statut</span>
+              <span class="info-value">
+                <span class="status-badge" [ngClass]="getStatusClass(fundRequest.status)">
+                  {{ fundRequest.status }}
+                </span>
+              </span>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Date limite</span>
+              <span class="info-value">
+                {{ formatDate(fundRequest.deadline) }}
+                <mat-icon *ngIf="isDeadlinePassed" class="warning-icon">warning</mat-icon>
+              </span>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Date de création</span>
+              <span class="info-value">{{ formatDate(fundRequest.createdAt) }}</span>
+            </div>
+
+            <div class="info-item full-width">
+              <span class="info-label">Description</span>
+              <p class="info-value">{{ fundRequest.description || 'Aucune description' }}</p>
+            </div>
+          </div>
+        </mat-card>
+
+        <!-- Funding Progress Card -->
+        <mat-card class="progress-card">
+          <h2 class="card-title">Progression du financement</h2>
+
+          <div class="progress-container">
+            <mat-progress-bar
+                mode="determinate"
+                [value]="calculateFundedPercentage()"
+                [color]="calculateFundedPercentage() === 100 ? 'primary' : 'accent'">
+            </mat-progress-bar>
+            <div class="progress-text">{{ calculateFundedPercentage() }}% financé</div>
+          </div>
+
+          <div class="amounts">
+            <div class="amount-item">
+              <span class="amount-label">Montant reçu</span>
+              <span class="amount-value">{{ formatCurrency(fundRequest.amount * calculateFundedPercentage() / 100) }}</span>
+            </div>
+            <div class="amount-item">
+              <span class="amount-label">Reste à financer</span>
+              <span class="amount-value">{{ formatCurrency(fundRequest.amount * (100 - calculateFundedPercentage()) / 100) }}</span>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Recipients Column -->
+      <div class="recipients-column">
+        <!-- Recipients List Card -->
+        <mat-card class="recipients-card">
+          <h2 class="card-title">Contacts sollicités ({{ fundRequest.recipients.length }})</h2>
+
+          <div class="recipients-list">
+            <div *ngFor="let recipient of fundRequest.recipients" class="recipient-item">
+              <div class="recipient-avatar">
+                {{ recipient.recipient.firstname.charAt(0) }}{{ recipient.recipient.lastname.charAt(0) }}
+              </div>
+
+              <div class="recipient-info">
+                <div class="recipient-name">
+                  {{ recipient.recipient.firstname }} {{ recipient.recipient.lastname }}
+                </div>
+                <div class="recipient-contacts">
+                  <span class="contact-item">
+                    <mat-icon>email</mat-icon>
+                    {{ recipient.recipient.email }}
+                  </span>
+                  <span class="contact-item">
+                    <mat-icon>phone</mat-icon>
+                    {{ recipient.recipient.phone }}
+                  </span>
+                </div>
+              </div>
+
+              <span class="recipient-status" [ngClass]="getStatusClass(recipient.status)">
+                {{ recipient.status }}
+              </span>
+            </div>
+          </div>
+        </mat-card>
+
+        <!-- Actions Card -->
+        <mat-card class="actions-card">
+          <h2 class="card-title">Actions</h2>
+
+          <div class="action-buttons">
+            <button mat-raised-button color="primary" class="action-button">
+              <mat-icon>send</mat-icon>
+              Envoyer un rappel
+            </button>
+
+            <button mat-stroked-button color="warn" class="action-button">
+              <mat-icon>cancel</mat-icon>
+              Annuler la demande
+            </button>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

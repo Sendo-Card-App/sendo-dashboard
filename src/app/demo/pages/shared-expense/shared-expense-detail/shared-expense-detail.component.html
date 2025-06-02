@@ -80,39 +80,32 @@
       <div class="details-column">
         <!-- Status Card -->
         <mat-card class="status-card">
-          <div class="status-header">
-            <h3>Statut de la dépense</h3>
-            <span class="status-badge" [ngClass]="getStatusClass(sharedExpense.status)">
-              {{ sharedExpense.status }}
-            </span>
-          </div>
+  <div class="status-header">
+    <h3>Statut de la dépense</h3>
+    <span class="status-badge" [ngClass]="getStatusClass(sharedExpense.status)">
+      {{ sharedExpense.status }}
+    </span>
+  </div>
 
-          <div *ngIf="isEditing" class="status-form" [formGroup]="statusForm">
-            <mat-form-field appearance="outline" class="status-select">
-              <mat-label>Nouveau statut</mat-label>
-              <mat-select formControlName="status">
-                <mat-option *ngFor="let status of statusOptions" [value]="status">
-                  {{ status }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+  <div *ngIf="sharedExpense.status === 'PENDING'" class="cancel-action">
+    <button mat-stroked-button
+            color="warn"
+            (click)="confirmCancel()"
+            [disabled]="isCancelling">
+      <span *ngIf="!isCancelling">Annuler la dépense</span>
+      <mat-spinner diameter="20" *ngIf="isCancelling"></mat-spinner>
+    </button>
+    <p class="cancel-warning">
+      <mat-icon>warning</mat-icon>
+      Cette action est irréversible et notifiera tous les participants
+    </p>
+  </div>
 
-            <div class="action-buttons">
-              <button mat-stroked-button (click)="toggleEdit()">Annuler</button>
-              <button mat-raised-button
-                      color="primary"
-                      (click)="updateStatus()"
-                      [disabled]="!statusForm.valid || statusForm.pristine">
-                Confirmer
-              </button>
-            </div>
-          </div>
-
-          <button *ngIf="!isEditing" mat-stroked-button (click)="toggleEdit()" class="edit-button">
-            <mat-icon>edit</mat-icon>
-            Modifier le statut
-          </button>
-        </mat-card>
+  <div *ngIf="sharedExpense.status === 'CANCELLED'" class="cancelled-info">
+    <mat-icon class="cancelled-icon">cancel</mat-icon>
+    <p>Cette dépense a été annulée le {{ formatDate(sharedExpense.updatedAt) }}</p>
+  </div>
+</mat-card>
 
         <!-- Description Card -->
         <mat-card class="description-card">
@@ -139,8 +132,12 @@
                 </div>
               </div>
 
-              <span class="participant-status" [ngClass]="getParticipantStatusClass(participant.paymentStatus)">
-                {{ participant.paymentStatus === 'PAID' ? 'Payé' : 'En attente' }}
+              <span class="participant-status" [ngClass]="getParticipantStatusClass(participant.paymentStatus)" [ngSwitch]="participant.paymentStatus">
+                <span *ngSwitchCase="'PAYED'">Payé</span>
+                <span *ngSwitchCase="'PENDING'">En attente</span>
+                <span *ngSwitchCase="'REFUSED'">Refusé</span>
+                <span *ngSwitchCase="'LATE'">En retard</span>
+                <span *ngSwitchDefault>Statut inconnu</span>
               </span>
             </div>
           </div>

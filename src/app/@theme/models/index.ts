@@ -214,7 +214,7 @@ export interface Participant {
   userId: number;
   sharedExpenseId: number;
   part: number;
-  paymentStatus: 'PENDING' | 'PAID'; // adapte selon tes valeurs possibles
+  paymentStatus: 'PENDING' | 'PAYED' | 'LATE'| 'REFUSED';// adapte selon tes valeurs possibles
   user: {
     id: number;
     firstname: string;
@@ -228,7 +228,7 @@ export interface SharedExpense {
   description: string;
   userId: number;
   initiatorPart: number;
-  status: 'PENDING' | 'PAYED' | 'LATE'| 'REFUSED';
+  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
   limitDate: string;
   methodCalculatingShare: string;
   createdAt: string;
@@ -253,4 +253,44 @@ export interface PaginatedData<T> {
   items: T[];
 }
 
+// src/app/%40theme/models/fund-request.model.ts
 
+export type FundRequestStatus = 'PENDING' | 'PARTIALLY_FUNDED' | 'FULLY_FUNDED' | 'CANCELLED';
+
+export interface FundRequest {
+ id: number;
+  amount: number;
+  description: string;
+  deadline: string;
+  status: FundRequestStatus;
+  userId: number;
+  reference: string;
+  createdAt: string;
+  updatedAt: string;
+  recipients: {
+    id: number;
+    status: string;
+    recipient: {
+      id: number;
+      firstname: string;
+      lastname: string;
+      email: string;
+      phone: string;
+    };
+    payments: any[];
+  }[];
+
+}
+
+export interface FundRequestListResponse {
+ message: string;
+  data:PaginatedData<FundRequest>;
+}
+
+export interface FundRequestQueryParams {
+  page?: number;
+  limit?: number;
+  status?: FundRequestStatus;
+  startDate?: string;
+  endDate?: string;
+}
