@@ -6,7 +6,6 @@ import {
   FundRequest,
   FundRequestListResponse,
   FundRequestQueryParams,
-  FundRequestStatus
 } from '../models/index';
 import { environment } from '../../../environments/environment'; // adapte le chemin si nécessaire
 

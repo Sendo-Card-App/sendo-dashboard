@@ -1,12 +1,11 @@
   import { Component, OnInit } from '@angular/core';
   import { ActivatedRoute } from '@angular/router';
   import { SharedExpenseService } from 'src/app/@theme/services/sharedexpenses.service';
-  import { SharedExpense, Participant, SharedExpenseResponse, BaseResponse, CancelSharedExpensePayload } from 'src/app/@theme/models/index';
+  import { SharedExpense, BaseResponse, CancelSharedExpensePayload } from 'src/app/@theme/models/index';
   import { CommonModule, DatePipe } from '@angular/common';
   import { MatSnackBar } from '@angular/material/snack-bar';
   import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   import { MatDialog } from '@angular/material/dialog';
-  import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
   import { SharedModule } from 'src/app/demo/shared/shared.module';
 
   @Component({

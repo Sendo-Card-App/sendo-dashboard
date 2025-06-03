@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FundRequestService } from 'src/app/@theme/services/fundrequest.service';
-import { BaseResponse, FundRequest } from 'src/app/@theme/models/index';
+import {FundRequest } from 'src/app/@theme/models/index';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
