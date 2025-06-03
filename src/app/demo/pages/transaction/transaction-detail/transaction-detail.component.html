@@ -109,15 +109,15 @@
     <h3>Modification du statut</h3>
     <button mat-stroked-button
             (click)="toggleEdit()"
-            *ngIf="transaction?.type === 'TRANSFER'">
+            *ngIf="transaction?.method === 'BANK_TRANSFER'">
       {{ isEditing ? 'Annuler' : 'Modifier' }}
     </button>
-    <div *ngIf="transaction?.type !== 'TRANSFER'" class="not-allowed-message">
+    <div *ngIf="transaction?.method !== 'BANK_TRANSFER'" class="not-allowed-message">
       Modification du statut non disponible pour ce type de transaction
     </div>
   </div>
 
-  <div *ngIf="isEditing && transaction?.type === 'TRANSFER'" class="status-form" [formGroup]="statusForm">
+  <div *ngIf="isEditing && transaction?.method === 'BANK_TRANSFER'" class="status-form" [formGroup]="statusForm">
     <!-- Le reste du formulaire reste inchangé -->
    <div class="form-grid">
       <!-- Colonne gauche -->

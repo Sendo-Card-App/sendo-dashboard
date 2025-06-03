@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs'; // adapte le chemin si nécessaire
-import { BaseResponse, SharedExpense, SharedExpenseResponse } from '../models';
+import { BaseResponse, CancelSharedExpensePayload, SharedExpense, SharedExpenseResponse } from '../models';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -42,10 +42,22 @@ export class SharedExpenseService {
     return this.http.get<BaseResponse<SharedExpense>>(`${this.apiUrl}/shared-expense/${idExpense}`,this.getConfigAuthorized());
   }
 
-  cancelSharedExpense(idExpense: number): Observable<BaseResponse> {
+  DeleteSharedExpense(idExpense: number): Observable<BaseResponse> {
   const url = `${this.apiUrl}/shared-expense/admin/${idExpense}/close`;
   return this.http.delete<BaseResponse>(url, this.getConfigAuthorized());
 }
+
+cancelSharedExpense(
+  id: number,
+  payload: CancelSharedExpensePayload
+): Observable<BaseResponse> {
+  return this.http.patch<BaseResponse>(
+    `${this.apiUrl}/shared-expense/${id}/cancel`,
+    payload,
+    this.getConfigAuthorized()
+  );
+}
+
 
 
 

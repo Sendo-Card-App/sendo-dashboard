@@ -245,6 +245,9 @@ export interface SharedExpenseResponse {
   message: string;
   data: PaginatedData<SharedExpense>;
 }
+export interface CancelSharedExpensePayload {
+  cancelReason: string;
+}
 
 export interface PaginatedData<T> {
   page: number;
