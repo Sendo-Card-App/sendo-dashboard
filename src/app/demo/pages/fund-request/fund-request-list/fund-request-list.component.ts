@@ -5,7 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { FundRequestService } from 'src/app/@theme/services/fundrequest.service';
-import { FundRequest, FundRequestStatus, FundRequestListResponse } from 'src/app/@theme/models/index';
+import { FundRequest, FundRequestStatus } from 'src/app/@theme/models/index';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SharedModule } from 'src/app/demo/shared/shared.module';

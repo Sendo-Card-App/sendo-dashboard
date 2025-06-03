@@ -245,6 +245,9 @@ export interface SharedExpenseResponse {
   message: string;
   data: PaginatedData<SharedExpense>;
 }
+export interface CancelSharedExpensePayload {
+  cancelReason: string;
+}
 
 export interface PaginatedData<T> {
   page: number;
@@ -277,9 +280,19 @@ export interface FundRequest {
       email: string;
       phone: string;
     };
-    payments: any[];
+    payments: payment[];
   }[];
 
+}
+
+export interface payment {
+  id: number;
+  amount: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  recipientId: number;
+  fundRequestId: number;
 }
 
 export interface FundRequestListResponse {

@@ -79,7 +79,8 @@
       <!-- Details Column -->
       <div class="details-column">
         <!-- Status Card -->
-        <mat-card class="status-card">
+        <!-- Status Card -->
+<mat-card class="status-card">
   <div class="status-header">
     <h3>Statut de la dépense</h3>
     <span class="status-badge" [ngClass]="getStatusClass(sharedExpense.status)">
@@ -87,13 +88,11 @@
     </span>
   </div>
 
-  <div *ngIf="sharedExpense.status === 'PENDING'" class="cancel-action">
+  <div *ngIf="sharedExpense.status === 'PENDING' && !showCancelForm" class="cancel-action">
     <button mat-stroked-button
             color="warn"
-            (click)="confirmCancel()"
-            [disabled]="isCancelling">
-      <span *ngIf="!isCancelling">Annuler la dépense</span>
-      <mat-spinner diameter="20" *ngIf="isCancelling"></mat-spinner>
+            (click)="confirmCancel()">
+      Annuler la dépense
     </button>
     <p class="cancel-warning">
       <mat-icon>warning</mat-icon>
@@ -101,9 +100,47 @@
     </p>
   </div>
 
+  <!-- Formulaire d'annulation -->
+  <div *ngIf="showCancelForm" class="cancel-form-container">
+    <h4>Motif d'annulation</h4>
+    <form [formGroup]="cancelForm" (ngSubmit)="cancelSharedExpense()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Raison de l'annulation *</mat-label>
+        <textarea matInput
+                 formControlName="cancelReason"
+                 rows="3"
+                 placeholder="Veuillez indiquer la raison de l'annulation (minimum 10 caractères)"></textarea>
+        <mat-error *ngIf="cancelForm.get('cancelReason')?.hasError('required')">
+          Ce champ est obligatoire
+        </mat-error>
+        <mat-error *ngIf="cancelForm.get('cancelReason')?.hasError('minlength')">
+          Minimum 10 caractères requis
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-stroked-button
+                type="button"
+                (click)="cancelCancellation()">
+          Retour
+        </button>
+        <button mat-raised-button
+                color="warn"
+                type="submit"
+                [disabled]="cancelForm.invalid || isCancelling">
+          <span *ngIf="!isCancelling">Confirmer l'annulation</span>
+          <mat-spinner diameter="20" *ngIf="isCancelling"></mat-spinner>
+        </button>
+      </div>
+    </form>
+  </div>
+
   <div *ngIf="sharedExpense.status === 'CANCELLED'" class="cancelled-info">
     <mat-icon class="cancelled-icon">cancel</mat-icon>
     <p>Cette dépense a été annulée le {{ formatDate(sharedExpense.updatedAt) }}</p>
+    <p *ngIf="sharedExpense.cancelReason" class="cancel-reason">
+      <strong>Motif:</strong> {{ sharedExpense.cancelReason }}
+    </p>
   </div>
 </mat-card>
 

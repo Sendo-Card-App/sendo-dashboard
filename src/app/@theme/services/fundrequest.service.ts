@@ -5,13 +5,17 @@ import {
   BaseResponse,
   FundRequest,
   FundRequestListResponse,
-  FundRequestQueryParams
+  FundRequestQueryParams,
 } from '../models/index';
 import { environment } from '../../../environments/environment'; // adapte le chemin si nécessaire
 
+export interface UpdateFundRequestStatusPayload {
+  status: 'CANCELLED' | 'PENDING';
+}
 @Injectable({
   providedIn: 'root'
 })
+
 export class FundRequestService {
   private apiUrl = environment.apiUrl;
 
@@ -44,9 +48,21 @@ export class FundRequestService {
   deleteFundRequestAsAdmin(fundRequestId: number): Observable<{ message: string }> {
   return this.http.delete<{ message: string }>(
     `${this.apiUrl}/fund-requests/admin/${fundRequestId}`
-    , this.getConfigAuthorized() 
+    , this.getConfigAuthorized()
   );
 }
+
+updateFundRequestStatus(
+  fundRequestId: number,
+  payload: UpdateFundRequestStatusPayload
+): Observable<BaseResponse> {
+  return this.http.patch<BaseResponse>(
+    `${this.apiUrl}/fund-requests/${fundRequestId}/status`,
+    payload,
+    this.getConfigAuthorized()
+  );
+}
+
 
 
   private getConfigAuthorized() {
