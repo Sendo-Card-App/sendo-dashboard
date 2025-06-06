@@ -69,6 +69,14 @@ export const menus: Navigation[] = [
             breadcrumbs: true
           },
           {
+            id: 'alltransaction',
+            title: 'Transaction Ca-Cam',
+            type: 'item',
+            url: '/transactions/ca-cam',
+            // target: true,
+            breadcrumbs: true
+          },
+          {
             id: 'addtransaction',
             title: 'Creer une transaction',
             type: 'item',
