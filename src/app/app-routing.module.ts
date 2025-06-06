@@ -79,6 +79,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/transaction/tr-alltransaction/tr-alltransaction.component').then((c) => c.TrAllTransactionComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
+       {
+        path: 'ca-cam',
+        loadComponent: () => import('./demo/pages/transaction/transaction-ca-cam/transaction-ca-cam.component').then((c) => c.TransactionCaCamComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
       {
         path: 'addtransaction',
         loadComponent: () => import('./demo/pages/transaction/tr-addtransaction/tr-addtransaction.component').then((c) => c.TrAddtransactionComponent),
