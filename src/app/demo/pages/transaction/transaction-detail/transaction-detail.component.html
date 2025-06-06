@@ -107,19 +107,25 @@
 <mat-card class="status-card">
   <div class="status-header">
     <h3>Modification du statut</h3>
+
+    <!-- Afficher le bouton si au moins une des deux conditions est vraie -->
     <button mat-stroked-button
             (click)="toggleEdit()"
-            *ngIf="transaction?.method === 'BANK_TRANSFER'">
+            *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER'">
       {{ isEditing ? 'Annuler' : 'Modifier' }}
     </button>
-    <div *ngIf="transaction?.method !== 'BANK_TRANSFER'" class="not-allowed-message">
+
+    <!-- Afficher le message uniquement si AUCUNE des deux conditions n’est vraie -->
+    <div *ngIf="transaction?.method !== 'BANK_TRANSFER' && transaction?.type !== 'TRANSFER'" class="not-allowed-message">
       Modification du statut non disponible pour ce type de transaction
     </div>
   </div>
 
-  <div *ngIf="isEditing && transaction?.method === 'BANK_TRANSFER'" class="status-form" [formGroup]="statusForm">
-    <!-- Le reste du formulaire reste inchangé -->
-   <div class="form-grid">
+  <!-- Afficher le formulaire SEULEMENT si isEditing est activé ET qu’on a le droit de modifier -->
+  <div *ngIf="isEditing && (transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER')"
+       class="status-form"
+       [formGroup]="statusForm">
+    <div class="form-grid">
       <!-- Colonne gauche -->
       <div class="form-column">
         <mat-form-field appearance="outline">
@@ -162,7 +168,8 @@
         </mat-form-field>
       </div>
     </div>
-     <div class="form-actions">
+
+    <div class="form-actions">
       <button mat-raised-button
               color="primary"
               (click)="updateStatus()"
@@ -172,7 +179,7 @@
     </div>
   </div>
 
- <!-- Aperçu du statut actuel -->
+  <!-- Aperçu du statut actuel -->
   <div *ngIf="!isEditing" class="current-status">
     <div class="status-display">
       <span class="status-label">Statut actuel:</span>
@@ -186,6 +193,7 @@
     </div>
   </div>
 </mat-card>
+
 
 
         <!-- Additional Information -->
