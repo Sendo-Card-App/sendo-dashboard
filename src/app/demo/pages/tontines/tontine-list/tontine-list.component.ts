@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TontineService } from 'src/app/@theme/services/tontine.service';
-import { Tontine, TontineResponse, TontinePagination } from 'src/app/@theme/models/index';
+import { Tontine, TontineResponse } from 'src/app/@theme/models/index';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageEvent } from '@angular/material/paginator';
 import { CommonModule, DatePipe } from '@angular/common';
