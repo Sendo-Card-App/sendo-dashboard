@@ -68,7 +68,6 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit {
     this.filterForm = this.fb.group({
       search: [''],
       status: [''],
-      method: [''],
       minAmount: [''],
       maxAmount: [''],
       startDate: [''],
@@ -107,7 +106,7 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit {
       this.itemsPerPage,
       'TRANSFER',
       formValues.status as TransactionStatus,
-      formValues.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
+      'MOBILE_MONEY',
       startDate || undefined,
       endDate || undefined
     ).subscribe({
