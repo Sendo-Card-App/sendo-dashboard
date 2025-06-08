@@ -326,7 +326,7 @@ export interface Membre {
       email: string;
       phone: string;
     };
-  penalites: any[]; // À adapter si tu as un modèle de pénalité
+  penalites: []; 
 }
 
 export interface CompteSequestre {
