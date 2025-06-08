@@ -160,6 +160,36 @@ const routes: Routes = [
     ]
   },
    {
+    path: 'requests',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'allrequests',
+        loadComponent: () => import('./demo/pages/niu-request/all-request-niu/all-request-niu.component').then((c) => c.AllRequestNiuComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+
+    ]
+  },
+  {
+    path: 'tontines',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'all',
+        loadComponent: () => import('./demo/pages/tontines/tontine-list/tontine-list.component').then((c) => c.TontineListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./demo/pages/tontines/tontine-details/tontine-details.component').then((c) => c.TontineDetailsComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+    ]
+  },
+   {
     path: 'fund-requests',
     component: AdminComponent,
     canActivateChild: [RoleGuard],

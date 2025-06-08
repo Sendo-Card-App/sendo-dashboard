@@ -171,6 +171,25 @@ export const menus: Navigation[] = [
 
         ]
       },
+      {
+        id: 'tontine',
+        title: 'Tontines',
+        type: 'collapse',
+        icon: '#custom-bill',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'alltontine',
+            title: 'Liste des tontines',
+            type: 'item',
+            url: '/tontines/all',
+            // target: true,
+            breadcrumbs: true
+          },
+
+
+        ]
+      },
     ]
   },
    {

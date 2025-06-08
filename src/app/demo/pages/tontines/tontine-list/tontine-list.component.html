@@ -1,0 +1,121 @@
+<div class="tontine-list-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Header and Search -->
+  <div class="list-header">
+
+    <div class="search-container">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Rechercher</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+        <button matSuffix mat-icon-button (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Tontines Table -->
+  <div class="table-responsive">
+    <!-- Changement de [dataSource]="tontines" à [dataSource]="filteredTontines" -->
+<table mat-table [dataSource]="filteredTontines" class="mat-elevation-z8">
+      <!-- Nom Column -->
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef>Nom</th>
+        <td mat-cell *matCellDef="let tontine">
+          <strong>{{ tontine.nom }}</strong>
+          <div class="small-text">{{ tontine.description }}</div>
+        </td>
+      </ng-container>
+
+      <!-- Type Column -->
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let tontine">
+          <span [ngClass]="getTypeClass(tontine.type)">
+            {{ tontine.type === 'FIXE' ? 'Fixe' : 'Variable' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Fréquence Column -->
+      <ng-container matColumnDef="frequence">
+        <th mat-header-cell *matHeaderCellDef>Fréquence</th>
+        <td mat-cell *matCellDef="let tontine">
+          {{ tontine.frequence === 'WEEKLY' ? 'Hebdomadaire' : 'Mensuelle' }}
+        </td>
+      </ng-container>
+
+      <!-- Montant Column -->
+      <ng-container matColumnDef="montant">
+        <th mat-header-cell *matHeaderCellDef>Montant</th>
+        <td mat-cell *matCellDef="let tontine">
+          {{ tontine.montant | currency:'XAF':'symbol':'1.2-2' }}
+        </td>
+      </ng-container>
+
+      <!-- Membres Column -->
+      <ng-container matColumnDef="membres">
+        <th mat-header-cell *matHeaderCellDef>Membres</th>
+        <td mat-cell *matCellDef="let tontine">
+          <div class="members-count">{{ tontine.membres.length }}/{{ tontine.nombreMembres }}</div>
+          <div class="small-text">Admin: {{ getAdminName(tontine) }}</div>
+        </td>
+      </ng-container>
+
+      <!-- Etat Column -->
+      <ng-container matColumnDef="etat">
+        <th mat-header-cell *matHeaderCellDef>État</th>
+        <td mat-cell *matCellDef="let tontine">
+          <span [ngClass]="getEtatClass(tontine.etat)">
+            {{ tontine.etat === 'ACTIVE' ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Créée le</th>
+        <td mat-cell *matCellDef="let tontine">
+          {{ formatDate(tontine.createdAt) }}
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let expense">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="viewDetails(expense.id)">
+                <mat-icon>visibility</mat-icon>
+                Détails
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+ <!-- Modifiez le mat-paginator comme suit -->
+<mat-paginator [length]="filteredTontines.length"
+               [pageSize]="itemsPerPage"
+               [pageSizeOptions]="[5, 10, 25, 100]"
+               (page)="onPageChange($event)"
+               class="tontine-paginator"
+               *ngIf="!searchQuery"> <!-- Ne montre que quand il n'y a pas de recherche -->
+</mat-paginator>
+
+<div *ngIf="searchQuery && filteredTontines.length === 0" class="no-results">
+  Aucun résultat trouvé pour "{{ searchQuery }}"
+</div>
+</div>

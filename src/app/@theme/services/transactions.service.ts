@@ -175,7 +175,7 @@ export class TransactionsService {
     limit: number = 10,
     type?: 'TRANSFER',
     status?: TransactionStatus,
-    method?: 'MOBILE_MONEY' | 'BANK_TRANSFER',
+    method?: 'MOBILE_MONEY',
     startDate?: string,   // format YYYY-MM-DD
     endDate?: string      // format YYYY-MM-DD
   ): Observable<TransactionsResponse> {
