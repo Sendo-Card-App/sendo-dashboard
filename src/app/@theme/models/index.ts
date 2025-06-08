@@ -307,3 +307,83 @@ export interface FundRequestQueryParams {
   startDate?: string;
   endDate?: string;
 }
+
+
+
+export interface Membre {
+  id: number;
+  dateInscription: string;
+  userId: number;
+  role: 'ADMIN' | 'MEMBER';
+  etat: 'ACTIVE' | 'INACTIVE';
+  tontineId: number;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+      firstName?: string;
+      lastName?: string;
+      id: string;
+      email: string;
+      phone: string;
+    };
+  penalites: any[]; // À adapter si tu as un modèle de pénalité
+}
+
+export interface CompteSequestre {
+  id: number;
+  soldeActuel: number;
+  dateOuverture: string;
+  etatCompte: 'ACTIVE' | 'INACTIVE';
+  dateDernierMouvement: string | null;
+  montantBloque: number;
+  tontineId: number;
+  responsableGestionId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TourDeDistribution {
+  id: number;
+  numeroDistribution: number;
+  dateDistribution: string | null;
+  montantDistribue: number | null;
+  etat: 'PENDING' | 'DONE' | string;
+  justificatif: string | null;
+  tontineId: number;
+  beneficiaireId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Tontine {
+  ordreRotation: string; // JSON string ["4", "3"], tu peux aussi parser en number[]
+  id: number;
+  nom: string;
+  type: 'FIXE' | 'VARIABLE' | string;
+  frequence: 'WEEKLY' | 'MONTHLY' | string;
+  description: string;
+  montant: number;
+  nombreMembres: number;
+  modeVersement: 'AUTOMATIC' | 'MANUAL' | string;
+  statutReglement: string | null;
+  invitationCode: string;
+  etat: 'ACTIVE' | 'INACTIVE';
+  createdAt: string;
+  updatedAt: string;
+  membres: Membre[];
+  compteSequestre: CompteSequestre;
+  toursDeDistribution: TourDeDistribution[];
+}
+
+export interface TontinePagination {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  items: Tontine[];
+}
+
+export interface TontineResponse {
+  status: number;
+  message: string;
+  data: TontinePagination;
+}
