@@ -1,4 +1,3 @@
-import { ComponentInputBindingFeature } from "@angular/router";
 
 
 export interface LoginResponse {
@@ -402,4 +401,10 @@ export interface TontineResponse {
   status: number;
   message: string;
   data: TontinePagination;
+}
+
+export interface TontineResponse1 {
+  status: number;
+  message: string;
+  data: Tontine[];
 }

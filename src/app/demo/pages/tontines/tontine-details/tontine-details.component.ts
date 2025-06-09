@@ -142,7 +142,7 @@ getTontineColor(tontine: Tontine): string {
   const index = tontine.nom.charCodeAt(0) % colors.length;
   return colors[index];
 }
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 getMemberColor(member: any): string {
   const name = member.user.firstname + member.user.lastname;
   const colors = [

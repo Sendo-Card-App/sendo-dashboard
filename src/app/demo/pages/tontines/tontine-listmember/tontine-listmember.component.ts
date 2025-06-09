@@ -16,9 +16,10 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
   imports: [CommonModule,SharedModule]
 })
 export class TontineListmemberComponent implements OnInit {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cotisations: any[] = [];
   isLoading = false;
-  memberInfo: any = null;
+  memberInfo = null;
   tontineId: number;
   membreId: number;
 
@@ -68,6 +69,7 @@ export class TontineListmemberComponent implements OnInit {
       this.membreId,
       this.statutPaiement
     ).subscribe({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       next: (response: BaseResponse<any>) => {
         this.cotisations = response.data;
         if (this.cotisations.length > 0) {
@@ -113,7 +115,7 @@ export class TontineListmemberComponent implements OnInit {
       default: return '';
     }
   }
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   viewJustificatif(justificatif: any): void {
     if (!justificatif) {
       this.snackBar.open('Aucun justificatif disponible', 'Fermer', {

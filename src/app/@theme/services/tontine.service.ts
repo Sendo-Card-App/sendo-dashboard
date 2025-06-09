@@ -35,7 +35,6 @@ export class TontineService {
       this.getConfigAuthorized()
     );
   }
-  
 getCotisationsByMembre(
   tontineId: number,
   membreId: number,
