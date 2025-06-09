@@ -320,8 +320,8 @@ export interface Membre {
   createdAt: string;
   updatedAt: string;
   user: {
-      firstName?: string;
-      lastName?: string;
+      firstname?: string;
+      lastname?: string;
       id: number;
       email: string;
       phone: string;

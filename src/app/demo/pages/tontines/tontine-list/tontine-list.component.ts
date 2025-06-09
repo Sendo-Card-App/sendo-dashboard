@@ -78,7 +78,8 @@ export class TontineListComponent implements OnInit {
   // Méthode pour obtenir le nom de l'admin
   getAdminName(tontine: Tontine): string {
     const admin = tontine.membres.find(m => m.role === 'ADMIN');
-    return admin ? `${admin.user.firstName} ${admin.user.lastName}` : 'Non défini';
+    console.log('Tontine:', admin);
+    return admin ? `${admin.user.firstname} ${admin.user.lastname}` : 'Non défini';
   }
 
   // Méthode pour filtrer les tontines
