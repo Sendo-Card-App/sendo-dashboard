@@ -322,11 +322,11 @@ export interface Membre {
   user: {
       firstName?: string;
       lastName?: string;
-      id: string;
+      id: number;
       email: string;
       phone: string;
     };
-  penalites: []; 
+  penalites: [];
 }
 
 export interface CompteSequestre {
@@ -347,7 +347,7 @@ export interface TourDeDistribution {
   numeroDistribution: number;
   dateDistribution: string | null;
   montantDistribue: number | null;
-  etat: 'PENDING' | 'DONE' | string;
+  etat:  'PENDING' | 'SUCCESS' | 'BLOCKED' | string;
   justificatif: string | null;
   tontineId: number;
   beneficiaireId: number;
@@ -356,7 +356,7 @@ export interface TourDeDistribution {
 }
 
 export interface Tontine {
-  ordreRotation: string; // JSON string ["4", "3"], tu peux aussi parser en number[]
+  ordreRotation: string;
   id: number;
   nom: string;
   type: 'FIXE' | 'VARIABLE' | string;
@@ -367,12 +367,27 @@ export interface Tontine {
   modeVersement: 'AUTOMATIC' | 'MANUAL' | string;
   statutReglement: string | null;
   invitationCode: string;
-  etat: 'ACTIVE' | 'INACTIVE';
+  etat: 'ACTIVE' | 'SUSPENDED' | 'CLOSED';
   createdAt: string;
   updatedAt: string;
   membres: Membre[];
+  cotisations:Cotisations[];
   compteSequestre: CompteSequestre;
   toursDeDistribution: TourDeDistribution[];
+}
+
+export interface Cotisations {
+  id: number;
+  dateCotisation: string;
+  montant: number;
+  methodePaiement: string;
+  statutPaiement: string;
+  justificatif: string;
+  tourDistributionId: number | null;
+  membreId: number;
+  tontineId: number;
+  createdAt: string;
+  updatedAt: number;
 }
 
 export interface TontinePagination {
@@ -386,4 +401,10 @@ export interface TontineResponse {
   status: number;
   message: string;
   data: TontinePagination;
+}
+
+export interface TontineResponse1 {
+  status: number;
+  message: string;
+  data: Tontine[];
 }

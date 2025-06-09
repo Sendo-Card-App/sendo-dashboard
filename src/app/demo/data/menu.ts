@@ -137,7 +137,7 @@ export const menus: Navigation[] = [
         id: 'shared',
         title: 'Depenses Partagées',
         type: 'collapse',
-        icon: '#custom-bill',
+        icon: '#custom-level',
         role: [Role.Admin, Role.User],
         children: [
           {
@@ -156,7 +156,7 @@ export const menus: Navigation[] = [
         id: 'shared',
         title: 'Demandes de fonds',
         type: 'collapse',
-        icon: '#custom-bill',
+        icon: '#custom-shield',
         role: [Role.Admin, Role.User],
         children: [
           {
@@ -203,7 +203,7 @@ export const menus: Navigation[] = [
         id: 'configuration',
         title: 'Configuration',
         type: 'collapse',
-        icon: '#custom-setting-2',
+        icon: '#custom-row-vertical',
         role: [Role.Admin, Role.User],
         children: [
           {
