@@ -123,7 +123,9 @@ export class TontineDetailsComponent implements OnInit {
   getMemberById(memberId: number): string {
     if (!this.tontine) return '';
     const member = this.tontine.membres.find(m => m.user.id === memberId);
-    return member ? `${member.user.firstName} ${member.user.lastName}` : '';
+    console.log('Member:', member);
+    console.log('MemberId:', memberId);
+    return member ? `${member.user.firstname} ${member.user.lastname}` : '';
   }
 
   calculateTotalContributions(): number {
