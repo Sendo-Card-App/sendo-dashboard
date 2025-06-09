@@ -187,6 +187,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/tontines/tontine-details/tontine-details.component').then((c) => c.TontineDetailsComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
+     {
+        path: ':id/members',
+        loadComponent: () => import('./demo/pages/tontines/tontine-listmember/tontine-listmember.component').then((c) => c.TontineListmemberComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
     ]
   },
    {

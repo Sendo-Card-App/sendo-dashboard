@@ -1,1 +1,207 @@
-<p>tontine-details works!</p>
+<div *ngIf="tontine" class="row m-t-25">
+  <!-- Colonne de gauche - Profil Tontine -->
+  <div class="col-lg-4 col-xxl-3">
+    <!-- Carte Profil Tontine -->
+    <mat-card class="tontine-profile-card">
+      <div class="account-info">
+        <!-- Badge de statut -->
+        <div class="tontine-status">
+          <span class="status-badge" [ngClass]="getStatusClass(tontine.etat)">
+            {{ tontine.etat === 'ACTIVE' ? 'Active' : 'Suspendue' }}
+          </span>
+        </div>
+
+        <div class="text-center m-t-15">
+          <!-- Avatar Tontine -->
+          <div class="avatar-circle-large" [style.background]="getTontineColor(tontine)">
+            {{ tontine.nom.charAt(0) }}
+          </div>
+
+          <!-- Nom et type -->
+          <div class="f-16 f-w-600 m-t-10">{{ tontine.nom }}</div>
+          <p class="text-muted">{{ tontine.type === 'FIXE' ? 'Tontine Fixe' : 'Tontine Variable' }}</p>
+
+          <mat-divider class="m-y-15"></mat-divider>
+
+          <!-- Statistiques -->
+          <div class="row" style="display: flex; justify-content: center; align-items: center;">
+            <div class="col-4 border-side">
+              <div class="f-16 f-w-500">{{ tontine.membres.length }}</div>
+              <div class="text-muted">Membres</div>
+            </div>
+            <div class="col-4">
+              <div class="f-16 f-w-500">{{ formatCurrency(tontine.montant) }}</div>
+              <div class="text-muted">Par tour</div>
+            </div>
+            <!-- <div class="col-4">
+              <div class="f-16 f-w-500">{{ formatDate(tontine.createdAt) }}</div>
+              <div class="text-muted">Créée le</div>
+            </div> -->
+          </div>
+
+          <mat-divider class="m-y-15"></mat-divider>
+
+          <!-- Informations -->
+          <div style="padding: 5px;">
+            <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
+            <mat-icon class="m-r-10">update</mat-icon>
+            <div>{{ tontine.frequence === 'WEEKLY' ? 'Hebdomadaire' : 'Mensuelle' }}</div>
+          </div>
+
+          <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
+            <mat-icon class="m-r-10">payments</mat-icon>
+            <div >{{ formatCurrency(tontine.compteSequestre.soldeActuel) }} solde</div>
+          </div>
+
+          <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
+            <mat-icon class="m-r-10">vpn_key</mat-icon>
+            <div >{{ tontine.invitationCode }}</div>
+            <button mat-icon-button (click)="copyInvitationCode()" matTooltip="Copier le code">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+          </div>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Carte Membres -->
+    <mat-card class="members-card">
+      <mat-card-header>
+        <mat-card-title>MEMBRES ({{ tontine.membres.length }})</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+  <div class="members-list">
+    <div *ngFor="let member of tontine.membres" class="member-item">
+      <div class="member-main-info">
+        <div class="member-avatar" [style.background]="getMemberColor(member)">
+          {{ member.user.firstname.charAt(0) }}{{ member.user.lastname.charAt(0) }}
+        </div>
+        <div class="member-info">
+          <div class="member-name">{{ member.user.firstname }} {{ member.user.lastname }}</div>
+          <div class="member-role" [ngClass]="{'admin': member.role === 'ADMIN'}">
+            {{ member.role === 'ADMIN' ? 'Administrateur' : 'Membre' }}
+          </div>
+        </div>
+      </div>
+
+      <button mat-icon-button
+              color="primary"
+              class="history-button"
+              (click)="viewMemberContributions(member)"
+              matTooltip="Voir l'historique des cotisations">
+        <mat-icon>history</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Colonne de droite - Détails -->
+  <div class="col-lg-8 col-xxl-9">
+    <!-- Carte Actions -->
+    <mat-card class="actions-card">
+      <div class="status-header">
+        <h3>Gestion de la tontine</h3>
+        <button mat-stroked-button (click)="toggleSuspend()" [disabled]="isSuspending">
+          <mat-icon>{{ tontine.etat === 'ACTIVE' ? 'pause' : 'play_arrow' }}</mat-icon>
+          {{ tontine.etat === 'ACTIVE' ? 'Suspendre' : 'Activer' }}
+          <mat-spinner *ngIf="isSuspending" diameter="20"></mat-spinner>
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- Carte Détails -->
+    <mat-card class="details-card">
+      <mat-card-header>
+        <mat-card-title>Détails de la tontine</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="row m-b-20">
+          <div class="col-md-6">
+            <p class="m-b-5 text-muted">Description</p>
+            <div class="f-w-500">{{ tontine.description || 'Aucune description' }}</div>
+          </div>
+          <div class="col-md-6">
+            <p class="m-b-5 text-muted">Mode de versement</p>
+            <div class="f-w-500">{{ tontine.modeVersement === 'AUTOMATIC' ? 'Automatique' : 'Manuel' }}</div>
+          </div>
+        </div>
+
+        <div class="row m-b-20">
+          <div class="col-md-6">
+            <p class="m-b-5 text-muted">Solde actuel</p>
+            <div class="f-w-500">{{ formatCurrency(tontine.compteSequestre.soldeActuel) }}</div>
+          </div>
+          <div class="col-md-6">
+            <p class="m-b-5 text-muted">Montant bloqué</p>
+            <div class="f-w-500">{{ formatCurrency(tontine.compteSequestre.montantBloque) }}</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <p class="m-b-5 text-muted">Date création</p>
+            <div class="f-w-500">{{ formatDate(tontine.createdAt) }}</div>
+          </div>
+          <div class="col-md-6">
+            <p class="m-b-5 text-muted">Dernière mise à jour</p>
+            <div class="f-w-500">{{ formatDate(tontine.updatedAt) }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Carte Ordre de rotation -->
+    <mat-card class="rotation-card">
+      <mat-card-header>
+        <mat-card-title>Ordre de rotation</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="rotation-timeline">
+          <div *ngFor="let memberId of getRotationOrder(); let i = index" class="timeline-item">
+            <div class="timeline-badge">
+              <span>{{ i + 1 }}</span>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-title">Tour {{ i + 1 }}</div>
+              <div class="timeline-member">{{ getMemberById(memberId) || 'Membre #' + memberId }}</div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Carte Tours de distribution -->
+    <mat-card class="distribution-card">
+      <mat-card-header>
+        <mat-card-title>Tours de distribution</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="distribution-list">
+          <div *ngFor="let tour of tontine.toursDeDistribution" class="distribution-item">
+            <div class="distribution-info">
+              <div class="distribution-number">Tour #{{ tour.numeroDistribution }}</div>
+              <div class="distribution-status" [ngClass]="getStatusClass(tour.etat)">
+                {{ tour.etat === 'PENDING' ? 'En attente' : 'Complété' }}
+              </div>
+            </div>
+            <div class="distribution-details">
+              <div class="distribution-beneficiary">
+                Bénéficiaire: {{ getMemberById(tour.beneficiaireId) || 'Membre #' + tour.beneficiaireId }}
+              </div>
+              <div class="distribution-amount" *ngIf="tour.montantDistribue">
+                Montant: {{ formatCurrency(tour.montantDistribue) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

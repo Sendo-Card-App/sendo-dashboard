@@ -1,0 +1,371 @@
+/* Variables de couleur */
+$primary-color: #3f51b5;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$danger-color: #f44336;
+$text-muted: #6c757d;
+$border-color: #e0e0e0;
+
+/* Mixins */
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styles généraux */
+.row {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.m-t-25 {
+  margin-top: 25px;
+}
+
+.m-t-15 {
+  margin-top: 15px;
+}
+
+.m-b-5 {
+  margin-bottom: 5px;
+}
+
+.m-b-15 {
+  margin-bottom: 15px;
+}
+
+.m-b-20 {
+  margin-bottom: 20px;
+}
+
+.m-y-15 {
+  margin: 15px 0;
+}
+
+.m-r-10 {
+  margin-right: 10px;
+}
+
+.p-y-15 {
+  padding: 15px 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: $text-muted;
+}
+
+.f-12 {
+  font-size: 12px;
+}
+
+.f-14 {
+  font-size: 14px;
+}
+
+.f-16 {
+  font-size: 16px;
+}
+
+.f-w-500 {
+  font-weight: 500;
+}
+
+.f-w-600 {
+  font-weight: 600;
+}
+
+.border-side {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background-color: $border-color;
+  }
+}
+
+/* Cartes */
+mat-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &.tontine-profile-card {
+    .tontine-status {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+    }
+
+    .avatar-circle-large {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      @include flex-center;
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0 auto;
+    }
+  }
+
+  &.actions-card {
+    .status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+
+      h3 {
+        margin: 0;
+      }
+    }
+  }
+
+  &.details-card, &.rotation-card, &.distribution-card {
+    mat-card-header {
+      padding: 16px 16px 0;
+
+      mat-card-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+
+    mat-card-content {
+      padding: 16px;
+    }
+  }
+}
+
+/* Badges */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.status-active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.status-inactive {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+
+  &.status-pending {
+    background-color: #fff8e1;
+    color: #ff8f00;
+  }
+}
+
+/* Liste des membres */
+.members-list {
+  .member-item {
+    @include flex-center;
+    padding: 10px 0;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .member-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      @include flex-center;
+      color: white;
+      font-weight: bold;
+      margin-right: 12px;
+    }
+
+    .member-info {
+      flex: 1;
+
+      .member-name {
+        font-weight: 500;
+      }
+
+      .member-role {
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 12px;
+        display: inline-block;
+
+        &.admin {
+          background-color: #e3f2fd;
+          color: #1565c0;
+        }
+      }
+    }
+  }
+}
+
+/* Timeline ordre de rotation */
+.rotation-timeline {
+  .timeline-item {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 9px;
+      top: 0;
+      bottom: -20px;
+      width: 2px;
+      background-color: $border-color;
+    }
+
+    .timeline-badge {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: $primary-color;
+      color: white;
+      @include flex-center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .timeline-content {
+      .timeline-title {
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+
+      .timeline-member {
+        color: $text-muted;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+/* Liste des distributions */
+.distribution-list {
+  .distribution-item {
+    padding: 12px 0;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .distribution-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+
+      .distribution-number {
+        font-weight: 500;
+      }
+    }
+
+    .distribution-details {
+      color: $text-muted;
+      font-size: 14px;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .col-lg-4, .col-lg-8, .col-xxl-3, .col-xxl-9 {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// .member-item {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   padding: 12px;
+//   border-radius: 8px;
+//   background-color: #f8f9fa;
+//   transition: all 0.3s ease;
+
+//   &:hover {
+//     background-color: #e9ecef;
+//     transform: translateY(-2px);
+//     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+//   }
+// }
+
+.member-main-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+// .member-avatar {
+//   width: 40px;
+//   height: 40px;
+//   border-radius: 50%;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   color: white;
+//   font-weight: bold;
+//   flex-shrink: 0;
+// }
+
+.member-info {
+  .member-name {
+    font-weight: 500;
+    color: #2c3e50;
+  }
+
+  .member-role {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-top: 4px;
+
+    &.admin {
+      background-color: #e3f2fd;
+      color: #1565c0;
+    }
+  }
+}
+
+.history-button {
+  margin-left: 16px;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
