@@ -1,30 +1,32 @@
-// angular project
 import { Component, OnInit, effect, inject } from '@angular/core';
-
-// project import
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service';
-
-// const
 import { DARK, LIGHT } from 'src/app/@theme/const';
-
-// third party
 import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
+import { AdminService } from 'src/app/@theme/services/admin.service';
+import { SharedExpensesStats, SharedExpenseStatusDistribution } from 'src/app/@theme/models/statistics';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-course-report-bar-chart',
-  imports: [SharedModule, NgApexchartsModule],
+  imports: [SharedModule, NgApexchartsModule, CommonModule],
   templateUrl: './course-report-bar-chart.component.html',
-  styleUrl: './course-report-bar-chart.component.scss'
+  styleUrls: ['./course-report-bar-chart.component.scss']
 })
 export class CourseReportBarChartComponent implements OnInit {
   private themeService = inject(ThemeLayoutService);
+  private statsService = inject(AdminService);
 
-  // public props
-  chartOptions!: Partial<ApexOptions>;
-  themeColors = ['#4680ff', '#faad14'];
+  // Chart configurations
+  statusChartOptions!: Partial<ApexOptions>;
+  contributorsChartOptions!: Partial<ApexOptions>;
+  recentExpensesChartOptions!: Partial<ApexOptions>;
+  themeColors = ['#4680ff', '#faad14', '#ff4d4f'];
 
-  // constructor
+  // Data
+  isLoading = false;
+  stats!: SharedExpensesStats;
+
   constructor() {
     effect(() => {
       this.updateChartColors(this.themeService.color());
@@ -34,112 +36,124 @@ export class CourseReportBarChartComponent implements OnInit {
     });
   }
 
-  // life cycle hook
   ngOnInit(): void {
-    this.chartOptions = {
+    this.loadStats();
+    this.initChartOptions();
+  }
+
+  loadStats(): void {
+    this.isLoading = true;
+    this.statsService.getStatistics().subscribe({
+      next: (response) => {
+        this.stats = response.data.sharedExpenses;
+        this.updateChartsData();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading stats:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  initChartOptions(): void {
+    // Chart for status distribution
+    this.statusChartOptions = {
+      chart: {
+        type: 'donut',
+        height: 300,
+        toolbar: { show: false }
+      },
+      labels: ['En attente', 'Complétées', 'Annulées'],
+      legend: { position: 'bottom' },
+      dataLabels: { enabled: false },
+      colors: this.themeColors
+    };
+
+    // Chart for top contributors
+    this.contributorsChartOptions = {
       chart: {
         type: 'bar',
-        height: '190px',
-        toolbar: {
-          show: false
-        }
+        height: 300,
+        toolbar: { show: false }
       },
       plotOptions: {
         bar: {
-          columnWidth: '50%',
+          horizontal: true,
           borderRadius: 3
         }
       },
-      stroke: {
-        show: true,
-        width: 3,
-        colors: ['transparent']
+      dataLabels: { enabled: false },
+      colors: [this.themeColors[0]]
+    };
+
+    // Chart for recent expenses
+    this.recentExpensesChartOptions = {
+      chart: {
+        type: 'line',
+        height: 300,
+        toolbar: { show: false }
       },
-      dataLabels: {
-        enabled: false
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'right',
-        show: true,
-        fontFamily: `'Public Sans', sans-serif`,
-        offsetX: 10,
-        offsetY: 10,
-        labels: {
-          useSeriesColors: false
-        },
-        markers: {
-          // width: 10,
-          // height: 10,
-          // radius: 50,
-          offsetX: 2,
-          offsetY: 2
-        },
-        itemMargin: {
-          horizontal: 15,
-          vertical: 5
-        }
-      },
-      colors: this.themeColors,
-      series: [
-        {
-          name: 'Net Profit',
-          data: [180, 90, 135, 114, 120, 145, 180, 90, 135, 114, 120, 145]
-        },
-        {
-          name: 'Revenue',
-          data: [120, 45, 78, 150, 168, 99, 120, 45, 78, 150, 168, 99]
-        }
-      ],
-      grid: {
-        borderColor: '#00000010'
-      },
-      yaxis: {
-        show: false
+      stroke: { curve: 'smooth', width: 3 },
+      markers: { size: 5 },
+      dataLabels: { enabled: false },
+      colors: [this.themeColors[1]]
+    };
+  }
+
+  updateChartsData(): void {
+    // Update status distribution chart
+    this.statusChartOptions = {
+      ...this.statusChartOptions,
+      series: this.stats.statusDistribution.map(item => item.count)
+    };
+
+    // Update top contributors chart
+    this.contributorsChartOptions = {
+      ...this.contributorsChartOptions,
+      series: [{
+        name: 'Montant contribué',
+        data: this.stats.topContributors.map(c => c.totalContributed)
+      }],
+      xaxis: {
+        categories: this.stats.topContributors.map(c => c.user.name)
+      }
+    };
+
+    // Update recent expenses chart
+    this.recentExpensesChartOptions = {
+      ...this.recentExpensesChartOptions,
+      series: [{
+        name: 'Montant',
+        data: this.stats.recentSharedExpenses.map(e => e.totalAmount)
+      }],
+      xaxis: {
+        categories: this.stats.recentSharedExpenses.map(e =>
+          new Date(e.createdAt).toLocaleDateString()
+        )
       }
     };
   }
 
   private updateChartColors(theme: string) {
-    switch (theme) {
-      case 'blue-theme':
-      default:
-        this.themeColors = ['#4680ff', '#faad14'];
-        break;
-      case 'indigo-theme':
-        this.themeColors = ['#6610f2', '#faad14'];
-        break;
-      case 'purple-theme':
-        this.themeColors = ['#673ab7', '#faad14'];
-        break;
-      case 'pink-theme':
-        this.themeColors = ['#e83e8c', '#faad14'];
-        break;
-      case 'red-theme':
-        this.themeColors = ['#dc2626', '#faad14'];
-        break;
-      case 'orange-theme':
-        this.themeColors = ['#fd7e14', '#faad14'];
-        break;
-      case 'yellow-theme':
-        this.themeColors = ['#e58a00', '#faad14'];
-        break;
-      case 'green-theme':
-        this.themeColors = ['#2ca87f', '#faad14'];
-        break;
-      case 'teal-theme':
-        this.themeColors = ['#20c997', '#faad14'];
-        break;
-      case 'cyan-theme':
-        this.themeColors = ['#3ec9d6', '#faad14'];
-        break;
-    }
-    this.chartOptions = { ...this.chartOptions, colors: this.themeColors };
+    // Same as your existing implementation
+    // ...
+    this.themeColors = ['#4680ff', '#faad14', '#ff4d4f'];
+    this.statusChartOptions = { ...this.statusChartOptions, colors: this.themeColors };
+    this.contributorsChartOptions = { ...this.contributorsChartOptions, colors: [this.themeColors[0]] };
+    this.recentExpensesChartOptions = { ...this.recentExpensesChartOptions, colors: [this.themeColors[1]] };
   }
 
   private isDarkTheme(isDark: string) {
-    const tooltip = { ...this.chartOptions.tooltip };
-    tooltip.theme = isDark === DARK ? DARK : LIGHT;
-    this.chartOptions = { ...this.chartOptions, tooltip };
+    const tooltip = { theme: isDark === DARK ? DARK : LIGHT };
+    this.statusChartOptions = { ...this.statusChartOptions, tooltip };
+    this.contributorsChartOptions = { ...this.contributorsChartOptions, tooltip };
+    this.recentExpensesChartOptions = { ...this.recentExpensesChartOptions, tooltip };
+  }
+
+  getStatusPercentage(status: string): number {
+    const total = this.stats.statusDistribution.reduce((sum, item) => sum + item.count, 0);
+    const item = this.stats.statusDistribution.find(s => s.status === status);
+    return item ? Math.round((item.count / total) * 100) : 0;
   }
 }

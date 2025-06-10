@@ -114,19 +114,20 @@ export class TontineDetailsComponent implements OnInit {
   getRotationOrder(): number[] {
     if (!this.tontine?.ordreRotation) return [];
     try {
+      console.log('Rotation Order:', this.tontine.ordreRotation);
       return JSON.parse(this.tontine.ordreRotation);
     } catch {
+      console.error('Error parsing rotation order:', this.tontine.ordreRotation);
       return [];
     }
   }
 
   getMemberById(memberId: number): string {
-    if (!this.tontine) return '';
-    const member = this.tontine.membres.find(m => m.user.id === memberId);
-    console.log('Member:', member);
-    console.log('MemberId:', memberId);
-    return member ? `${member.user.firstname} ${member.user.lastname}` : '';
-  }
+  if (!this.tontine?.membres) return '';
+  const member = this.tontine.membres.find(m => m.id === memberId);
+  return member?.user ? `${member.user.firstname} ${member.user.lastname}` : `Membre #${memberId}`;
+}
+
 
   calculateTotalContributions(): number {
     if (!this.tontine) return 0;

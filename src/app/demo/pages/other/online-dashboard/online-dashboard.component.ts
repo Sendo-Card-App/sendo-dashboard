@@ -12,6 +12,7 @@ import { ActivityLineChartComponent } from './activity-line-chart/activity-line-
 import { activityData } from 'src/app/fake-data/activity_data';
 import { VisitorsBarChartComponent } from './visitors-bar-chart/visitors-bar-chart.component';
 import { EarningCoursesLineChartComponent } from './earning-courses-line-chart/earning-courses-line-chart.component';
+import { CourseReportBarChartComponent } from './course-report-bar-chart/course-report-bar-chart.component';
 import { courseStatesData } from 'src/app/fake-data/courseStates_data';
 import { AdminService } from 'src/app/@theme/services/admin.service'; // Importez votre service
 import { DashboardSummaryItem, StatisticsData, StatisticsResponse, WalletStats, WalletTop } from 'src/app/@theme/models/statistics'; // Importez votre interface
@@ -42,6 +43,7 @@ const courseStates_data = courseStatesData;
     StatisticsChartComponent,
     InvitesGoalChartComponent,
     TotalRevenueLineChartComponent,
+    CourseReportBarChartComponent,
     StudentStatesChartComponent,
     ActivityLineChartComponent,
     VisitorsBarChartComponent,

@@ -1,7 +1,145 @@
-::ng-deep#courses {
-  apx-chart {
-    div {
-      min-height: 0px !important;
+.shared-expenses-stats-container {
+  padding-top: 20px;
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.stats-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  height: 100%;
+
+  .summary-item {
+    padding: 16px;
+
+    .summary-label {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .summary-value {
+      font-size: 24px;
+      font-weight: 600;
+    }
+  }
+}
+
+.charts-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card, .recent-expenses-card {
+  height: 100%;
+
+  .chart-container {
+    height: 300px;
+  }
+}
+
+.status-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-badge {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+
+    &.status-pending {
+      background-color: #faad14;
+    }
+
+    &.status-completed {
+      background-color: #52c41a;
+    }
+
+    &.status-cancelled {
+      background-color: #ff4d4f;
+    }
+  }
+
+  .status-label {
+    font-size: 14px;
+  }
+
+  .status-count {
+    font-weight: 500;
+  }
+}
+
+.recent-expenses-list {
+  margin-top: 24px;
+
+  .expense-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .expense-info {
+      .expense-amount {
+        font-weight: 600;
+        margin-right: 12px;
+      }
+    }
+
+    .expense-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .expense-status {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+
+      &.status-pending {
+        background-color: #fff7e6;
+        color: #faad14;
+      }
+
+      &.status-completed {
+        background-color: #f6ffed;
+        color: #52c41a;
+      }
+
+      &.status-cancelled {
+        background-color: #fff1f0;
+        color: #ff4d4f;
+      }
     }
   }
 }

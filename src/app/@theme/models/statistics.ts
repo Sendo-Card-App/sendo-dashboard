@@ -84,6 +84,7 @@ export interface StatisticsData {
   walletStats: WalletStats;
   transactionStats: TransactionStats;
   cardStats: CardStats;
+  sharedExpenses: SharedExpensesStats; 
   requestStats: RequestStats;
   roleStats: RoleStat[];
 }
@@ -112,3 +113,49 @@ export interface CountsByType {
 
 // 2) Puis un type pour l’ensemble des dates
 export type GroupedData = Record<string, CountsByType>;
+
+export interface SharedExpenseStatusDistribution {
+  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
+  count: number;
+}
+
+export interface TopContributor {
+  userId: number;
+  totalContributed: number;
+  user: {
+    name: string;
+    // Ajoutez d'autres propriétés utilisateur si nécessaire
+    // email?: string;
+    // avatar?: string;
+  };
+}
+
+export interface RecentSharedExpense {
+  id: number;
+  totalAmount: number;
+  description: string;
+  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
+  initiator: string;
+  createdAt: string; // ou Date si vous convertissez les strings en Date
+  // Ajoutez d'autres propriétés si nécessaire
+  // participants?: number;
+}
+
+export interface SharedExpensesStats {
+  totalSharedExpenses: number;
+  averageParticipants: number;
+  statusDistribution: SharedExpenseStatusDistribution[];
+  totalAmountShared: number;
+  topContributors: TopContributor[];
+  recentSharedExpenses: RecentSharedExpense[];
+}
+
+// Exemple d'interface pour la réponse complète si nécessaire
+export interface SharedExpensesResponse {
+  status: number;
+  message: string;
+  data: {
+    sharedExpenses: SharedExpensesStats;
+    // autres données potentielles...
+  };
+}
