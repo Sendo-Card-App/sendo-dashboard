@@ -1,6 +1,7 @@
 // angular import
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 // project import
 import { SharedModule } from 'src/app/demo/shared/shared.module';
@@ -47,7 +48,8 @@ const courseStates_data = courseStatesData;
     StudentStatesChartComponent,
     ActivityLineChartComponent,
     VisitorsBarChartComponent,
-    EarningCoursesLineChartComponent
+    EarningCoursesLineChartComponent,
+    RouterModule 
   ],
   templateUrl: './online-dashboard.component.html',
   styleUrl: './online-dashboard.component.scss'

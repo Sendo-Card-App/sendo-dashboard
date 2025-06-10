@@ -72,20 +72,30 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div class="members-list">
-          <div *ngFor="let member of tontine.membres" class="member-item">
-            <div class="member-avatar" [style.background]="getMemberColor(member)">
-              {{ member.user.firstname.charAt(0) }}{{ member.user.lastname.charAt(0) }}
-            </div>
-            <div class="member-info">
-              <div class="member-name">{{ member.user.firstname }} {{ member.user.lastname }}</div>
-              <div class="member-role" [ngClass]="{'admin': member.role === 'ADMIN'}">
-                {{ member.role === 'ADMIN' ? 'Administrateur' : 'Membre' }}
-              </div>
-            </div>
+  <div class="members-list">
+    <div *ngFor="let member of tontine.membres" class="member-item">
+      <div class="member-main-info">
+        <div class="member-avatar" [style.background]="getMemberColor(member)">
+          {{ member.user.firstname.charAt(0) }}{{ member.user.lastname.charAt(0) }}
+        </div>
+        <div class="member-info">
+          <div class="member-name">{{ member.user.firstname }} {{ member.user.lastname }}</div>
+          <div class="member-role" [ngClass]="{'admin': member.role === 'ADMIN'}">
+            {{ member.role === 'ADMIN' ? 'Administrateur' : 'Membre' }}
           </div>
         </div>
-      </mat-card-content>
+      </div>
+
+      <button mat-icon-button
+              color="primary"
+              class="history-button"
+              (click)="viewMemberContributions(member)"
+              matTooltip="Voir l'historique des cotisations">
+        <mat-icon>history</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-card-content>
     </mat-card>
   </div>
 

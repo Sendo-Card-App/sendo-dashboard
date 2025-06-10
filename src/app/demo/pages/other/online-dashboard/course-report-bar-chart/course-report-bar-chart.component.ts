@@ -4,7 +4,7 @@ import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service
 import { DARK, LIGHT } from 'src/app/@theme/const';
 import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
 import { AdminService } from 'src/app/@theme/services/admin.service';
-import { SharedExpensesStats, SharedExpenseStatusDistribution } from 'src/app/@theme/models/statistics';
+import { SharedExpensesStats } from 'src/app/@theme/models/statistics';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -28,9 +28,6 @@ export class CourseReportBarChartComponent implements OnInit {
   stats!: SharedExpensesStats;
 
   constructor() {
-    effect(() => {
-      this.updateChartColors(this.themeService.color());
-    });
     effect(() => {
       this.isDarkTheme(this.themeService.isDarkMode());
     });
@@ -135,7 +132,7 @@ export class CourseReportBarChartComponent implements OnInit {
     };
   }
 
-  private updateChartColors(theme: string) {
+  private updateChartColors() {
     // Same as your existing implementation
     // ...
     this.themeColors = ['#4680ff', '#faad14', '#ff4d4f'];
