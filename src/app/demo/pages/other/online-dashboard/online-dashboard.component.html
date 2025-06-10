@@ -64,35 +64,22 @@
     </ul>
   </app-card>
 </div>
-<div class="col-lg-7 col-md-12">
-    <app-card [showHeader]="false">
-      <div class="flex align-item-center justify-content-between m-b-15">
-        <div class="f-16 f-w-600 m-b-0">Informations sur les users</div>
-        <a [matMenuTriggerFor]="menu" class="avatar avatar-s hover"><i class="ti ti-dots-vertical f-18"></i></a>
-        <mat-menu #menu="matMenu">
-          <a mat-menu-item>Today</a>
-          <a mat-menu-item>Weekly</a>
-          <a mat-menu-item>Monthly</a>
-        </mat-menu>
-      </div>
-      <app-student-states-chart />
-    </app-card>
-  </div>
-  <!-- <div class="col-lg-7 col-md-12">
+
+  <div class="col-lg-7 col-md-12">
     <app-card [showHeader]="false">
       <div class="flex align-item-center justify-content-between">
-        <div class="f-16 f-w-600">Courses</div>
-        <a class="text-primary-500">View Report</a>
+        <div class="f-16 f-w-600">Dépenses partagées</div>
+        <a class="text-primary-500" routerLink="/shared-expenses/all">Rapport complet</a>
       </div>
-      <div class="f-24 f-w-600">$7,860</div>
+      <!-- <div class="f-24 f-w-600">$7,860</div>
       <p class="flex align-item-center text-success-500 m-b-0">
         <i class="ti ti-arrow-narrow-up m-r-5"></i>
         2.1%
       </p>
-      <p class="text-muted">Sales from 1-12 Dec, 2023</p>
+      <p class="text-muted">Sales from 1-12 Dec, 2023</p> -->
       <app-course-report-bar-chart />
     </app-card>
-  </div> -->
+  </div>
   <div class="col-lg-4 col-md-6">
     <app-card [showHeader]="false" [padding]="20">
       <p class="text-muted m-b-5">Total Revenue</p>
@@ -115,6 +102,20 @@
         </p>
       </div>
       <app-total-revenue-line-chart [values]="[20, 10, 25, 18, 18, 10, 12]" [color]="['#ff4d4f']" />
+    </app-card>
+  </div>
+  <div class="col-lg-4 col-md-6">
+    <app-card [showHeader]="false">
+      <div class="flex align-item-center justify-content-between m-b-15">
+        <div class="f-16 f-w-600 m-b-0">Informations sur les users</div>
+        <a [matMenuTriggerFor]="menu" class="avatar avatar-s hover"><i class="ti ti-dots-vertical f-18"></i></a>
+        <mat-menu #menu="matMenu">
+          <a mat-menu-item>Today</a>
+          <a mat-menu-item>Weekly</a>
+          <a mat-menu-item>Monthly</a>
+        </mat-menu>
+      </div>
+      <app-student-states-chart />
     </app-card>
   </div>
 

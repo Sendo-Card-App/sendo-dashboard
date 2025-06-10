@@ -1,14 +1,116 @@
-<div id="courses">
-  <apx-chart
-    [series]="chartOptions.series"
-    [chart]="chartOptions.chart"
-    [dataLabels]="chartOptions.dataLabels"
-    [legend]="chartOptions.legend"
-    [yaxis]="chartOptions.yaxis"
-    [colors]="chartOptions.colors"
-    [stroke]="chartOptions.stroke"
-    [grid]="chartOptions.grid"
-    [tooltip]="chartOptions.tooltip"
-    [plotOptions]="chartOptions.plotOptions"
-  ></apx-chart>
+<div class="shared-expenses-stats-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="stats && !isLoading" class="stats-content">
+    <!-- Header with summary stats -->
+    <!-- <div class="stats-header">
+      <mat-card class="summary-card">
+        <div class="summary-item">
+          <div class="summary-label">Total des dépenses</div>
+          <div class="summary-value">{{ stats.totalSharedExpenses }}</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <div class="summary-item">
+          <div class="summary-label">Montant total</div>
+          <div class="summary-value">{{ stats.totalAmountShared | currency:'XAF':'symbol':'1.0-0' }}</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <div class="summary-item">
+          <div class="summary-label">Participants moyens</div>
+          <div class="summary-value">{{ stats.averageParticipants }}</div>
+        </div>
+      </mat-card>
+    </div> -->
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <!-- Status Distribution -->
+      <!-- <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Répartition par statut</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <apx-chart
+              [series]="statusChartOptions.series"
+              [chart]="statusChartOptions.chart"
+              [labels]="statusChartOptions.labels"
+              [legend]="statusChartOptions.legend"
+              [colors]="statusChartOptions.colors"
+              [dataLabels]="statusChartOptions.dataLabels">
+            </apx-chart>
+          </div>
+          <div class="status-details">
+            <div *ngFor="let status of stats.statusDistribution" class="status-item">
+              <span class="status-badge" [ngClass]="'status-' + status.status.toLowerCase()"></span>
+              <span class="status-label">{{ status.status | titlecase }}:</span>
+              <span class="status-count">{{ status.count }} ({{ getStatusPercentage(status.status) }}%)</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card> -->
+
+      <!-- Top Contributors -->
+      <!-- <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Top Contributeurs</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <apx-chart
+              [series]="contributorsChartOptions.series"
+              [chart]="contributorsChartOptions.chart"
+              [plotOptions]="contributorsChartOptions.plotOptions"
+              [xaxis]="contributorsChartOptions.xaxis"
+              [dataLabels]="contributorsChartOptions.dataLabels"
+              [colors]="contributorsChartOptions.colors">
+            </apx-chart>
+          </div>
+        </mat-card-content>
+      </mat-card> -->
+    </div>
+
+    <!-- Recent Expenses -->
+    <mat-card class="recent-expenses-card">
+      <mat-card-header>
+        <mat-card-title>Dépenses récentes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <apx-chart
+            [series]="recentExpensesChartOptions.series"
+            [chart]="recentExpensesChartOptions.chart"
+            [xaxis]="recentExpensesChartOptions.xaxis"
+            [stroke]="recentExpensesChartOptions.stroke"
+            [markers]="recentExpensesChartOptions.markers"
+            [dataLabels]="recentExpensesChartOptions.dataLabels"
+            [colors]="recentExpensesChartOptions.colors">
+          </apx-chart>
+        </div>
+        <div class="recent-expenses-list">
+          <div *ngFor="let expense of stats.recentSharedExpenses" class="expense-item">
+            <div class="expense-info">
+              <span class="expense-amount">{{ expense.totalAmount | currency:'XAF':'symbol':'1.0-0' }}</span>
+              <span class="expense-description">{{ expense.description }}</span>
+            </div>
+            <div class="expense-meta">
+              <span class="expense-initiator">{{ expense.initiator }}</span>
+              <span class="expense-date">{{ expense.createdAt | date:'shortDate' }}</span>
+              <span class="expense-status" [ngClass]="'status-' + expense.status.toLowerCase()">
+                {{ expense.status | titlecase }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>
