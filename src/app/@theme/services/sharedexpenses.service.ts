@@ -58,6 +58,10 @@ cancelSharedExpense(
   );
 }
 
+updateSharedExpenseStatus(id: number, status: 'PENDING' | 'COMPLETED'): Observable<BaseResponse> {
+    const url = `${this.apiUrl}/shared-expense/${id}/update-status`;
+    return this.http.patch<BaseResponse>(url, { status }, this.getConfigAuthorized());
+}
 
 
 

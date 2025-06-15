@@ -256,6 +256,9 @@ export interface PaginatedData<T> {
   items: T[];
 }
 
+export interface SharedResponseMessage {
+  message: string;
+}
 // src/app/%40theme/models/fund-request.model.ts
 
 export type FundRequestStatus = 'PENDING' | 'PARTIALLY_FUNDED' | 'FULLY_FUNDED' | 'CANCELLED';

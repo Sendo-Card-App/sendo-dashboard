@@ -136,11 +136,18 @@
   </div>
 
   <div *ngIf="sharedExpense.status === 'CANCELLED'" class="cancelled-info">
-    <mat-icon class="cancelled-icon">cancel</mat-icon>
-    <p>Cette dépense a été annulée le {{ formatDate(sharedExpense.updatedAt) }}</p>
-    <p *ngIf="sharedExpense.cancelReason" class="cancel-reason">
-      <strong>Motif:</strong> {{ sharedExpense.cancelReason }}
-    </p>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <mat-icon class="cancelled-icon">cancel</mat-icon>
+      <p>Cette dépense a été annulée le {{ formatDate(sharedExpense.updatedAt) }}</p>
+      <p *ngIf="sharedExpense.cancelReason" class="cancel-reason">
+        <strong>Motif:</strong> {{ sharedExpense.cancelReason }}
+      </p>
+    </div>
+    <button style="margin-top: 10px;width: 100%;" mat-stroked-button
+           color="success"
+           (click)="confirmActivate()">
+     Activer la dépense
+   </button>
   </div>
 </mat-card>
 

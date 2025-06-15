@@ -113,6 +113,31 @@
       });
   }
 
+  confirmActivate(): void {
+    if (!this.sharedExpense) return;
+
+    this.sharedExpenseService.updateSharedExpenseStatus(this.sharedExpense.id, 'PENDING')
+      .subscribe({
+        next: (response) => {
+          console.log('Mise à jour réussie', response);
+          this.snackBar.open('Dépense activée avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          this.loadSharedExpense();
+        },
+    error: (error) => {
+      console.error('Erreur lors de la mise à jour', error);
+      this.snackBar.open('Erreur lors de l\'activation de la dépense', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+
+
+  }
+
   cancelCancellation(): void {
     this.showCancelForm = false;
     this.cancelForm.reset();
