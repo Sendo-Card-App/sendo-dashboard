@@ -142,6 +142,24 @@ const routes: Routes = [
 
     ]
   },
+   {
+    path: 'publicites',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'all',
+        loadComponent: () => import('./demo/pages/pub/pub-list/pub-list.component').then((c) => c.PubListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+       {
+        path: 'create',
+        loadComponent: () => import('./demo/pages/pub/pub-add/pub-add.component').then((c) => c.PubAddComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+
+    ]
+  },
   {
     path: 'shared-expenses',
     component: AdminComponent,

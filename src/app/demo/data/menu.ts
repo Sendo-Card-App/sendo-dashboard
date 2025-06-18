@@ -192,6 +192,41 @@ export const menus: Navigation[] = [
       },
     ]
   },
+    {
+    id: 'Section Publicite',
+    title: 'Publicité',
+    type: 'group',
+    icon: 'icon-navigation',
+    role: [Role.Admin, Role.User],
+    children: [
+      {
+        id: 'publicite',
+        title: 'Publicité',
+        type: 'collapse',
+        icon: '#custom-row-vertical',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'allpublicite',
+            title: 'Liste des publicités',
+            type: 'item',
+            url: '/publicites/all',
+            // target: true,
+            breadcrumbs: true
+          },
+           {
+            id: 'addpublicite',
+            title: 'Ajouter une publicité',
+            type: 'item',
+            url: '/publicites/create',
+            // target: true,
+            breadcrumbs: true
+          },
+
+        ]
+      },
+    ]
+  },
    {
     id: 'Paramettres',
     title: 'Paramettres',

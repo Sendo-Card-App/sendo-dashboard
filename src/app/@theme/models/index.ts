@@ -1,5 +1,6 @@
 
 
+
 export interface LoginResponse {
     accessToken: string;
     deviceId: string;
@@ -410,4 +411,23 @@ export interface TontineResponse1 {
   status: number;
   message: string;
   data: Tontine[];
+}
+
+
+export interface Publicite {
+  id: number;
+  name?: string;
+  description?: string;
+  imageUrl: string;
+  price?: number;
+  link?: string;
+  isActive?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PubliciteListResponse {
+  status: number;
+  message: string;
+  data: PaginatedData<Publicite>;
 }
