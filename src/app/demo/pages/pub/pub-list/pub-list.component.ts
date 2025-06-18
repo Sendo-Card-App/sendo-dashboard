@@ -140,4 +140,28 @@ export class PubListComponent implements OnInit {
   getStatusClass(isActive: boolean): string {
     return isActive ? 'status-active' : 'status-inactive';
   }
+  deletePub(pub: Publicite): void {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette publicité ?')) return;
+
+    this.isLoading = true;
+    this.pubService.deletePublicite(pub.id)
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Publicité supprimée avec succès', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+          this.dataSource.data = this.dataSource.data.filter(p => p.id !== pub.id);
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error deleting pub:', error);
+          this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+          this.isLoading = false;
+        }
+      });
+  }
 }

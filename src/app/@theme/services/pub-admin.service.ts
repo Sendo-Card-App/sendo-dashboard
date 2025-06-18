@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { Publicite, BaseResponse, PubliciteListResponse } from '../models/index';
 import { environment } from 'src/environments/environment';
 
@@ -31,6 +31,17 @@ export class PubAdminService {
   createPublicite(data: FormData): Observable<BaseResponse<Publicite>> {
     return this.http.post<BaseResponse<Publicite>>(this.apiUrl, data, this.getConfigAuthorized());
   }
+
+  deletePublicite(id: number): Observable<BaseResponse<Publicite>> {
+  const url = `${this.apiUrl}/${id}`;
+  return this.http.delete<BaseResponse<Publicite>>(url, this.getConfigAuthorized()).pipe(
+    catchError((error) => {
+      console.error('Erreur lors de la suppression de la publicité :', error);
+      return throwError(() => error);
+    })
+  );
+}
+
 
 
 
