@@ -252,6 +252,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/other/online-dashboard/online-dashboard.component').then((c) => c.OnlineDashboardComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
+       {
+        path: 'chat',
+        loadComponent: () => import('./demo/pages/chat/chat.component').then((c) => c.ChatComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
       {
         path: '',
         loadChildren: () => import('./demo/pages/application/application.module').then((m) => m.ApplicationModule),

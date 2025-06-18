@@ -133,7 +133,7 @@ export const menus: Navigation[] = [
 
         ]
       },
-       {
+      {
         id: 'shared',
         title: 'Depenses Partagées',
         type: 'collapse',
@@ -192,7 +192,7 @@ export const menus: Navigation[] = [
       },
     ]
   },
-    {
+  {
     id: 'Section Publicite',
     title: 'Publicité',
     type: 'group',
@@ -214,7 +214,7 @@ export const menus: Navigation[] = [
             // target: true,
             breadcrumbs: true
           },
-           {
+          {
             id: 'addpublicite',
             title: 'Ajouter une publicité',
             type: 'item',
@@ -227,7 +227,7 @@ export const menus: Navigation[] = [
       },
     ]
   },
-   {
+  {
     id: 'Paramettres',
     title: 'Paramettres',
     type: 'group',
@@ -251,6 +251,14 @@ export const menus: Navigation[] = [
           },
 
         ]
+      },
+      {
+        id: 'cht',
+        title: 'Support Client',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/chat',
+        icon: '#custom-message-2'
       },
     ]
   },
