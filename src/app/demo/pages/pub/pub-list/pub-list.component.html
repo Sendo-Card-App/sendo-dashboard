@@ -1,0 +1,186 @@
+<div class="request-container">
+  <div class="filter-section">
+    <form [formGroup]="filterForm">
+      <div class="row">
+        <!-- Search Field -->
+        <div class="col-md-10">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Rechercher</mat-label>
+            <input matInput formControlName="search" placeholder="Nom, description...">
+          </mat-form-field>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="col-md-2">
+          <button mat-stroked-button type="button" class="w-100">
+            <mat-icon>search</mat-icon>
+            Rechercher
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-section">
+    <div class="table-responsive">
+      <table mat-table [dataSource]="dataSource" matSort>
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let pub">{{ pub.id }}</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
+          <td mat-cell *matCellDef="let pub">{{ pub.name }}</td>
+        </ng-container>
+
+        <!-- Image Column -->
+        <ng-container matColumnDef="imageUrl">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Image</th>
+          <td mat-cell *matCellDef="let pub">
+            <img [src]="pub.imageUrl" alt="Publicité" class="pub-image">
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+          <td mat-cell *matCellDef="let pub">
+            <span class="status-badge" [ngClass]="getStatusClass(pub.isActive)">
+              {{ pub.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date de création</th>
+          <td mat-cell *matCellDef="let pub">
+            {{ pub.createdAt | date:'medium' }}
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="text-center">ACTIONS</th>
+                <td mat-cell *matCellDef="let pub" class="text-nowrap">
+                  <div class="text-center text-nowrap">
+                    <ul class="list-inline p-l-0">
+                      <li class="list-inline-item m-r-10" matTooltip="View">
+                        <a href="javascript:" (click)="openDetails(pub)" class="avatar avatar-xs text-muted">
+                          <i class="ti ti-eye f-18"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item m-r-10" matTooltip="Supprimer">
+                        <a href="javascript:" (click)="deletePub(pub)" class="avatar avatar-xs text-muted">
+                          <i class="ti ti-trash f-18"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Loading/No Data Row -->
+        <tr *matNoDataRow>
+          <td [colSpan]="displayedColumns.length">
+            <div class="no-data-message">
+              <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
+              <span *ngIf="!isLoading && dataSource.data.length === 0">
+                Aucune publicité trouvée
+              </span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator [length]="totalItems" [pageSize]="itemsPerPage" [pageSizeOptions]="[5, 10, 25, 100]"
+      (page)="onPageChange($event)" showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</div>
+
+<mat-drawer #drawer position="end" class="pub-drawer" mode="side">
+  <div class="drawer-header">
+    <h2>Détails de la publicité</h2>
+    <button mat-icon-button class="close-drawer" (click)="closeDetails()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="drawer-content" *ngIf="currentPub">
+    <div *ngIf="!isEditing">
+      <div class="detail-section">
+        <div class="detail-row">
+          <span class="detail-label">ID:</span>
+          <span>{{ currentPub.id }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Nom:</span>
+          <span>{{ currentPub.name }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Description:</span>
+          <span>{{ currentPub.description }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Statut:</span>
+          <span class="status-badge" [ngClass]="getStatusClass(currentPub.isActive)">
+            {{ currentPub.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Image:</span>
+          <img [src]="currentPub.imageUrl" alt="Publicité" class="pub-detail-image">
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="toggleEdit()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="isEditing">
+      <form [formGroup]="pubForm">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="name">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Lien</mat-label>
+          <input matInput formControlName="link">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Prix</mat-label>
+          <input matInput type="number" formControlName="price">
+        </mat-form-field>
+
+        <mat-checkbox formControlName="isActive">Active</mat-checkbox>
+
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="updatePub()" [disabled]="isLoading">
+            <span *ngIf="!isLoading">Enregistrer</span>
+            <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+          </button>
+          <button mat-stroked-button (click)="toggleEdit()">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</mat-drawer>
