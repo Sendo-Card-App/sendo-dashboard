@@ -1,0 +1,29 @@
+<div class="stats-container">
+  <div class="stats-charts">
+    <div style="flex: 1;">
+      <apx-chart *ngIf="chartOptions" [series]="chartOptions.series" [chart]="chartOptions.chart"
+        [xaxis]="chartOptions.xaxis" [colors]="chartOptions.colors" [dataLabels]="chartOptions.dataLabels"
+        [stroke]="chartOptions.stroke" [legend]="chartOptions.legend" [tooltip]="chartOptions.tooltip">
+      </apx-chart>
+    </div>
+  </div>
+  <div class="stats-recent">
+    <h6>Demandes récentes</h6>
+    <ul>
+      <li *ngFor="let req of requestFundsStats?.recent">
+        <div class="fw-bold">{{ req.requester }}</div>
+        <div class="text-muted small">{{ req.description }}</div>
+        <div>
+          <span class="fw-bold">{{ req.amount | number }} FCFA</span>
+          <span class="badge" [ngClass]="{
+                  'bg-success': req.status === 'FULLY_FUNDED',
+                  'bg-danger': req.status === 'CANCELLED'
+                }">
+            {{ req.status === 'FULLY_FUNDED' ? 'Financée' : 'Annulée' }}
+          </span>
+        </div>
+        <div class="small text-muted">{{ req.createdAt | date:'shortDate' }}</div>
+      </li>
+    </ul>
+  </div>
+</div>

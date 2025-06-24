@@ -42,7 +42,7 @@ export class CourseReportBarChartComponent implements OnInit {
     this.isLoading = true;
     this.statsService.getStatistics().subscribe({
       next: (response) => {
-        this.stats = response.data.sharedExpenses;
+        this.stats = response.data.sharedExpensesStats;
         this.updateChartsData();
         this.isLoading = false;
       },

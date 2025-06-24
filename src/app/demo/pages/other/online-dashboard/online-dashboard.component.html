@@ -80,28 +80,30 @@
       <app-course-report-bar-chart />
     </app-card>
   </div>
-  <div class="col-lg-4 col-md-6">
+  <div class="col-lg-6 col-md-12">
     <app-card [showHeader]="false" [padding]="20">
-      <p class="text-muted m-b-5">Total Revenue</p>
-      <div class="flex align-item-center justify-content-between">
+      <p class="text-muted m-b-5">Demande de fond</p>
+      <!-- <div class="flex align-item-center justify-content-between">
         <div class="f-24 f-w-600 m-b-0">7,265</div>
         <p class="flex align-item-center text-success-500 m-b-0">
           +11.02%
           <i class="ti ti-arrow-up-right text-success-500"></i>
         </p>
-      </div>
-      <app-total-revenue-line-chart [values]="[20, 10, 18, 12, 25, 10, 20]" [color]="['#52c41a']" />
+      </div> -->
+      <app-request-funds-chart />
     </app-card>
+  </div>
+  <div class="col-lg-6 col-md-12">
     <app-card [showHeader]="false" [padding]="20">
-      <p class="text-muted m-b-5">Total Subscription</p>
-      <div class="flex align-item-center justify-content-between">
-        <div class="f-24 f-w-600 m-b-0">5,326</div>
+      <p class="text-muted m-b-5">Statistiques des tontines</p>
+      <!-- <div class="flex align-item-center justify-content-between">
+        <div class="f-24 f-w-600 m-b-0">7,265</div>
         <p class="flex align-item-center text-success-500 m-b-0">
-          +12.02%
-          <i class="ti ti-arrow-down-right text-success-500"></i>
+          +11.02%
+          <i class="ti ti-arrow-up-right text-success-500"></i>
         </p>
-      </div>
-      <app-total-revenue-line-chart [values]="[20, 10, 25, 18, 18, 10, 12]" [color]="['#ff4d4f']" />
+      </div> -->
+      <app-tontine-stats />
     </app-card>
   </div>
   <div class="col-lg-4 col-md-6">

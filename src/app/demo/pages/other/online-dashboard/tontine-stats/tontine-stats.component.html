@@ -1,0 +1,30 @@
+<div class="tontine-stats-container" *ngIf="tontineStats">
+  <div class="tontine-stats-charts">
+    <h6 class="mb-3">Répartition des tontines par type</h6>
+    <apx-chart
+      *ngIf="chartOptions"
+      [series]="chartOptions.series"
+      [labels]="chartOptions.labels"
+      [chart]="chartOptions.chart"
+      [colors]="chartOptions.colors"
+      [legend]="chartOptions.legend"
+      [dataLabels]="chartOptions.dataLabels"
+      [tooltip]="chartOptions.tooltip">
+    </apx-chart>
+    <div class="mt-3">
+      <div>Total tontines : <b>{{ tontineStats.totalTontines }}</b></div>
+      <div>Montant total : <b>{{ tontineStats.totalAmount | number }} FCFA</b></div>
+      <div>Montant moyen : <b>{{ tontineStats.averageAmount | number:'1.0-0' }} FCFA</b></div>
+    </div>
+  </div>
+  <div class="tontine-stats-recent">
+    <h6 class="mb-3">Tontines récentes</h6>
+    <ul>
+      <li *ngFor="let t of tontineStats.recentTontines">
+        <div class="fw-bold">#{{ t.id }} - {{ t.status }}</div>
+        <div class="text-muted small">Montant : {{ t.montantTotal | number }} FCFA</div>
+        <div class="small text-muted">{{ t.createdAt | date:'shortDate' }}</div>
+      </li>
+    </ul>
+  </div>
+</div>

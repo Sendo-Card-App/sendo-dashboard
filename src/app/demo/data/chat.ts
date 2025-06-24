@@ -2,7 +2,7 @@ import { chatPersonType } from 'src/app/@theme/types/chat-type';
 
 export const chatPersonData: chatPersonType[] = [
   {
-    id: 1,
+    id: '1',
     name: 'Alene',
     company: 'ABC Pvt Ltd',
     role: 'Sr. Customer Manager',
@@ -19,7 +19,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'available'
   },
   {
-    id: 2,
+    id: "2",
     name: 'Keefe',
     company: 'ABC Pvt Ltd',
     role: 'Dynamic Operations Officer',
@@ -36,7 +36,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'available'
   },
   {
-    id: 3,
+    id: "3",
     name: 'Lazaro',
     company: 'ABC Pvt Ltd',
     role: 'Resource Investigator',
@@ -53,7 +53,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'available'
   },
   {
-    id: 4,
+    id: "4",
     name: 'Hazle',
     company: 'ABC Pvt Ltd',
     role: 'Teamworker',
@@ -70,7 +70,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'do_not_disturb'
   },
   {
-    id: 5,
+    id: "5",
     name: 'Herman Essertg',
     company: 'ABC Pvt Ltd',
     role: 'Co-ordinator',
@@ -87,7 +87,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'do_not_disturb'
   },
   {
-    id: 6,
+    id: "6",
     name: 'Wilhelmine Durrg',
     company: 'ABC Pvt Ltd',
     role: 'Monitor Evaluator',
@@ -104,7 +104,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'available'
   },
   {
-    id: 7,
+    id: "7",
     name: 'Agilulf Fuxg',
     company: 'ABC Pvt Ltd',
     role: 'Specialist',
@@ -121,7 +121,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'available'
   },
   {
-    id: 8,
+    id: "8",
     name: 'Adaline Bergfalks',
     company: 'ABC Pvt Ltd',
     role: 'Shaper',
@@ -138,7 +138,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'offline'
   },
   {
-    id: 9,
+    id: "9",
     name: 'Eadwulf Beckete',
     company: 'ABC Pvt Ltd',
     role: 'Implementer',
@@ -155,7 +155,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'offline'
   },
   {
-    id: 10,
+    id: "10",
     name: 'Midas',
     company: 'ABC Pvt Ltd',
     role: 'Leader',
@@ -172,7 +172,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'offline'
   },
   {
-    id: 11,
+    id: "11",
     name: 'Uranus',
     company: 'ABC Pvt Ltd',
     role: 'Facilitator',
@@ -189,7 +189,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'available'
   },
   {
-    id: 12,
+    id: "12",
     name: 'Peahen',
     company: 'ABC Pvt Ltd',
     role: 'Coach',
@@ -206,7 +206,7 @@ export const chatPersonData: chatPersonType[] = [
     online_status: 'do_not_disturb'
   },
   {
-    id: 13,
+    id: "13",
     name: 'Menelaus',
     company: 'ABC Pvt Ltd',
     role: 'Facilitator',

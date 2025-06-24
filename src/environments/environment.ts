@@ -4,14 +4,19 @@
 
 import packageInfo from '../../package.json';
 
-//export const apiUrl = 'https://api.sf-e.ca/api'
-export const apiUrl = 'https://api.sf-e.ca/api'
-const authUrl = '/auth'
+export const apiUrl = 'https://api.sf-e.ca/api';
+const authUrl = '/auth';
+const socketUrl = 'https://api.sf-e.ca/api'; // Même domaine que votre API
+
 export const environment = {
   appVersion: packageInfo.version,
   production: false,
   apiUrl: apiUrl,
-  authUrl: authUrl
+  authUrl: authUrl,
+  socketUrl: socketUrl, // Ajout de l'URL Socket.IO
+  socketPaths: {
+    chat: '/socket.io/chat' // Chemin spécifique pour le chat
+  }
 };
 
 /*
