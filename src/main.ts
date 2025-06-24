@@ -12,6 +12,10 @@ import { ErrorInterceptor } from 'src/app/@theme/helpers/error.interceptor';
 import { SharedModule } from './app/demo/shared/shared.module';
 import { GuestModule } from './app/demo/layout/front';
 import { AppComponent } from './app/app.component';
+// import { provideSocket } from './app/demo/shared/socket-io.config';
+import { SocketIoModule } from 'ngx-socket-io';
+import { socketConfig } from './app/demo/shared/socket-io.config';
+
 
 if (environment.production) {
   enableProdMode();
@@ -19,10 +23,10 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(AppRoutingModule, SharedModule, BrowserModule, GuestModule),
+    importProvidersFrom(AppRoutingModule, SharedModule, BrowserModule, GuestModule,SocketIoModule.forRoot(socketConfig)),
     { provide: HTTP_INTERCEPTORS, useClass: BasicAuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     [provideHttpClient(withInterceptorsFromDi())],
-    provideAnimations()
+    provideAnimations(),
   ]
 }).catch((err) => console.error(err));

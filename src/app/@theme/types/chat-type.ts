@@ -1,5 +1,5 @@
 export interface chatPersonType {
-  id: number;
+  id: string;
   name: string;
   company: string;
   role: string;
@@ -17,9 +17,10 @@ export interface chatPersonType {
 }
 
 export interface chatHistory {
-  id: number;
+  id: string;
   from: string;
   to: string;
   text: string;
   time: string;
+  isMine?: boolean;
 }

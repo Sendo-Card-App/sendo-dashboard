@@ -20,9 +20,13 @@ import { chatHistory, chatPersonType } from 'src/app/@theme/types/chat-type';
 
 //const
 import { MIN_WIDTH_1025PX, MAX_WIDTH_1024PX, MIN_WIDTH_1400PX, MAX_WIDTH_1399PX, RTL } from 'src/app/@theme/const';
+import { Conversation } from 'src/app/@theme/models/chat';
+import { ChatService } from 'src/app/@theme/services/chat.service';
+import { SocketService } from 'src/app/@theme/services/socket.service';
 
 @Component({
   selector: 'app-chat',
+
   imports: [SharedModule, CommonModule, MatExpansionModule, MatSlideToggleModule],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
@@ -46,7 +50,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   chatHistory: chatHistory[] = chatsHistory; // chat history
   selectedUser: chatPersonType; // sidebar on click to selected user data
   selectedUserChatHistory: chatHistory[] = []; // sidebar on click to selected user chat history
-  selectedPersonId!: number; // sidebar on click to selected user id
+  selectedPersonId!: string; // sidebar on click to selected user id
 
   message: string = ''; // send new message
   errorMessage: string = ''; // error message
@@ -55,7 +59,7 @@ export class ChatComponent implements OnInit, AfterViewInit {
   searchTerm: string = '';
 
   // constructor
-  constructor() {
+  constructor(private chatService: ChatService,private socketService: SocketService) {
     effect(() => {
       this.themeDirection(this.themeService.directionChange());
     });
@@ -78,44 +82,93 @@ export class ChatComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.selectedUser = this.chatPersonList[0];
-    this.selectedUserChatHistory = this.chatHistory.filter((x) => x.from === 'Alene' || x.to === 'Alene');
-    this.selectedPersonId = this.selectedUser.id;
+    this.chatService.getConversations().subscribe({
+      next: (res) => {
+        const items = res.data.items;
+        console.log('Conversations récupérées:', items);
+
+        this.chatPersonList = items.map((conversation) =>
+          this.mapConversationToChatPerson(conversation)
+        );
+
+        if (this.chatPersonList.length) {
+          this.selectedUser = this.chatPersonList[0];
+          this.selectedPersonId = this.selectedUser.id;
+          // this.loadMessages(this.selectedUser.id);
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des conversations', err);
+      }
+    });
   }
 
   ngAfterViewInit() {
     this.rtlMode = AbleProConfig.isRtlLayout;
   }
 
-  // public method
-  chatPerson(id: number) {
-    // sidebar on click to selected user
-    this.selectedUser = this.chatPersonList.filter((x) => x.id === id)[0];
 
-    // sidebar on click to selected user chat history
-    this.selectedUserChatHistory = this.chatHistory.filter(
-      (message) => message.from === this.selectedUser.name || message.to === this.selectedUser.name
-    );
+  // ...existing code...
+  chatPerson(id: string) {
+    this.selectedUser = this.chatPersonList.find((x) => x.id === id)!;
     this.selectedPersonId = this.selectedUser.id;
+
+    this.chatService.getMessagesByConversationId(id).subscribe({
+  next: (res) => {
+    const messages = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
+    this.selectedUserChatHistory = messages.map((msg) => ({
+      id: msg.id,
+      from: msg.senderType === 'ADMIN' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+      to: msg.senderType === 'CUSTOMER' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+      text: msg.content === '[Pièce jointe]'
+        ? (msg.attachments && msg.attachments.length > 0 ? msg.attachments[0] : '[Pièce jointe]')
+        : msg.content,
+      attachments: msg.attachments, // tu peux garder ce champ si tu veux l'utiliser dans le template
+      time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isMine: msg.senderType === 'ADMIN'
+    }));
+  },
+  error: (err) => {
+    this.selectedUserChatHistory = [];
+    console.error('Erreur lors de la récupération des messages', err);
   }
+});
+  }
+  // ...existing code...
 
   // send new message
-  sendNewMessage(name: string) {
-    if (this.message.trim() !== '') {
-      const newMessage = {
-        id: Math.max(...this.chatHistory.map((message) => message.id), 0) + 1, // You need to implement a function to get the next available ID
-        from: 'User1',
-        to: name,
-        text: this.message,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      this.selectedUserChatHistory.push(newMessage);
-      this.message = '';
-      this.errorMessage = '';
-    } else {
-      this.errorMessage = 'Please Enter Any Message.';
-    }
+ sendNewMessage() {
+  if (this.message.trim() !== '') {
+    const payload = {
+      conversationId: this.selectedPersonId,
+      content: this.message,
+      senderType: 'ADMIN', // utile pour l'API REST, pas pour le socket natif sauf si tu le gères côté serveur
+      attachments: []
+    };
+
+    // Envoi via le socket
+    this.socketService.sendMessage({
+      conversationId: payload.conversationId,
+      content: payload.content,
+      attachments: payload.attachments
+    });
+
+    // Affichage immédiat côté front (optimiste)
+    this.selectedUserChatHistory.push({
+      id: (Math.max(...this.selectedUserChatHistory.map((m) => Number(m.id) || 0), 0) + 1).toString(),
+      from: 'Moi',
+      to: this.selectedUser.name,
+      text: this.message,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isMine: true
+    });
+
+    this.message = '';
+    this.errorMessage = '';
+  } else {
+    this.errorMessage = 'Please Enter Any Message.';
   }
+}
 
   // user status
   setStatus(status: string) {
@@ -187,4 +240,55 @@ export class ChatComponent implements OnInit, AfterViewInit {
       text: '49 files, 193MB'
     }
   ];
+
+
+  private mapConversationToChatPerson(conversation: Conversation): chatPersonType {
+    const user = conversation.user;
+
+    return {
+      id: conversation.id,
+      name: `${user.firstname} ${user.lastname}`,
+      company: '', // pas fourni par l'API (à compléter ou vide)
+      role: '', // idem
+      work_email: '', // idem
+      personal_email: user.email || '',
+      work_phone: '', // idem
+      personal_phone: '', // idem
+      location: '', // idem
+      avatar: '', // avatar par défaut ou récupéré d'une autre source
+      status: conversation.status, // "OPEN" ou "CLOSE"
+      lastMessage: '', // à compléter avec un call pour récupérer le dernier message
+      birthdayText: '', // si applicable
+      unReadChatCount: 0, // valeur par défaut ou à compléter si tu as une API pour ça
+      online_status: 'available' // à adapter selon le système de présence
+    };
+  }
+
+  getAvatarColor(name: string): string {
+  // Génère une couleur à partir du nom
+  const colors = [
+    '#F44336', '#E91E63', '#9C27B0', '#3F51B5', '#03A9F4',
+    '#009688', '#4CAF50', '#FF9800', '#795548', '#607D8B'
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+}
+
+changeConversationStatus(status: 'OPEN' | 'CLOSED') {
+  if (!this.selectedPersonId) return;
+  this.chatService.changeConversationStatus(this.selectedPersonId, status).subscribe({
+    next: () => {
+      this.selectedUser.status = status;
+      // Optionnel : message de succès ou rafraîchir la liste
+    },
+    error: (err) => {
+      console.error('Erreur lors du changement de statut de la conversation', err);
+      // Optionnel : afficher un message d'erreur à l'utilisateur
+    }
+  });
+}
 }

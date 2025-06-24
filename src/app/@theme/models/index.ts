@@ -1,6 +1,3 @@
-
-
-
 export interface LoginResponse {
     accessToken: string;
     deviceId: string;
@@ -431,3 +428,5 @@ export interface PubliciteListResponse {
   message: string;
   data: PaginatedData<Publicite>;
 }
+
+

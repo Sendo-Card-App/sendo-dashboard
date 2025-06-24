@@ -1,4 +1,4 @@
-@import '../../../../app/@theme/styles/theme-palette-colors.scss';
+@import '/src/app/@theme/styles/theme-palette-colors.scss';
 
 ::ng-deep.chat-body {
   .contact-list {
@@ -86,9 +86,9 @@
   .message-in {
     display: flex;
     margin-bottom: 24px;
-    .d-flex {
-      max-width: 80%;
-    }
+    // .d-flex {
+    //   max-width: 80%;
+    // }
   }
   .message-out {
     justify-content: flex-end;
@@ -225,4 +225,13 @@
       }
     }
   }
+}
+
+.rounded-circle {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
 }

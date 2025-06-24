@@ -84,9 +84,11 @@ export interface StatisticsData {
   walletStats: WalletStats;
   transactionStats: TransactionStats;
   cardStats: CardStats;
-  sharedExpenses: SharedExpensesStats; 
+  sharedExpensesStats: SharedExpensesStats;
   requestStats: RequestStats;
   roleStats: RoleStat[];
+  requestFundsStats: RequestFundsStats;
+  tontineStats: TontineStats;
 }
 
 /** Réponse de l’API */
@@ -148,6 +150,7 @@ export interface SharedExpensesStats {
   totalAmountShared: number;
   topContributors: TopContributor[];
   recentSharedExpenses: RecentSharedExpense[];
+  requestFundsStats: RequestFundsStats;
 }
 
 // Exemple d'interface pour la réponse complète si nécessaire
@@ -158,4 +161,83 @@ export interface SharedExpensesResponse {
     sharedExpenses: SharedExpensesStats;
     // autres données potentielles...
   };
+}
+
+
+// Statut possible pour une demande de fonds
+export type RequestFundStatus = 'FULLY_FUNDED' | 'CANCELLED';
+
+// Répartition par statut
+export interface RequestFundStatusDistribution {
+  status: RequestFundStatus;
+  count: number;
+}
+
+// Top demandeur de fonds
+export interface TopRequester {
+  userId: number;
+  totalRequested: number;
+  user: string; // nom complet
+}
+
+// Demande récente de fonds
+export interface RecentRequestFund {
+  id: number;
+  amount: number;
+  description: string;
+  status: RequestFundStatus;
+  requester: string;
+  createdAt: string;
+}
+
+// Statistiques globales des demandes de fonds
+export interface RequestFundsStats {
+  total: number;
+  statusDistribution: RequestFundStatusDistribution[];
+  totalAmountRequested: number;
+  topRequesters: TopRequester[];
+  recent: RecentRequestFund[];
+}
+
+
+// Statut possible pour une tontine
+export type TontineStatus = 'ACTIVE' | 'CLOSED' | 'INACTIVE'; // Ajoute d'autres statuts si besoin
+
+// Répartition par statut
+export interface TontineStatusDistribution {
+  status: TontineStatus;
+  count: number;
+}
+
+// Répartition par type de tontine
+export type TontineType = 'FIXE' | 'ALEATOIRE';
+
+export interface TontineTypeDistribution {
+  type: TontineType;
+  count: number;
+}
+
+// Participant principal
+export interface TopTontineParticipant {
+  totalCotise: number;
+  // Ajoute d'autres propriétés si besoin (ex: userId, nom, etc.)
+}
+
+// Tontine récente
+export interface RecentTontine {
+  id: number;
+  montantTotal: number;
+  status: TontineStatus;
+  createdAt: string;
+}
+
+// Statistiques globales des tontines
+export interface TontineStats {
+  totalTontines: number;
+  totalAmount: number;
+  averageAmount: number;
+  statusDistribution: TontineStatusDistribution[];
+  typeDistribution: TontineTypeDistribution[];
+  topParticipants: TopTontineParticipant[];
+  recentTontines: RecentTontine[];
 }
