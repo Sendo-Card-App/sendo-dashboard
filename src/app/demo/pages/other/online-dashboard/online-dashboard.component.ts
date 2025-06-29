@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { StatisticsChartComponent } from '../../../pages/apex-chart/statistics-chart/statistics-chart.component';
 import { InvitesGoalChartComponent } from './invites-goal-chart/invites-goal-chart.component';
-import { TotalRevenueLineChartComponent } from './total-revenue-line-chart/total-revenue-line-chart.component';
+// import { TotalRevenueLineChartComponent } from './total-revenue-line-chart/total-revenue-line-chart.component';
 import { StudentStatesChartComponent } from './student-states-chart/student-states-chart.component';
 import { ActivityLineChartComponent } from './activity-line-chart/activity-line-chart.component';
 import { activityData } from 'src/app/fake-data/activity_data';
@@ -45,7 +45,6 @@ const courseStates_data = courseStatesData;
     CommonModule,
     StatisticsChartComponent,
     InvitesGoalChartComponent,
-    TotalRevenueLineChartComponent,
     CourseReportBarChartComponent,
     StudentStatesChartComponent,
     ActivityLineChartComponent,

@@ -80,7 +80,7 @@ export class TransactionsService {
   updateTransactionStatus(
   transactionId: string,
   status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED',
-  payload: ChangeTransactionStatusPayload
+  payload?: ChangeTransactionStatusPayload
 ): Observable<BaseResponse> {
   const params = new HttpParams()
     .set('transactionId', transactionId)
