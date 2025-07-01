@@ -49,7 +49,8 @@
 
               <div class="detail-row">
                 <mat-icon>payments</mat-icon>
-                <span>{{ transaction.user?.wallet?.balance | currency:transaction.user?.wallet?.currency:'symbol':'1.2-2' }}</span>
+                <span>{{ transaction.user?.wallet?.balance |
+                  currency:transaction.user?.wallet?.currency:'symbol':'1.2-2' }}</span>
               </div>
             </div>
           </div>
@@ -93,7 +94,8 @@
 
             <div class="summary-item">
               <span class="summary-label">Méthode</span>
-              <span class="summary-value">{{ transaction.method ? (transaction.method | lowercase | titlecase) : 'N/A' }}</span>
+              <span class="summary-value">{{ transaction.method ? (transaction.method | lowercase | titlecase) : 'N/A'
+                }}</span>
             </div>
 
             <div class="summary-item">
@@ -104,95 +106,118 @@
         </mat-card>
 
         <!-- Status Update Section -->
-<mat-card class="status-card">
-  <div class="status-header">
-    <h3>Modification du statut</h3>
+        <mat-card class="status-card">
+          <div class="status-header">
+            <h3>Modification du statut</h3>
 
-    <!-- Afficher le bouton si au moins une des deux conditions est vraie -->
-    <button mat-stroked-button
-            (click)="toggleEdit()"
-            *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER'">
-      {{ isEditing ? 'Annuler' : 'Modifier' }}
-    </button>
+            <!-- Afficher le bouton si au moins une des deux conditions est vraie -->
+            <button mat-stroked-button (click)="toggleEdit()"
+              *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER'">
+              {{ isEditing ? 'Annuler' : 'Modifier' }}
+            </button>
 
-    <!-- Afficher le message uniquement si AUCUNE des deux conditions n’est vraie -->
-    <div *ngIf="transaction?.method !== 'BANK_TRANSFER' && transaction?.type !== 'TRANSFER'" class="not-allowed-message">
-      Modification du statut non disponible pour ce type de transaction
-    </div>
-  </div>
+            <!-- Afficher le message uniquement si AUCUNE des deux conditions n’est vraie -->
+            <div *ngIf="transaction?.method !== 'BANK_TRANSFER' && transaction?.type !== 'TRANSFER'"
+              class="not-allowed-message">
+              Modification du statut non disponible pour ce type de transaction
+            </div>
+          </div>
 
-  <!-- Afficher le formulaire SEULEMENT si isEditing est activé ET qu’on a le droit de modifier -->
-  <div *ngIf="isEditing && (transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER')"
-       class="status-form"
-       [formGroup]="statusForm">
-    <div class="form-grid">
-      <!-- Colonne gauche -->
-      <div class="form-column">
-        <mat-form-field appearance="outline">
-          <mat-label>Nouveau statut</mat-label>
-          <mat-select formControlName="status" required>
-            <mat-option *ngFor="let status of statusOptions" [value]="status">
-              {{ status | titlecase }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="statusForm.get('status')?.hasError('required')">
-            Statut requis
-          </mat-error>
-        </mat-form-field>
+          <!-- Afficher le formulaire SEULEMENT si isEditing est activé ET qu’on a le droit de modifier -->
+          <div *ngIf="isEditing && (transaction?.method === 'BANK_TRANSFER')" class="status-form"
+            [formGroup]="statusForm">
+            <div class="form-grid">
+              <!-- Colonne gauche -->
+              <div class="form-column">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nouveau statut</mat-label>
+                  <mat-select formControlName="status" required>
+                    <mat-option *ngFor="let status of statusOptions" [value]="status">
+                      {{ status | titlecase }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="statusForm.get('status')?.hasError('required')">
+                    Statut requis
+                  </mat-error>
+                </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Référence transaction</mat-label>
-          <input matInput formControlName="transactionReference" required>
-          <mat-error *ngIf="statusForm.get('transactionReference')?.hasError('required')">
-            Référence requise
-          </mat-error>
-        </mat-form-field>
-      </div>
+                <mat-form-field appearance="outline">
+                  <mat-label>Référence transaction</mat-label>
+                  <input matInput formControlName="transactionReference" required>
+                  <mat-error *ngIf="statusForm.get('transactionReference')?.hasError('required')">
+                    Référence requise
+                  </mat-error>
+                </mat-form-field>
+              </div>
 
-      <!-- Colonne droite -->
-      <div class="form-column">
-        <mat-form-field appearance="outline">
-          <mat-label>Nom de la banque</mat-label>
-          <input matInput formControlName="bankName" required>
-          <mat-error *ngIf="statusForm.get('bankName')?.hasError('required')">
-            Nom de banque requis
-          </mat-error>
-        </mat-form-field>
+              <!-- Colonne droite -->
+              <div class="form-column">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nom de la banque</mat-label>
+                  <input matInput formControlName="bankName" required>
+                  <mat-error *ngIf="statusForm.get('bankName')?.hasError('required')">
+                    Nom de banque requis
+                  </mat-error>
+                </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Numéro de compte</mat-label>
-          <input matInput formControlName="accountNumber" required>
-          <mat-error *ngIf="statusForm.get('accountNumber')?.hasError('required')">
-            Numéro de compte requis
-          </mat-error>
-        </mat-form-field>
-      </div>
-    </div>
+                <mat-form-field appearance="outline">
+                  <mat-label>Numéro de compte</mat-label>
+                  <input matInput formControlName="accountNumber" required>
+                  <mat-error *ngIf="statusForm.get('accountNumber')?.hasError('required')">
+                    Numéro de compte requis
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </div>
 
-    <div class="form-actions">
-      <button mat-raised-button
-              color="primary"
-              (click)="updateStatus()"
-              [disabled]="!statusForm.valid || statusForm.pristine">
-        <mat-icon>save</mat-icon> Confirmer
-      </button>
-    </div>
-  </div>
+            <div class="form-actions">
+              <button mat-raised-button color="primary" (click)="updateStatus()"
+                [disabled]="!statusForm.valid || statusForm.pristine">
+                <mat-icon>save</mat-icon> Confirmer
+              </button>
+            </div>
+          </div>
+          <div *ngIf="isEditing && ( transaction?.type === 'TRANSFER')" class="status-form" [formGroup]="statusForm">
+            <div class="form-grid">
+              <!-- Colonne gauche -->
+              <div class="form-column">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nouveau statut</mat-label>
+                  <mat-select formControlName="status" required>
+                    <mat-option *ngFor="let status of statusOptions" [value]="status">
+                      {{ status | titlecase }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="statusForm.get('status')?.hasError('required')">
+                    Statut requis
+                  </mat-error>
+                </mat-form-field>
+                <div class="form-actions">
+                  <button mat-raised-button color="primary" (click)="updateStatus()"
+                    [disabled]="!statusForm.valid || statusForm.pristine">
+                    <mat-icon>save</mat-icon> Confirmer
+                  </button>
+                </div>
+              </div>
+            </div>
 
-  <!-- Aperçu du statut actuel -->
-  <div *ngIf="!isEditing" class="current-status">
-    <div class="status-display">
-      <span class="status-label">Statut actuel:</span>
-      <span class="status-value" [ngClass]="getStatusClass(transaction.status)">
-        {{ transaction.status | titlecase }}
-      </span>
-    </div>
-    <div *ngIf="transaction.transactionReference" class="reference-display">
-      <span class="info-label">Référence:</span>
-      <span class="info-value">{{ transaction.transactionReference }}</span>
-    </div>
-  </div>
-</mat-card>
+
+          </div>
+
+          <!-- Aperçu du statut actuel -->
+          <div *ngIf="!isEditing" class="current-status">
+            <div class="status-display">
+              <span class="status-label">Statut actuel:</span>
+              <span class="status-value" [ngClass]="getStatusClass(transaction.status)">
+                {{ transaction.status | titlecase }}
+              </span>
+            </div>
+            <div *ngIf="transaction.transactionReference" class="reference-display">
+              <span class="info-label">Référence:</span>
+              <span class="info-value">{{ transaction.transactionReference }}</span>
+            </div>
+          </div>
+        </mat-card>
 
 
 
@@ -213,7 +238,15 @@
 
             <div class="info-item full-width">
               <span class="info-label">Description</span>
-              <p class="info-value">{{ transaction.description || 'Aucune description fournie' }}</p>
+              <ng-container
+                *ngIf="transaction.description && (transaction.description.startsWith('file://') || transaction.description.endsWith('.pdf')); else normalDesc">
+                <a [href]="transaction.description" target="_blank" rel="noopener" class="pdf-link">
+                  📄 Consulter le document PDF
+                </a>
+              </ng-container>
+              <ng-template #normalDesc>
+                <p class="info-value">{{ transaction.description || 'Aucune description fournie' }}</p>
+              </ng-template>
             </div>
           </div>
         </mat-card>
