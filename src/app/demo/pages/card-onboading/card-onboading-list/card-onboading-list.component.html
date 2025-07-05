@@ -1,0 +1,183 @@
+<div class="row p-t-25">
+  <div class="col-12">
+    <app-card cardTitle="Demandes d'onboarding" padding="0" cardClass="sm-block">
+      <div class="p-b-15">
+        <div class="table-container table-responsive">
+          <div class="table-search p-t-15 p-x-15">
+            <div class="row">
+              <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                  <input matInput placeholder="Rechercher..." (keyup)="applyFilter($event.target.value)" />
+                </mat-form-field>
+              </div>
+              <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Statut</mat-label>
+                  <mat-select [(value)]="currentStatus" (selectionChange)="onStatusChange($event.value)">
+                    <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                      {{ status.label }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <div *ngIf="isLoading" class="loading-spinner text-center p-3">
+              <mat-spinner diameter="50"></mat-spinner>
+            </div>
+
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+              <!-- User Column -->
+              <ng-container matColumnDef="user">
+                <th mat-header-cell *matHeaderCellDef class="p-l-25">UTILISATEUR</th>
+                <td mat-cell *matCellDef="let party" class="p-l-25 text-nowrap">
+                  <div class="flex align-item-center">
+                    <div class="flex-shrink-0">
+                      <div class="avatar-circle">
+                        {{ party.partyInfo?.firstName?.charAt(0) || 'U' }}
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 m-l-15">
+                      <div class="f-w-600">{{ party.partyInfo?.firstName }} {{ party.partyInfo?.familyName }}</div>
+                      <div class="text-muted">{{ getPrimaryEmail(party.contactPoints) }}</div>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Type Column -->
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>TYPE</th>
+                <td mat-cell *matCellDef="let party" class="text-nowrap">
+                  {{ party.type }}
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>STATUT</th>
+                <td mat-cell *matCellDef="let party" class="text-nowrap">
+                  <mat-chip [class]="'status-' + party.onboardingSessionStatus.toLowerCase()">
+                    {{ formatStatus(party.onboardingSessionStatus) }}
+                  </mat-chip>
+                </td>
+              </ng-container>
+
+              <!-- Created At Column -->
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>DATE</th>
+                <td mat-cell *matCellDef="let party" class="text-nowrap">
+                  {{ party.createdAt | date:'medium' }}
+                </td>
+              </ng-container>
+
+              <!-- Action Column -->
+               
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef class="text-center">ACTIONS</th>
+                <td mat-cell *matCellDef="let party" class="text-nowrap">
+                  <div class="text-center text-nowrap">
+                    <ul class="list-inline p-l-0">
+                      <li class="list-inline-item m-r-10" matTooltip="Voir détails">
+                        <button mat-icon-button (click)="viewDetails(party)">
+                          <i class="ti ti-eye f-18"></i>
+                        </button>
+                      </li>
+                      <li class="list-inline-item m-r-10" matTooltip="Approuver">
+                        <button mat-icon-button (click)="approveOnboarding(party.key)" color="primary">
+                           <i class="ti ti-check f-18"></i>
+                        </button>
+                      </li>
+                      <li class="list-inline-item m-r-10" matTooltip="Rejeter">
+                        <button mat-icon-button (click)="rejectOnboarding(party.key)" color="warn">
+                          <i class="ti ti-x f-18"></i>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="5">
+                  <div *ngIf="!isLoading" class="text-center p-3">
+                    Aucune demande trouvée {{ searchText ? 'correspondant à "' + searchText + '"' : '' }}
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <mat-paginator [pageSizeOptions]="[5,10,25,100]" [length]="totalItems" [pageSize]="itemsPerPage"
+              [pageIndex]="currentPage-1" (page)="onPageChange($event)">
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<!-- Drawer pour les détails -->
+<mat-drawer #drawer position="end" style="z-index: 9999;" class="notification-status sidenav" mode="over">
+  <div class="drawer-header">
+    <div class="f-16 f-w-600">Détails de la demande</div>
+    <button type="button" mat-icon-button class="close-drawer" (click)="headerBlur = false; drawer.toggle()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <ng-scrollbar style="height: calc(100vh - 88px)" visibility="hover">
+    <div *ngIf="selectedParty" class="user-details">
+      <div class="user-avatar">
+        <div class="avatar-circle large">
+          {{ selectedParty.partyInfo?.firstName?.charAt(0) || 'U' }}
+        </div>
+      </div>
+      <div class="user-info">
+        <h3>{{ selectedParty.partyInfo?.firstName }} {{ selectedParty.partyInfo?.familyName }}</h3>
+        <p>Date de naissance: {{ selectedParty.partyInfo?.birthDate | date }}</p>
+        <p>Type de document: {{ selectedParty.partyInfo?.idDocumentType }}</p>
+        <p>Numéro: {{ selectedParty.partyInfo?.idDocumentNumber }}</p>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="section-title">Coordonnées</div>
+      <div *ngFor="let contact of selectedParty.contactPoints" class="contact-item">
+        <mat-icon>{{ contact.type === 'EMAIL' ? 'email' : 'phone' }}</mat-icon>
+        <span>{{ contact.value }}</span>
+      </div>
+      <!-- <div *ngIf="selectedParty.locations?.length" class="section-title">Adresse</div>
+      <div *ngFor="let location of selectedParty.locations" class="address-item">
+        <p>{{ location.address1 }}</p>
+        <p>{{ location.postalCode }} {{ location.city }}</p>
+        <p>{{ location.country }}</p>
+      </div> -->
+
+      <mat-divider></mat-divider>
+
+      <div class="section-title">Documents</div>
+      <div *ngFor="let doc of selectedParty.documents" class="document-item">
+        <div class="document-header">
+          <span class="document-type">{{ doc.type }}</span>
+          <span class="document-date">{{ doc.createDateTime | date }}</span>
+        </div>
+        <div class="document-files">
+          <div *ngFor="let file of doc.files" class="file-item">
+            <span>{{ file.header }}</span>
+            <button mat-icon-button (click)="openDocument(file)">
+              <i class="ti ti-eye f-18"></i>
+            </button>
+            <button mat-icon-button (click)="downloadDocument(file.url)">
+              <i class="ti ti-download f-18"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-scrollbar>
+</mat-drawer>
