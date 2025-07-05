@@ -4,7 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatDrawer } from '@angular/material/sidenav';
 import { CardService } from 'src/app/@theme/services/card.service';
 import { ContactPoint, SessionPartyUser, SessionPartyUserResponse } from 'src/app/@theme/models/card';
-import { MatDialog } from '@angular/material/dialog';
+// import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 
@@ -42,7 +42,7 @@ export class CardOnboardingListComponent implements OnInit {
 
   constructor(
     private cardService: CardService,
-    private dialog: MatDialog
+    // private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
