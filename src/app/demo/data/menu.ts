@@ -190,6 +190,25 @@ export const menus: Navigation[] = [
 
         ]
       },
+      {
+        id: 'demande de carte',
+        title: 'Demande de carte',
+        type: 'collapse',
+        icon: '#custom-bill',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'allrequest',
+            title: 'Liste des demandes',
+            type: 'item',
+            url: '/onboarding/card',
+            // target: true,
+            breadcrumbs: true
+          },
+
+
+        ]
+      },
     ]
   },
   {

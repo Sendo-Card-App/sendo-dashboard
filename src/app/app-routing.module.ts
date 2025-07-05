@@ -213,6 +213,18 @@ const routes: Routes = [
     ]
   },
    {
+    path: 'onboarding',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'card',
+        loadComponent: () => import('./demo/pages/card-onboading/card-onboading-list/card-onboading-list.component').then((c) => c.CardOnboardingListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+    ]
+  },
+   {
     path: 'fund-requests',
     component: AdminComponent,
     canActivateChild: [RoleGuard],
