@@ -1,72 +1,88 @@
-export interface PartyInfo {
-  firstName: string;
-  familyName: string;
-  birthDate: string;
-  idDocumentType: string;
-  idDocumentNumber: string;
-  taxIdNumber: string;
-  nationality: string;
+export type OnboardingSessionStatus =
+  | 'WAITING_FOR_INFORMATION'
+  | 'UNDER_VERIFICATION'
+  | 'VERIFIED'
+  | 'REFUSED_TIMEOUT';
+
+export interface SessionDocument {
+  name: string;
+  description?: string;
+  files: SessionDocumentFile[];
 }
 
-export interface Location {
-  address1: string;
-  address2: string;
-  address3: string;
-  postalCode: string;
-  city: string;
-  region: string;
-  country: string;
-  longitude: number | null;
-  latitude: number | null;
-  type: string;
+export interface SessionDocumentFile {
+  contentType: string; // ex: "image/jpeg"
+  url: string;
+  sequenceno: number;
+}
+
+export interface PartyInfo {
+  idDocumentNumber: string;
+  idDocumentType: string;
+  firstName: string;
+  familyName: string;
+  birthDate: string; // ou Date
+  nationality: string;
+  gender: string; // ex: "M" ou "F"
+}
+
+export interface SessionLocation {
+  type: string; // ex: "home", "work"
+  country?: string;
+  region?: string;
+  department?: string;
+  subdivision?: string;
+  city?: string;
+  neighborhood?: string;
+}
+
+export interface SessionType {
+  user: {
+    firstname?: string;
+    lastname?: string;
+    id: number;
+    email: string;
+    phone: string;
+  };
+  SessionParty: SessionParty;
+
+}
+
+export interface SessionParty {
+  key: string;
+  onboardingSessionStatus: OnboardingSessionStatus;
+  documents: SessionDocument[];
+  contactPoints: ContactPoint[];
+  partyInfo: PartyInfo;
+  locations: SessionLocation[];
+  createdAt: string; // ou Date
+
 }
 
 export interface ContactPoint {
-  type: 'PHONENUMBER' | 'EMAIL';
-  country: string | null;
+  type: string; // ex: "email", "phone"
   value: string;
-  contextualCode: string | null;
+  country?: string; // Pour les numéros de téléphone
 }
 
-export interface Capacity {
-  code: string;
-  enabled: boolean;
-}
-
-export interface DocumentFile {
-  sequenceno: number;
-  header: string;
-  contentType: string;
-  size: number;
-  url: string;
-}
-
-export interface Document {
-  name: string;
-  createDateTime: string;
-  type: string;
-  files: DocumentFile[];
-}
-
-export interface SessionPartyUser {
-  key: string;
-  operator_id: number;
-  createdAt: string;
-  name: string;
-  onboardingSessionKey: string;
-  onboardingSessionStatus: string;
-  type: string;
-  partyInfo: PartyInfo;
-  isActive: boolean;
-  isDeleted: boolean;
-  locations: Location[];
-  contactPoints: ContactPoint[];
-  capacities: Capacity[];
-  documents: Document[];
-}
 
 export interface SessionPartyUserResponse {
   status: number;
   message: string;
-  data: SessionPartyUser[];
+  data: SessionParty[];
+}
+
+export interface KycDocument {
+  id: number;
+  type: 'ID_PROOF' | 'ADDRESS_PROOF' | string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | string;
+  url: string;
+  publicId: string;
+  idDocumentNumber: string | null;
+  taxIdNumber: string | null;
+  rejectionReason: string;
+  reviewedById: number | null;
+  userId: number;
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string
 }

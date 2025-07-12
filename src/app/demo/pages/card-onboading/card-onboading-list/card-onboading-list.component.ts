@@ -3,10 +3,12 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDrawer } from '@angular/material/sidenav';
 import { CardService } from 'src/app/@theme/services/card.service';
-import { ContactPoint, SessionPartyUser, SessionPartyUserResponse } from 'src/app/@theme/models/card';
+import { ContactPoint, KycDocument, SessionParty, SessionPartyUserResponse, SessionType } from 'src/app/@theme/models/card';
 // import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { BaseResponse } from 'src/app/@theme/models';
 
 @Component({
   selector: 'app-card-onboarding-list',
@@ -32,17 +34,19 @@ export class CardOnboardingListComponent implements OnInit {
 ];
 
   displayedColumns: string[] = ['user', 'type', 'status', 'createdAt', 'action'];
-  dataSource = new MatTableDataSource<SessionPartyUser>();
+  dataSource = new MatTableDataSource<SessionParty>();
   totalItems = 0;
   itemsPerPage = 10;
   currentPage = 1;
 
-  selectedParty: SessionPartyUser | null = null;
+  selectedParty: SessionType | null = null;
+  selectedKycDocuments: BaseResponse<KycDocument> | null = null;
   headerBlur = false;
 
   constructor(
     private cardService: CardService,
     // private dialog: MatDialog
+    private snackBar: MatSnackBar // Assurez-vous d'importer MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -51,15 +55,17 @@ export class CardOnboardingListComponent implements OnInit {
 
  loadOnboardingRequests(): void {
   this.isLoading = true;
-  
+
   // Ne pas envoyer de paramètre status si currentStatus est vide
   const status = this.currentStatus === '' ? undefined : this.currentStatus;
-  
+
   this.cardService.getOnboardingRequests(status).subscribe({
     next: (response: SessionPartyUserResponse) => {
       this.dataSource.data = response.data;
       this.totalItems = response.data.length;
       this.isLoading = false;
+
+      console.log('Onboarding requests loaded:', response.data, 'Total items:', this.totalItems);
     },
     error: (err) => {
       console.error('Error loading onboarding requests', err);
@@ -88,11 +94,19 @@ export class CardOnboardingListComponent implements OnInit {
     this.loadOnboardingRequests();
   }
 
-  viewDetails(party: SessionPartyUser): void {
+
+
+  viewDetails(party: SessionType): void {
     this.selectedParty = party;
     this.headerBlur = true;
     this.drawer.toggle();
+
+    this.cardService.getKycDocuments(party.user.id).subscribe({
+      next: (docs) => this.selectedKycDocuments = docs,
+      error: (err) => console.error('Erreur de chargement KYC:', err),
+    });
   }
+
 
   approveOnboarding(partyKey: string): void {
     // Implémentez la logique d'approbation
@@ -141,4 +155,49 @@ export class CardOnboardingListComponent implements OnInit {
   downloadDocument(url: string): void {
     window.open(url, '_blank');
   }
+
+  // Dans votre composant
+
+getDocumentType(docType: string): 'ID_PROOF' | 'ADDRESS_PROOF' | 'NIU_PROOF' | 'SELFIE' {
+  console.log('getDocumentType called with:', docType);
+  switch(docType) {
+    case 'NATIONALID': return 'ID_PROOF';
+    case 'Locationmap': return 'ADDRESS_PROOF';
+    case 'NIU': return 'NIU_PROOF';
+    case 'SELFIE': return 'SELFIE';
+    default: return 'ID_PROOF'; // Valeur par défaut
+  }
+}
+
+sendDocumentToNeero(documentType: 'ID_PROOF' | 'ADDRESS_PROOF' | 'NIU_PROOF' | 'SELFIE', userId: number): void {
+  this.cardService.sendDocumentToNeero(documentType, userId).subscribe({
+    next: () => {
+      this.snackBar.open(`Document ${documentType} envoyé avec succès`, 'Fermer', {
+        duration: 3000
+      });
+    },
+    error: (err) => {
+      console.error('Erreur lors de l\'envoi du document', err);
+      this.snackBar.open(`Erreur lors de l'envoi du document ${documentType}`, 'Fermer', {
+        duration: 3000
+      });
+    }
+  });
+}
+
+submitDocumentsToNeero(userId: number) {
+  this.cardService.submitDocumentsToNeero(userId).subscribe({
+    next: () => {
+      this.snackBar.open('Tous les documents ont été soumis avec succès', 'Fermer', {
+        duration: 3000
+      });
+    },
+    error: (err) => {
+      console.error('Erreur lors de la soumission des documents', err);
+      this.snackBar.open('Erreur lors de la soumission des documents', 'Fermer', {
+        duration: 3000
+      });
+    }
+  });
+}
 }

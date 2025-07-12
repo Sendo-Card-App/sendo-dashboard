@@ -35,12 +35,13 @@
                   <div class="flex align-item-center">
                     <div class="flex-shrink-0">
                       <div class="avatar-circle">
-                        {{ party.partyInfo?.firstName?.charAt(0) || 'U' }}
+                        {{ party.sessionParty.partyInfo?.firstName?.charAt(0) || 'U' }}
                       </div>
                     </div>
                     <div class="flex-grow-1 m-l-15">
-                      <div class="f-w-600">{{ party.partyInfo?.firstName }} {{ party.partyInfo?.familyName }}</div>
-                      <div class="text-muted">{{ getPrimaryEmail(party.contactPoints) }}</div>
+                      <div class="f-w-600">{{ party.sessionParty.partyInfo?.firstName }} {{
+                        party.sessionParty.partyInfo?.familyName }}</div>
+                      <div class="text-muted">{{ getPrimaryEmail(party.sessionParty.contactPoints) }}</div>
                     </div>
                   </div>
                 </td>
@@ -50,7 +51,7 @@
               <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef>TYPE</th>
                 <td mat-cell *matCellDef="let party" class="text-nowrap">
-                  {{ party.type }}
+                  {{ party.sessionParty.type }}
                 </td>
               </ng-container>
 
@@ -58,8 +59,8 @@
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>STATUT</th>
                 <td mat-cell *matCellDef="let party" class="text-nowrap">
-                  <mat-chip [class]="'status-' + party.onboardingSessionStatus.toLowerCase()">
-                    {{ formatStatus(party.onboardingSessionStatus) }}
+                  <mat-chip [class]="'status-' + party.sessionParty.onboardingSessionStatus.toLowerCase()">
+                    {{ formatStatus(party.sessionParty.onboardingSessionStatus) }}
                   </mat-chip>
                 </td>
               </ng-container>
@@ -68,29 +69,29 @@
               <ng-container matColumnDef="createdAt">
                 <th mat-header-cell *matHeaderCellDef>DATE</th>
                 <td mat-cell *matCellDef="let party" class="text-nowrap">
-                  {{ party.createdAt | date:'medium' }}
+                  {{ party.sessionParty.createdAt | date:'medium' }}
                 </td>
               </ng-container>
 
               <!-- Action Column -->
-               
+
               <ng-container matColumnDef="action">
                 <th mat-header-cell *matHeaderCellDef class="text-center">ACTIONS</th>
                 <td mat-cell *matCellDef="let party" class="text-nowrap">
                   <div class="text-center text-nowrap">
                     <ul class="list-inline p-l-0">
                       <li class="list-inline-item m-r-10" matTooltip="Voir détails">
-                        <button mat-icon-button (click)="viewDetails(party)">
+                        <button mat-icon-button (click)="viewDetails(party)" color="primary">
                           <i class="ti ti-eye f-18"></i>
                         </button>
                       </li>
                       <li class="list-inline-item m-r-10" matTooltip="Approuver">
-                        <button mat-icon-button (click)="approveOnboarding(party.key)" color="primary">
-                           <i class="ti ti-check f-18"></i>
+                        <button mat-icon-button (click)="approveOnboarding(party.sessionParty.key)" color="primary">
+                          <i class="ti ti-check f-18"></i>
                         </button>
                       </li>
                       <li class="list-inline-item m-r-10" matTooltip="Rejeter">
-                        <button mat-icon-button (click)="rejectOnboarding(party.key)" color="warn">
+                        <button mat-icon-button (click)="rejectOnboarding(party.sessionParty.key)" color="warn">
                           <i class="ti ti-x f-18"></i>
                         </button>
                       </li>
@@ -134,20 +135,21 @@
     <div *ngIf="selectedParty" class="user-details">
       <div class="user-avatar">
         <div class="avatar-circle large">
-          {{ selectedParty.partyInfo?.firstName?.charAt(0) || 'U' }}
+          {{ selectedParty.sessionParty.partyInfo?.firstName?.charAt(0) || 'U' }}
         </div>
       </div>
       <div class="user-info">
-        <h3>{{ selectedParty.partyInfo?.firstName }} {{ selectedParty.partyInfo?.familyName }}</h3>
-        <p>Date de naissance: {{ selectedParty.partyInfo?.birthDate | date }}</p>
-        <p>Type de document: {{ selectedParty.partyInfo?.idDocumentType }}</p>
-        <p>Numéro: {{ selectedParty.partyInfo?.idDocumentNumber }}</p>
+        <h3>{{ selectedParty.sessionParty.partyInfo?.firstName }} {{ selectedParty.sessionParty.partyInfo?.familyName }}
+        </h3>
+        <p>Date de naissance: {{ selectedParty.sessionParty.partyInfo?.birthDate | date }}</p>
+        <p>Type de document: {{ selectedParty.sessionParty.partyInfo?.idDocumentType }}</p>
+        <p>Numéro: {{ selectedParty.sessionParty.partyInfo?.idDocumentNumber }}</p>
       </div>
 
       <mat-divider></mat-divider>
 
       <div class="section-title">Coordonnées</div>
-      <div *ngFor="let contact of selectedParty.contactPoints" class="contact-item">
+      <div *ngFor="let contact of selectedParty.sessionParty.contactPoints" class="contact-item">
         <mat-icon>{{ contact.type === 'EMAIL' ? 'email' : 'phone' }}</mat-icon>
         <span>{{ contact.value }}</span>
       </div>
@@ -161,7 +163,31 @@
       <mat-divider></mat-divider>
 
       <div class="section-title">Documents</div>
-      <div *ngFor="let doc of selectedParty.documents" class="document-item">
+      <div *ngFor="let doc of selectedKycDocuments?.data" class="document-item">
+        <div class="document-header">
+          <span class="document-type">{{ doc.type }}</span>
+          <span class="document-date">{{ doc.createdAt | date }}</span>
+        </div>
+        <div class="document-files">
+          <div class="file-item">
+            <span>{{ doc.status }}</span>
+
+            <!-- Bouton Télécharger -->
+            <button mat-icon-button (click)="downloadDocument(doc.url)" matTooltip="Télécharger">
+              <i class="ti ti-download f-18"></i>
+            </button>
+
+            <!-- Bouton Envoyer à Neero -->
+            <button mat-icon-button (click)="sendDocumentToNeero(doc.type, selectedParty.user.id)"
+              matTooltip="Envoyer à Neero" color="primary">
+              <i class="ti ti-send f-18"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Documents</div>
+      <div *ngFor="let doc of selectedParty.sessionParty.documents" class="document-item">
         <div class="document-header">
           <span class="document-type">{{ doc.type }}</span>
           <span class="document-date">{{ doc.createDateTime | date }}</span>
@@ -169,14 +195,27 @@
         <div class="document-files">
           <div *ngFor="let file of doc.files" class="file-item">
             <span>{{ file.header }}</span>
-            <button mat-icon-button (click)="openDocument(file)">
-              <i class="ti ti-eye f-18"></i>
-            </button>
-            <button mat-icon-button (click)="downloadDocument(file.url)">
+
+            <!-- Bouton Télécharger -->
+            <button mat-icon-button (click)="downloadDocument(file.url)" matTooltip="Télécharger">
               <i class="ti ti-download f-18"></i>
+            </button>
+
+            <!-- Bouton Envoyer à Neero -->
+            <button mat-icon-button (click)="sendDocumentToNeero(getDocumentType(doc.type), selectedParty.user.id)"
+              matTooltip="Envoyer à Neero" color="primary">
+              <i class="ti ti-send f-18"></i>
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- Bouton de soumission globale -->
+      <div class="submit-all-container">
+        <button mat-raised-button color="primary" (click)="submitDocumentsToNeero(selectedParty.user.id)">
+          <i class="ti ti-send f-18 m-r-5"></i>
+          Soumettre tous les documents à Neero
+        </button>
       </div>
     </div>
   </ng-scrollbar>
