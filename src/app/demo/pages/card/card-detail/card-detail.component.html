@@ -1,0 +1,144 @@
+<div *ngIf="card" class="row m-t-25">
+  <!-- Colonne de gauche - Profil Carte -->
+  <div class="col-lg-4 col-xxl-3">
+    <!-- Carte Visuelle -->
+    <mat-card class="card-visual">
+      <div class="card-design" [ngClass]="getStatusClass(card.status)">
+        <div class="card-header">
+          <span class="card-bank">SF-E BANK</span>
+          <span class="card-type">Virtuelle</span>
+        </div>
+        <div class="card-chip"></div>
+        <div class="card-number">
+          •••• •••• •••• {{card.last4Digits}}
+        </div>
+        <div class="card-footer">
+          <div class="card-holder">{{card.cardName || 'Titulaire de carte'}}</div>
+          <div class="card-expiry">EXP {{card.expirationDate | date:'MM/yy'}}</div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Carte Statut -->
+    <mat-card class="status-card">
+      <div class="status-header">
+        <h3>Statut de la carte</h3>
+        <span class="status-badge" [ngClass]="getStatusClass(card.status)">
+          {{ formatStatus(card.status) }}
+        </span>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="card-meta">
+        <div class="meta-item">
+          <mat-icon>credit_card</mat-icon>
+          <span>Créée le {{card.createdAt | date:'mediumDate'}}</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>update</mat-icon>
+          <span>Dernière mise à jour {{card.updatedAt | date:'mediumDate'}}</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>person</mat-icon>
+          <span>ID Utilisateur: {{card.userId}}</span>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Colonne de droite - Détails et Actions -->
+  <div class="col-lg-8 col-xxl-9">
+    <!-- Carte Actions -->
+    <mat-card class="actions-card">
+      <div class="actions-header">
+        <h3>Gestion de la carte</h3>
+        <div class="action-buttons">
+          <button mat-stroked-button
+                  color="primary"
+                  (click)="toggleCardStatus(card.status === 'ACTIVE' ? 'FREEZE' : 'UNFREEZE')"
+                  [disabled]="isUpdating">
+            <mat-icon>{{card.status === 'ACTIVE' ? 'lock' : 'lock_open'}}</mat-icon>
+            {{card.status === 'ACTIVE' ? 'Bloquer la carte' : 'Débloquer la carte'}}
+            <mat-spinner *ngIf="isUpdating" diameter="20"></mat-spinner>
+          </button>
+
+          <button mat-stroked-button
+                  color="warn"
+                  (click)="deleteCard()"
+                  [disabled]="isUpdating"
+                  class="delete-button">
+            <mat-icon>delete</mat-icon>
+            Supprimer la carte
+          </button>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Carte Détails -->
+    <mat-card class="details-card">
+      <mat-card-header>
+        <mat-card-title>Détails de la carte</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <h4>Nom de la carte</h4>
+            <p>{{card.cardName || 'Non renseigné'}}</p>
+          </div>
+
+          <div class="detail-item">
+            <h4>Numéro de carte</h4>
+            <p>•••• •••• •••• {{card.last4Digits}}</p>
+          </div>
+
+          <div class="detail-item">
+            <h4>Date d'expiration</h4>
+            <p>{{card.expirationDate | date:'MM/yy'}}</p>
+          </div>
+
+          <div class="detail-item">
+            <h4>ID Partie</h4>
+            <p>{{card.partyId}}</p>
+          </div>
+
+          <div class="detail-item">
+            <h4>Date de création</h4>
+            <p>{{card.createdAt | date:'medium'}}</p>
+          </div>
+
+          <div class="detail-item">
+            <h4>Dernière mise à jour</h4>
+            <p>{{card.updatedAt | date:'medium'}}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Carte Transactions -->
+    <mat-card class="transactions-card">
+      <mat-card-header>
+        <mat-card-title>Dernières transactions</mat-card-title>
+        <button mat-icon-button>
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="transactions-placeholder">
+          <mat-icon>receipt</mat-icon>
+          <p>Historique des transactions à venir</p>
+          <button mat-stroked-button color="primary" (click)="viewDetails(card.id)">
+            Voir toutes les transactions
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" class="loading-overlay">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>

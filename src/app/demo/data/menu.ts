@@ -209,6 +209,25 @@ export const menus: Navigation[] = [
 
         ]
       },
+      {
+        id: 'gestion carte',
+        title: 'Gestion de carte',
+        type: 'collapse',
+        icon: '#custom-bill',
+        role: [Role.Admin, Role.User],
+        children: [
+          {
+            id: 'allrequest',
+            title: 'Liste des cartes',
+            type: 'item',
+            url: '/card/all',
+            // target: true,
+            breadcrumbs: true
+          },
+
+
+        ]
+      },
     ]
   },
   {

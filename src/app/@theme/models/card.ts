@@ -1,3 +1,5 @@
+import { PaginatedData } from ".";
+
 export type OnboardingSessionStatus =
   | 'WAITING_FOR_INFORMATION'
   | 'UNDER_VERIFICATION'
@@ -85,4 +87,111 @@ export interface KycDocument {
   userId: number;
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
+}
+
+export type CardStatus =
+  | 'PRE_ACTIVE'
+  | 'ACTIVE'
+  | 'FROZEN'
+  | 'TERMINATED'
+  | 'IN_TERMINATION'
+  | 'SUSPENDED';
+
+export interface VirtualCard {
+  id: number;
+  cardId: number;
+  userId: number;
+  cardName: string;
+  partyId: string;
+  last4Digits: string;
+  expirationDate: string;
+  status: CardStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CardResponse {
+  status: number;
+  message: string;
+  data: PaginatedData<VirtualCard>;
+}
+
+export interface CardTransactionResponse {
+  status: number;
+  message: string;
+  data: {
+    card: CardInfo;
+    transactions: CardTransactionPagination;
+  };
+}
+
+export interface CardInfo {
+  id: number;
+  cardId: number;
+  cardName: string;
+  partyId: string;
+  last4Digits: string;
+  expirationDate: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+  paymentMethod: PaymentMethod;
+}
+
+export interface PaymentMethod {
+  id: number;
+  paymentMethodId: string;
+  type: string;
+  phone: string | null;
+  userId: number;
+  cardId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CardTransactionPagination {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  items: CardTransaction[];
+}
+
+export interface CardTransaction {
+  id: number;
+  transactionId: string;
+  amount: number;
+  exchangeRates: number;
+  sendoFees: number;
+  currency: string;
+  description: string | null;
+  tva: number;
+  partnerFees: number;
+  totalAmount: number;
+  type: string;
+  status: string;
+  receiverId: number | null;
+  virtualCardId: number;
+  method: string;
+  provider: string | null;
+  transactionReference: string;
+  bankName: string | null;
+  accountNumber: string | null;
+  retryCount: number;
+  lastChecked: string | null;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+  user: {
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+    phone: string;
+  };
+  card: {
+    id: number;
+    cardId: number;
+    status: string;
+  };
 }

@@ -1,0 +1,266 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+.col-lg-4, .col-lg-8, .col-xxl-3, .col-xxl-9 {
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.m-t-25 {
+  margin-top: 25px;
+}
+
+/* Carte Visuelle */
+.card-visual {
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: 20px;
+
+  .card-design {
+    padding: 24px;
+    height: 200px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #3f51b5, #2196f3);
+    color: white;
+    position: relative;
+    overflow: hidden;
+
+    &.status-frozen {
+      background: linear-gradient(135deg, #f44336, #ff9800);
+    }
+
+    &.status-terminated, &.status-in_termination {
+      background: linear-gradient(135deg, #9e9e9e, #607d8b);
+    }
+
+    &.status-suspended {
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .card-chip {
+      width: 50px;
+      height: 40px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+
+    .card-number {
+      font-size: 22px;
+      letter-spacing: 3px;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+
+      .card-holder {
+        text-transform: uppercase;
+        max-width: 70%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+/* Carte Statut */
+.status-card {
+  .status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  .status-badge {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .card-meta {
+    padding: 16px;
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+
+      mat-icon {
+        margin-right: 10px;
+        color: rgba(0,0,0,0.54);
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+/* Carte Actions */
+.actions-card {
+  margin-bottom: 20px;
+
+  .actions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+
+    .delete-button {
+      margin-left: 10px;
+    }
+  }
+}
+
+/* Carte Détails */
+.details-card {
+  margin-bottom: 20px;
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 16px;
+
+    .detail-item {
+      h4 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        color: rgba(0,0,0,0.6);
+        font-weight: 500;
+      }
+
+      p {
+        margin: 0;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+/* Carte Transactions */
+.transactions-card {
+  .transactions-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: rgba(0,0,0,0.54);
+
+    mat-icon {
+      font-size: 60px;
+      width: 60px;
+      height: 60px;
+      margin-bottom: 20px;
+      color: rgba(0,0,0,0.2);
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+/* Classes de statut */
+.status-pre_active {
+  color: #e65100;
+  background-color: #fff3e0;
+}
+
+.status-active {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+}
+
+.status-frozen {
+  color: #c62828;
+  background-color: #ffebee;
+}
+
+.status-terminated {
+  color: #616161;
+  background-color: #f5f5f5;
+}
+
+.status-in_termination {
+  color: #ff8f00;
+  background-color: #fff8e1;
+}
+
+.status-suspended {
+  color: #1565c0;
+  background-color: #e3f2fd;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .col-lg-4, .col-lg-8 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .actions-card .action-buttons {
+    flex-direction: column;
+    width: 100%;
+
+    button {
+      width: 100%;
+      margin: 5px 0 !important;
+    }
+  }
+}
