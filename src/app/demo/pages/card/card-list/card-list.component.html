@@ -1,0 +1,114 @@
+<div class="card-container">
+  <app-card cardTitle="Liste des cartes virtuelles" padding="0" cardClass="sm-block">
+    <div class="p-b-15">
+      <div class="table-container table-responsive">
+        <div class="table-search p-t-15 p-x-15">
+          <div class="row">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput
+                       placeholder="Rechercher..."
+                       (keyup)="applyFilter($event)" />
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Statut</mat-label>
+                <mat-select [(value)]="currentStatus" (selectionChange)="onStatusChange($event.value)">
+                  <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                    {{ status.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <div *ngIf="isLoading" class="loading-spinner text-center p-3">
+            <mat-spinner diameter="50"></mat-spinner>
+          </div>
+
+          <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+            <!-- Nom Column -->
+            <ng-container matColumnDef="cardName">
+              <th mat-header-cell *matHeaderCellDef>NOM</th>
+              <td mat-cell *matCellDef="let card" class="text-nowrap">
+                {{ card.cardName || 'Sans nom' }}
+              </td>
+            </ng-container>
+
+            <!-- Numéro Column -->
+            <ng-container matColumnDef="last4Digits">
+              <th mat-header-cell *matHeaderCellDef>NUMÉRO</th>
+              <td mat-cell *matCellDef="let card" class="text-nowrap">
+                •••• •••• •••• {{ card.last4Digits }}
+              </td>
+            </ng-container>
+
+            <!-- Expiration Column -->
+            <ng-container matColumnDef="expirationDate">
+              <th mat-header-cell *matHeaderCellDef>EXPIRATION</th>
+              <td mat-cell *matCellDef="let card" class="text-nowrap">
+                {{ card.expirationDate | date:'MM/yy' }}
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>STATUT</th>
+              <td mat-cell *matCellDef="let card" class="text-nowrap">
+                <mat-chip [class]="getStatusClass(card.status)">
+                  {{ formatStatus(card.status) }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <!-- Création Column -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>CRÉÉE LE</th>
+              <td mat-cell *matCellDef="let card" class="text-nowrap">
+                {{ card.createdAt | date:'mediumDate' }}
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="text-right">ACTIONS</th>
+              <td mat-cell *matCellDef="let card" class="text-nowrap text-right">
+                <button mat-icon-button color="primary" matTooltip="Détails" (click)="viewDetails(card.cardId)">
+                  <i class="ti ti-eye f-18"></i>
+                </button>
+                <!-- <button mat-icon-button color="warn" matTooltip="Bloquer" *ngIf="card.status === 'ACTIVE'">
+                  <i class="ti ti-lock f-18"></i>
+                </button>
+                <button mat-icon-button color="primary" matTooltip="Activer" *ngIf="card.status === 'FROZEN'">
+                  <i class="ti ti-lock-open f-18"></i>
+                </button> -->
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="6">
+                <div *ngIf="!isLoading" class="text-center p-3">
+                  Aucune carte trouvée {{ searchText ? 'correspondant à "' + searchText + '"' : '' }}
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                        [length]="totalItems"
+                        [pageSize]="itemsPerPage"
+                        [pageIndex]="currentPage - 1"
+                        (page)="onPageChange($event)"
+                        showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </app-card>
+</div>

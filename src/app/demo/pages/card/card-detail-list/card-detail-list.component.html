@@ -1,0 +1,157 @@
+<div class="transaction-list-container">
+  <!-- En-tête avec infos de la carte -->
+  <mat-card class="card-header">
+    <div class="header-content">
+      <div class="card-info">
+        <h2>{{ InfoUser?.cardName }}</h2>
+        <div class="transaction-reference" >
+          expiration: {{ formatDate(InfoUser?.expirationDate) }}
+        </div>
+        <!-- <div class="card-meta">
+          <span *ngIf="dataSource.data.length">Affichage de {{currentPage * itemsPerPage + 1}} à 
+            {{Math.min((currentPage + 1) * itemsPerPage, totalItems)}} sur {{totalItems}} transactions</span>
+        </div> -->
+      </div>
+      <button mat-stroked-button color="primary" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Retour à la carte
+      </button>
+    </div>
+  </mat-card>
+
+  <!-- Filtres -->
+  <!-- <mat-card class="filters-card">
+    <form [formGroup]="filterForm">
+      <div class="filters-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+              {{ status.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+              {{ type.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Date de début</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Date de fin</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+
+        
+        <div class="filter-actions">
+          <button mat-stroked-button type="button" (click)="resetFilters()">
+            <mat-icon>refresh</mat-icon>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-card> -->
+
+  <!-- Tableau des transactions -->
+  <mat-card class="transactions-card">
+    <div *ngIf="isLoading" class="loading-spinner">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <div class="table-responsive" *ngIf="!isLoading">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ formatDate(transaction.createdAt) }}
+          </td>
+        </ng-container>
+
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+          <td mat-cell *matCellDef="let transaction">
+            <div class="description-cell">
+              <div class="transaction-type">{{ formatType(transaction.type) }}</div>
+              <div class="transaction-detail" *ngIf="transaction.description">
+                {{ transaction.description }}
+              </div>
+              <div class="transaction-reference" *ngIf="transaction.transactionReference">
+                Réf: {{ transaction.transactionReference }}
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Amount Column -->
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>
+          <td mat-cell *matCellDef="let transaction"
+            [class.negative-amount]="transaction.type === 'WITHDRAWAL' || transaction.type === 'PAYMENT'">
+            {{ formatCurrency(transaction.amount) }}
+          </td>
+        </ng-container>
+
+        <!-- Fees Column -->
+        <ng-container matColumnDef="fees">
+          <th mat-header-cell *matHeaderCellDef>Frais</th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ formatCurrency(transaction.sendoFees + transaction.partnerFees) }}
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+          <td mat-cell *matCellDef="let transaction">
+            <mat-chip [class]="getStatusClass(transaction.status)">
+              {{ formatStatus(transaction.status) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="method">
+          <th mat-header-cell *matHeaderCellDef>Méthode</th>
+          <td mat-cell *matCellDef="let transaction">
+            {{ transaction.method }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Row when no data -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="6">
+            <div class="no-data-message">
+              Aucune transaction trouvée
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [length]="totalItems" [pageSize]="itemsPerPage"
+        [pageIndex]="currentPage" (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </mat-card>
+</div>

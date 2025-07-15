@@ -1,0 +1,153 @@
+.transaction-list-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  
+}
+
+.card-header {
+  margin-bottom: 20px;
+
+  .transaction-reference {
+      font-size: 12px;
+      color: rgba(0,0,0,0.5);
+      margin-top: 4px;
+    }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+
+    .card-info {
+      h2 {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+      }
+
+      .card-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 14px;
+        color: rgba(0,0,0,0.6);
+      }
+    }
+  }
+}
+
+.filters-card {
+  margin-bottom: 20px;
+
+  form {
+    padding: 16px;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .filter-actions {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}
+
+.transactions-card {
+  position: relative;
+  min-height: 300px;
+
+  .loading-spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.7);
+    z-index: 100;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .description-cell {
+    .transaction-type {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .transaction-detail {
+      font-size: 14px;
+      color: rgba(0,0,0,0.7);
+    }
+
+    .transaction-reference {
+      font-size: 12px;
+      color: rgba(0,0,0,0.5);
+      margin-top: 4px;
+    }
+  }
+
+  .negative-amount {
+    color: #f44336;
+    font-weight: 500;
+  }
+
+  .no-data-message {
+    padding: 40px;
+    text-align: center;
+    color: rgba(0,0,0,0.5);
+  }
+}
+
+/* Classes de statut */
+.status-pending {
+  background-color: #fff3e0 !important;
+  color: #e65100 !important;
+}
+
+.status-completed {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+}
+
+.status-failed {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 16px;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .mat-table {
+    min-width: 600px;
+  }
+}

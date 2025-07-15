@@ -1,0 +1,67 @@
+
+.card-container {
+  padding: 16px;
+}
+
+.table-container {
+  padding: 15px;
+}
+
+.status-pre_active {
+  background-color: #fff3e0 !important;
+  color: #e65100;
+}
+
+.status-active {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+}
+
+.status-frozen {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+}
+
+.status-terminated {
+  background-color: #f5f5f5 !important;
+  color: #616161 !important;
+}
+
+.status-in_termination {
+  background-color: #fff8e1 !important;
+  color: #ff8f00 !important;
+}
+
+.status-suspended {
+  background-color: #e3f2fd !important;
+  color: #1565c0 !important;
+}
+
+.mat-table {
+  width: 100%;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .table-search {
+    flex-direction: column;
+
+    mat-form-field {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+}

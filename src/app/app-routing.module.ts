@@ -222,6 +222,29 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/card-onboading/card-onboading-list/card-onboading-list.component').then((c) => c.CardOnboardingListComponent),
         data: { roles: ['SUPER_ADMIN'] }
       },
+
+    ]
+  },
+   {
+    path: 'card',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'all',
+        loadComponent: () => import('./demo/pages/card/card-list/card-list.component').then((c) => c.CardListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+       {
+        path: ':id/details',
+        loadComponent: () => import('./demo/pages/card/card-detail/card-detail.component').then((c) => c.CardDetailComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: ':id/list',
+        loadComponent: () => import('./demo/pages/card/card-detail-list/card-detail-list.component').then((c) => c.CardDetailListComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
     ]
   },
    {
