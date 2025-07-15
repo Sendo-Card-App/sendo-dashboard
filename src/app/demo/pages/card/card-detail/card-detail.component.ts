@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CardService } from 'src/app/@theme/services/card.service';
-import {  CardStatus, VirtualCard } from 'src/app/@theme/models/card';
+import { CardStatus, VirtualCard } from 'src/app/@theme/models/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule, Location } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,7 +12,7 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
   selector: 'app-card-detail',
   templateUrl: './card-detail.component.html',
   styleUrls: ['./card-detail.component.scss'],
-   imports: [SharedModule, CommonModule],
+  imports: [SharedModule, CommonModule],
 })
 export class CardDetailComponent implements OnInit {
   isLoading = false;
@@ -27,7 +27,7 @@ export class CardDetailComponent implements OnInit {
     private location: Location,
     private dialog: MatDialog,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cardId = Number(this.route.snapshot.paramMap.get('id'));
@@ -99,17 +99,18 @@ export class CardDetailComponent implements OnInit {
     });
   }
 
-  formatStatus(status: CardStatus): string {
-    const statusMap: Record<CardStatus, string> = {
-      'PRE_ACTIVE': 'Pré-activée',
-      'ACTIVE': 'Active',
-      'FROZEN': 'Bloquée',
-      'TERMINATED': 'Résiliée',
-      'IN_TERMINATION': 'En résiliation',
-      'SUSPENDED': 'Suspendue'
-    };
-    return statusMap[status] || status;
-  }
+   formatStatus(status: string | undefined): string {
+  const statusMap: Partial<Record<CardStatus, string>> = {
+    'PRE_ACTIVE': 'Pré-activée',
+    'ACTIVE': 'Active',
+    'FROZEN': 'Bloquée',
+    'TERMINATED': 'Résiliée',
+    'IN_TERMINATION': 'En résiliation',
+    'SUSPENDED': 'Suspendue',
+  };
+  if (!status) return 'Inconnu';
+  return statusMap[status as CardStatus] ?? status;
+}
 
   getStatusClass(status: CardStatus): string {
     return `status-${status.toLowerCase()}`;
@@ -127,7 +128,7 @@ export class CardDetailComponent implements OnInit {
     this.snackBar.open(message, 'Fermer', { duration: 3000 });
   }
 
-   viewDetails(cardId: number): void {
+  viewDetails(cardId: number): void {
     this.router.navigate(['/card/', cardId, 'list']);
   }
 }
