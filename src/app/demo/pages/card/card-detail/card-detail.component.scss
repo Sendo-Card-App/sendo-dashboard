@@ -42,6 +42,9 @@
     &.status-suspended {
       background: linear-gradient(135deg, #ff9800, #ff5722);
     }
+    &.status-blocked {
+      background: linear-gradient(135deg, #f44336, #ff9800);
+    }
 
     .card-header {
       display: flex;
@@ -214,6 +217,11 @@
 }
 
 .status-frozen {
+  color: #c62828;
+  background-color: #ffebee;
+}
+
+.status-blocked {
   color: #c62828;
   background-color: #ffebee;
 }
