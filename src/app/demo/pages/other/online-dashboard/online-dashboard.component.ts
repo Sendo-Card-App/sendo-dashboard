@@ -9,10 +9,10 @@ import { StatisticsChartComponent } from '../../../pages/apex-chart/statistics-c
 import { InvitesGoalChartComponent } from './invites-goal-chart/invites-goal-chart.component';
 // import { TotalRevenueLineChartComponent } from './total-revenue-line-chart/total-revenue-line-chart.component';
 import { StudentStatesChartComponent } from './student-states-chart/student-states-chart.component';
-import { ActivityLineChartComponent } from './activity-line-chart/activity-line-chart.component';
+// import { ActivityLineChartComponent } from './activity-line-chart/activity-line-chart.component';
 import { activityData } from 'src/app/fake-data/activity_data';
-import { VisitorsBarChartComponent } from './visitors-bar-chart/visitors-bar-chart.component';
-import { EarningCoursesLineChartComponent } from './earning-courses-line-chart/earning-courses-line-chart.component';
+// import { VisitorsBarChartComponent } from './visitors-bar-chart/visitors-bar-chart.component';
+// import { EarningCoursesLineChartComponent } from './earning-courses-line-chart/earning-courses-line-chart.component';
 import { CourseReportBarChartComponent } from './course-report-bar-chart/course-report-bar-chart.component';
 import { RequestFundsChartComponent } from './request-funds-stats/course-report-bar-chart.component';
 import { TontineStatsComponent } from './tontine-stats/tontine-stats.component';
@@ -47,9 +47,9 @@ const courseStates_data = courseStatesData;
     InvitesGoalChartComponent,
     CourseReportBarChartComponent,
     StudentStatesChartComponent,
-    ActivityLineChartComponent,
-    VisitorsBarChartComponent,
-    EarningCoursesLineChartComponent,
+    // ActivityLineChartComponent,
+    // VisitorsBarChartComponent,
+    // EarningCoursesLineChartComponent,
     RouterModule,
     RequestFundsChartComponent,
     TontineStatsComponent

@@ -45,6 +45,36 @@
         </div>
       </div>
     </mat-card>
+
+    <mat-card class="status-card">
+      <div class="status-header">
+        <h3>Status du wallet</h3>
+        <span class="status-badge" [ngClass]="getStatusClass(card.user.wallet.status)">
+          {{ formatStatus(card.user.wallet.status) }}
+        </span>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="card-meta">
+        <div class="meta-item">
+          <mat-icon>credit_card</mat-icon>
+          <span>Créée le {{card.user.wallet.createdAt | date:'mediumDate'}}</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>update</mat-icon>
+          <span>Dernière mise à jour {{card.user.wallet.updatedAt | date:'mediumDate'}}</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>person</mat-icon>
+          <span>Matricule: {{card.user.wallet.matricule}}</span>
+        </div>
+         <div class="meta-item">
+          <mat-icon>Balance</mat-icon>
+          <span>Balance: {{formatBalance(card.user.wallet.balance, card.user.wallet.currency)}}</span>
+        </div>
+      </div>
+    </mat-card>
   </div>
 
   <!-- Colonne de droite - Détails et Actions -->

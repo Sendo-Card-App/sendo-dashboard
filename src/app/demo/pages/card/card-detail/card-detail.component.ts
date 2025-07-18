@@ -131,4 +131,12 @@ export class CardDetailComponent implements OnInit {
   viewDetails(cardId: number): void {
     this.router.navigate(['/card/', cardId, 'list']);
   }
+
+  formatBalance(balance: number, currency: string): string {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0
+    }).format(balance);
+  }
 }
