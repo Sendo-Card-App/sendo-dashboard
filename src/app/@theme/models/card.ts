@@ -108,6 +108,24 @@ export interface VirtualCard {
   status: CardStatus;
   createdAt: string;
   updatedAt: string;
+  user: {
+    id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+    phone: string;
+    wallet: {
+      id: number;
+      balance: number;
+      currency: string;
+      status: string;
+      userId: number;
+      matricule: string;
+      createdAt: string;
+      updatedAt: string;
+    }
+  }
+
 }
 
 export interface CardResponse {
