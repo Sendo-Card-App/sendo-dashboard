@@ -35,23 +35,23 @@ export interface KycListResponse extends BaseResponse {
 export class KycService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /** Récupère les headers (JWT, etc.) */
-    private getConfigAuthorized() {
-       const dataRegistered = localStorage.getItem('login-sendo') || '{}'
-       const data = JSON.parse(dataRegistered)
-       return {
-         headers: new HttpHeaders(
-           {
-             "Access-Control-Allow-Origin": "*",
-             "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
-             "Content-Type": "application/json",
-             'Authorization': `Bearer ${data.accessToken}`
-           }
-         )
-       }
-     }
+  private getConfigAuthorized() {
+    const dataRegistered = localStorage.getItem('login-sendo') || '{}'
+    const data = JSON.parse(dataRegistered)
+    return {
+      headers: new HttpHeaders(
+        {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${data.accessToken}`
+        }
+      )
+    }
+  }
 
   /**
    * Récupère tous les documents KYC en attente ("PENDING")
@@ -63,7 +63,7 @@ export class KycService {
     limit: number = 10
   ): Observable<KycPendingResponse> {
     const params = new HttpParams()
-      .set('page',  page.toString())
+      .set('page', page.toString())
       .set('limit', limit.toString());
 
     return this.http.get<KycPendingResponse>(
@@ -74,6 +74,16 @@ export class KycService {
       }
     );
   }
+
+  // kyc.service.ts
+  updateKycDocument(publicId: string, file: File): Observable<BaseResponse> {
+    const formData = new FormData();
+    formData.append('document', file);
+
+    return this.http.put<BaseResponse>(`${this.apiUrl}/kyc/${publicId}/admin`,
+      { formData, ...this.getConfigAuthorized() });
+  }
+
 
   /**
    * GET /users/{id}/kyc
@@ -86,12 +96,12 @@ export class KycService {
     );
   }
 
-   /**
-   * Valide ou rejette un document KYC
-   * @param documentId ID du document à reviewer
-   * @param payload    { status: 'APPROVED'|'REJECTED', rejectionReason?: string }
-   */
-   reviewKyc(
+  /**
+  * Valide ou rejette un document KYC
+  * @param documentId ID du document à reviewer
+  * @param payload    { status: 'APPROVED'|'REJECTED', rejectionReason?: string }
+  */
+  reviewKyc(
     documentId: number,
     payload: ReviewKycRequest
   ): Observable<BaseResponse> {
@@ -110,14 +120,14 @@ export class KycService {
     );
   }
 
-   /**
-   * Récupère tous les documents KYC
-   * GET /admin/kyc/list
-   * @param page   Numéro de page (défaut 1)
-   * @param limit  Éléments par page (défaut 10)
-   * @param status Filtrer par statut (PENDING, APPROVED, REJECTED...)
-   */
-   getAllKyc(
+  /**
+  * Récupère tous les documents KYC
+  * GET /admin/kyc/list
+  * @param page   Numéro de page (défaut 1)
+  * @param limit  Éléments par page (défaut 10)
+  * @param status Filtrer par statut (PENDING, APPROVED, REJECTED...)
+  */
+  getAllKyc(
     page: number = 1,
     limit: number = 10,
     status?: string

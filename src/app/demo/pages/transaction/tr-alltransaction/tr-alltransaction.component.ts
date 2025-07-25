@@ -51,7 +51,8 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
   methodOptions = [
     { value: '', label: 'All' },
     { value: 'MOBILE_MONEY', label: 'Mobile Money' },
-    { value: 'BANK_TRANSFER', label: 'Bank Transfer' }
+    { value: 'BANK_TRANSFER', label: 'Bank Transfer' },
+    { value: 'VIRTUAL_CARD', label: 'Virtual Card' }
   ];
    private intervalId!: ReturnType<typeof setInterval>;
 
