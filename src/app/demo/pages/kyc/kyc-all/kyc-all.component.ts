@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { KycDocument } from 'src/app/@theme/models';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-kyc-all',
@@ -30,7 +31,8 @@ export class KycAllComponent implements OnInit {
 
   constructor(
     private kycService: KycService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
   ) {
     this.filterForm = this.fb.group({
       search: [''],
@@ -129,4 +131,22 @@ export class KycAllComponent implements OnInit {
   getStatusClass(status: string): string {
     return `status-${status.toLowerCase()}`;
   }
+
+  
+onReplaceDocument(event: Event, publicId: string): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const file = input.files[0];
+    this.kycService.updateKycDocument(publicId, file).subscribe({
+      next: () => {
+        this.loadKycDocuments();
+         this.snackBar.open('Image modifier avec succes', 'Fermer', {
+    duration: 3000
+  });
+      },
+      error: () => {
+      }
+    });
+  }
+}
 }
