@@ -1,4 +1,4 @@
-import { Component, effect, OnInit, output, ViewChild } from '@angular/core';
+import { Component, effect, OnInit, output, ViewChild, OnDestroy } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -16,7 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./kyc-list.component.scss'],
   imports: [SharedModule, CommonModule],
 })
-export class KycListComponent implements OnInit {
+export class KycListComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['user', 'type', 'status', 'createdAt', 'action'];
   dataSource: MatTableDataSource<KycDocument> = new MatTableDataSource<KycDocument>([]);
   isLoading = false;
@@ -26,6 +26,7 @@ export class KycListComponent implements OnInit {
   searchText = '';
   readonly HeaderBlur = output();
   direction: string = 'ltr';
+  private intervalId!: ReturnType<typeof setInterval>;
 
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -42,6 +43,16 @@ export class KycListComponent implements OnInit {
   }
   ngOnInit(): void {
     this.loadDocuments();
+
+     this.intervalId = setInterval(() => {
+      this.loadDocuments();
+    }, 30000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   loadDocuments(): void {

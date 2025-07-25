@@ -76,14 +76,14 @@ export const menus: Navigation[] = [
             // target: true,
             breadcrumbs: true
           },
-          {
-            id: 'addtransaction',
-            title: 'Creer une transaction',
-            type: 'item',
-            url: '/transactions/addtransaction',
-            // target: true,
-            breadcrumbs: true
-          },
+          // {
+          //   id: 'addtransaction',
+          //   title: 'Creer une transaction',
+          //   type: 'item',
+          //   url: '/transactions/addtransaction',
+          //   // target: true,
+          //   breadcrumbs: true
+          // },
 
         ]
       },

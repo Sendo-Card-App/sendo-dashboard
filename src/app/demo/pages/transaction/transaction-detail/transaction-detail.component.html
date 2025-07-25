@@ -49,8 +49,8 @@
 
               <div class="detail-row">
                 <mat-icon>payments</mat-icon>
-                <span>{{ transaction.user?.wallet?.balance |
-                  currency:transaction.user?.wallet?.currency:'symbol':'1.2-2' }}</span>
+                <span>{{ transaction.user?.wallet?.balance | number:'1.2-2' }} {{ transaction.currency }}
+</span>
               </div>
             </div>
           </div>
