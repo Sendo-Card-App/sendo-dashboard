@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -20,7 +20,7 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
       SharedModule
     ],
 })
-export class TransactionListComponent implements OnInit {
+export class TransactionListComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns: string[] = [
     'transactionId',
     'amount',
@@ -36,6 +36,7 @@ export class TransactionListComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 10;
   userId: number;
+  private intervalId!: ReturnType<typeof setInterval>;
 
   filterForm: FormGroup;
 
@@ -83,6 +84,16 @@ export class TransactionListComponent implements OnInit {
         this.currentPage = 1;
         this.loadTransactions();
       });
+
+       this.intervalId = setInterval(() => {
+      this.loadTransactions();
+    }, 30000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   ngAfterViewInit() {

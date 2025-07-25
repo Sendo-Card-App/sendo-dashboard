@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef, OnDestroy } from '@angular/core';
 import { TransactionsService } from 'src/app/@theme/services/transactions.service';
 import { Transactions, TransactionType, TransactionStatus } from 'src/app/@theme/models/index';
 import { MatTableDataSource } from '@angular/material/table';
@@ -21,7 +21,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./tr-alltransaction.component.scss'],
   providers: [DatePipe]
 })
-export class TrAllTransactionComponent implements OnInit, AfterViewInit {
+export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns: string[] = ['transactionId', 'username', 'amount', 'type', 'status', 'method', 'createdAt', 'actions'];
   dataSource = new MatTableDataSource<Transactions>([]);
   isLoading = false;
@@ -53,6 +53,7 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit {
     { value: 'MOBILE_MONEY', label: 'Mobile Money' },
     { value: 'BANK_TRANSFER', label: 'Bank Transfer' }
   ];
+   private intervalId!: ReturnType<typeof setInterval>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -80,7 +81,28 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.loadTransactions();
     this.setupFilterListeners();
+
+    // Auto-refresh every 30 seconds (30 000 ms)
+    this.intervalId = setInterval(() => {
+      this.loadTransactions();
+    }, 30000);
+
+    this.filterForm.get('search')?.valueChanges
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((value: string) => {
+      this.applyFilter(value);
+    });
   }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  applyFilter(filterValue: string): void {
+  this.dataSource.filter = filterValue.trim().toLowerCase();
+}
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
@@ -91,10 +113,31 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit {
       this.currentSort.direction = sort.direction || 'asc'; // Valeur par défaut si vide
       this.loadTransactions();
     });
+
+    this.dataSource.filterPredicate = (data: Transactions, filter: string) => {
+    const searchStr = [
+      data.transactionId,
+      data.user ? data.user.firstname : '',
+      data.user ? data.user.lastname : '',
+      data.amount?.toString(),
+      data.type,
+      data.status,
+      data.method,
+      data.description
+    ].join(' ').toLowerCase();
+    return searchStr.includes(filter);
+  };
+
+  this.sort.sortChange.subscribe(sort => {
+    this.currentSort.active = sort.active;
+    this.currentSort.direction = sort.direction || 'asc';
+    this.loadTransactions();
+  });
   }
 
   loadTransactions(): void {
     this.isLoading = true;
+    // console.log('Transactions rechargées à', new Date().toLocaleTimeString());
 
     const formValues = this.filterForm.value;
     const startDate = formValues.startDate ? this.datePipe.transform(formValues.startDate, 'yyyy-MM-dd') : '';

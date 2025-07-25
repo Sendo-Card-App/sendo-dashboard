@@ -39,6 +39,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   currentRequest: RequestItem | null = null;
   selectedAction: 'approve' | 'reject' | null = null;
   isUpdatingStatus = false;
+  private intervalId!: ReturnType<typeof setInterval>;
 
   constructor(
     private fb: FormBuilder,
@@ -59,11 +60,18 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.setupFormListeners();
     this.loadRequests();
+
+    this.intervalId = setInterval(() => {
+      this.loadRequests();
+    }, 30000);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
 

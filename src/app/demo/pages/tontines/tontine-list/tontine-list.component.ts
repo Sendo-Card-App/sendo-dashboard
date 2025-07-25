@@ -50,6 +50,7 @@ export class TontineListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTontines();
+    
   }
 
   loadTontines(): void {

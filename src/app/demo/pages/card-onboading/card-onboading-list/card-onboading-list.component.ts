@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDrawer } from '@angular/material/sidenav';
@@ -16,7 +16,7 @@ import { BaseResponse } from 'src/app/@theme/models';
   styleUrls: ['./card-onboading-list.component.scss'],
   imports: [CommonModule, SharedModule],
 })
-export class CardOnboardingListComponent implements OnInit {
+export class CardOnboardingListComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('drawer') drawer!: MatDrawer;
 
@@ -42,6 +42,7 @@ export class CardOnboardingListComponent implements OnInit {
   selectedParty: SessionType | null = null;
   selectedKycDocuments: BaseResponse<KycDocument> | null = null;
   headerBlur = false;
+  private intervalId!: ReturnType<typeof setInterval>;
 
   constructor(
     private cardService: CardService,
@@ -51,6 +52,15 @@ export class CardOnboardingListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOnboardingRequests();
+    this.intervalId = setInterval(() => {
+      this.loadOnboardingRequests();
+    }, 30000); // Auto-refresh every 30 seconds
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
  loadOnboardingRequests(): void {

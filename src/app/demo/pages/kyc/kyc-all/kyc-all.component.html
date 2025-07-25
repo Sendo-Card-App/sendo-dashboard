@@ -6,7 +6,7 @@
         <div class="col-md-4">
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Rechercher</mat-label>
-            <input matInput formControlName="search" placeholder="Nom, email...">
+           <input matInput placeholder="Recherche" [formControl]="filterForm.get('search')" />
           </mat-form-field>
         </div>
 

@@ -7,6 +7,7 @@ import { KycService } from 'src/app/@theme/services/kyc.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { KycDocument } from 'src/app/@theme/models';
 
 @Component({
   selector: 'app-kyc-all',
@@ -41,16 +42,38 @@ export class KycAllComponent implements OnInit {
   ngOnInit(): void {
     this.loadKycDocuments();
 
-    this.filterForm.valueChanges
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged()
-      )
-      .subscribe(() => {
-        this.currentPage = 1;
-        this.loadKycDocuments();
-      });
+   this.filterForm.get('search')?.valueChanges
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((value: string) => {
+      this.applyFilter(value);
+    });
+
+  this.filterForm.valueChanges
+    .pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    )
+    .subscribe(() => {
+      this.currentPage = 1;
+      this.loadKycDocuments();
+    });
+
+  // Définis le prédicat de filtre
+  this.dataSource.filterPredicate = (data: unknown, filter: string) => {
+    const kycData = data as KycDocument;
+    const searchStr = [
+      kycData.user?.firstname,
+      kycData.user?.lastname,
+      kycData.type,
+      kycData.status
+    ].join(' ').toLowerCase();
+    return searchStr.includes(filter);
+  };
   }
+
+  applyFilter(filterValue: string): void {
+  this.dataSource.filter = filterValue.trim().toLowerCase();
+}
 
   loadKycDocuments(): void {
     this.isLoading = true;

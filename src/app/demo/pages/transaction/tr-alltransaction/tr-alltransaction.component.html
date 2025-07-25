@@ -51,7 +51,7 @@
         <div class="col-md-3">
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Search</mat-label>
-            <input matInput formControlName="search" placeholder="Transaction ID, amount...">
+            <input matInput placeholder="Recherche" [formControl]="filterForm.get('search')" />
           </mat-form-field>
         </div>
 

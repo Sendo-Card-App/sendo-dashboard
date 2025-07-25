@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, TemplateRef, OnDestroy } from '@angular/core';
 import { TransactionsService } from 'src/app/@theme/services/transactions.service';
 import { Transactions, TransactionType, TransactionStatus } from 'src/app/@theme/models/index';
 import { MatTableDataSource } from '@angular/material/table';
@@ -21,7 +21,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
   imports: [CommonModule, SharedModule],
   providers: [DatePipe]
 })
-export class TransactionCaCamComponent implements OnInit, AfterViewInit {
+export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns: string[] = ['transactionId', 'username', 'amount', 'type', 'status', 'method', 'createdAt', 'actions'];
   dataSource = new MatTableDataSource<Transactions>([]);
   isLoading = false;
@@ -32,6 +32,7 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit {
 
   filterForm: FormGroup;
   maxDate = new Date();
+  private intervalId!: ReturnType<typeof setInterval>;
 
   // Options for filters
   statusOptions = [
@@ -78,6 +79,26 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.loadTransactions();
     this.setupFilterListeners();
+
+     this.intervalId = setInterval(() => {
+      this.loadTransactions();
+    }, 30000);
+
+    this.filterForm.get('search')?.valueChanges
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((value: string) => {
+      this.applyFilter(value);
+    });
+  }
+
+  applyFilter(filterValue: string): void {
+  this.dataSource.filter = filterValue.trim().toLowerCase();
+}
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   ngAfterViewInit(): void {
@@ -89,6 +110,26 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit {
       this.currentSort.direction = sort.direction || 'asc'; // Valeur par défaut si vide
       this.loadTransactions();
     });
+
+    this.dataSource.filterPredicate = (data: Transactions, filter: string) => {
+    const searchStr = [
+      data.transactionId,
+      data.user ? data.user.firstname : '',
+      data.user ? data.user.lastname : '',
+      data.amount?.toString(),
+      data.type,
+      data.status,
+      data.method,
+      data.description
+    ].join(' ').toLowerCase();
+    return searchStr.includes(filter);
+  };
+
+  this.sort.sortChange.subscribe(sort => {
+    this.currentSort.active = sort.active;
+    this.currentSort.direction = sort.direction || 'asc';
+    this.loadTransactions();
+  });
   }
 
   loadTransactions(): void {
