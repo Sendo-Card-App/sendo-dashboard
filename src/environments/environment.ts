@@ -6,7 +6,7 @@ import packageInfo from '../../package.json';
 
 export const apiUrl = 'https://api.sf-e.ca/api';
 const authUrl = '/auth';
-const socketUrl = 'https://api.sf-e.ca/api'; // Même domaine que votre API
+const socketUrl = 'https://api.sf-e.ca'; // Même domaine que votre API
 
 export const environment = {
   appVersion: packageInfo.version,
