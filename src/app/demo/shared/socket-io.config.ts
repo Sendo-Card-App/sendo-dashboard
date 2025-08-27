@@ -1,6 +1,7 @@
 // src/app/demo/shared/socket-io.config.ts
 
-import { SocketIoConfig } from 'ngx-socket-io';
+//import { SocketIoConfig } from 'ngx-socket-io';
+import { environment } from 'src/environments/environment';
 
 function getAuthToken(): string {
   try {
@@ -13,13 +14,13 @@ function getAuthToken(): string {
   }
 }
 
-export const socketConfig: SocketIoConfig = {
-  url: 'https://api.sf-e.ca',
+export const socketConfig = {
+  url: environment.socketUrl,
   options: {
+    path: '/socket.io',
     transports: ['websocket'],
-    autoConnect: true,
-    extraHeaders: {
-      Authorization: `Bearer ${getAuthToken()}`
+    auth: {
+      token: getAuthToken()
     }
   }
 };

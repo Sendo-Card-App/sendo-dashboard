@@ -6,18 +6,19 @@ import packageInfo from '../../package.json';
 
 export const apiUrl = 'https://api.sf-e.ca/api';
 const authUrl = '/auth';
-const socketUrl = 'https://api.sf-e.ca/api'; // Même domaine que votre API
+const socketUrl = 'https://api.sf-e.ca/'; // ⚠️ enlever le /api ici
 
 export const environment = {
   appVersion: packageInfo.version,
   production: false,
   apiUrl: apiUrl,
   authUrl: authUrl,
-  socketUrl: socketUrl, // Ajout de l'URL Socket.IO
+  socketUrl: socketUrl, // Socket.IO tourne à la racine
   socketPaths: {
-    chat: '/socket.io/chat' // Chemin spécifique pour le chat
+    chat: '/socket.io' // le path par défaut de Socket.IO
   }
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file

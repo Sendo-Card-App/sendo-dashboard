@@ -1,5 +1,5 @@
 // angular import
-import { AfterViewInit, Component, effect, inject, OnInit } from '@angular/core';
+import { AfterViewInit, Component, effect, inject, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
 
@@ -23,6 +23,7 @@ import { MIN_WIDTH_1025PX, MAX_WIDTH_1024PX, MIN_WIDTH_1400PX, MAX_WIDTH_1399PX,
 import { Conversation } from 'src/app/@theme/models/chat';
 import { ChatService } from 'src/app/@theme/services/chat.service';
 import { SocketService } from 'src/app/@theme/services/socket.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-chat',
@@ -31,7 +32,7 @@ import { SocketService } from 'src/app/@theme/services/socket.service';
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
 })
-export class ChatComponent implements OnInit, AfterViewInit {
+export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   // breakpoint observer
   private breakpointObserver = inject(BreakpointObserver);
 
@@ -45,6 +46,9 @@ export class ChatComponent implements OnInit, AfterViewInit {
   direction: string = 'ltr';
   userStatus: string = 'active';
   rtlMode: boolean = false;
+  attachments: string[] = [];
+  isloadingattachments: boolean = false;
+  totalMessages: number = 0;
 
   chatPersonList: chatPersonType[] = chatPersonData; // chat person list
   chatHistory: chatHistory[] = chatsHistory; // chat history
@@ -57,9 +61,11 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   // list to search any person
   searchTerm: string = '';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  pollingInterval: any;
 
   // constructor
-  constructor(private chatService: ChatService,private socketService: SocketService) {
+  constructor(private chatService: ChatService, private socketService: SocketService, private snackbar: MatSnackBar) {
     effect(() => {
       this.themeDirection(this.themeService.directionChange());
     });
@@ -82,14 +88,19 @@ export class ChatComponent implements OnInit, AfterViewInit {
       }
     });
 
+   
     this.chatService.getConversations().subscribe({
       next: (res) => {
         const items = res.data.items;
         console.log('Conversations récupérées:', items);
 
+        this.totalMessages = items.length;
+
         this.chatPersonList = items.map((conversation) =>
           this.mapConversationToChatPerson(conversation)
-        );
+        ).sort((a, b) => {
+          return new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime();
+        });
 
         if (this.chatPersonList.length) {
           this.selectedUser = this.chatPersonList[0];
@@ -101,11 +112,56 @@ export class ChatComponent implements OnInit, AfterViewInit {
         console.error('Erreur lors de la récupération des conversations', err);
       }
     });
+  //    this.pollingInterval = setInterval(() => {
+  // }, 5000);
+
+   this.socketService.onNewMessage().subscribe((msg) => {
+    this.playNotificationSound();
+    this.snackbar.open(`Nouveau message reçu ${msg.content}`, 'Fermer', {
+      duration: 3000
+    });
+  });
   }
+
+  playNotificationSound(): void {
+  const audio = new Audio('assets/sound/sound 2.mp3');
+  audio.play();
+}
 
   ngAfterViewInit() {
     this.rtlMode = AbleProConfig.isRtlLayout;
   }
+  ngOnDestroy() {
+  if (this.pollingInterval) {
+    clearInterval(this.pollingInterval);
+  }
+}
+
+refreshDom(): void {
+  this.chatService.getConversations().subscribe({
+      next: (res) => {
+        const items = res.data.items;
+        console.log('Conversations récupérées:', items);
+
+        this.totalMessages = items.length;
+
+        this.chatPersonList = items.map((conversation) =>
+          this.mapConversationToChatPerson(conversation)
+        ).sort((a, b) => {
+          return new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime();
+        });
+
+        if (this.chatPersonList.length) {
+          this.selectedUser = this.chatPersonList[0];
+          this.selectedPersonId = this.selectedUser.id;
+          // this.loadMessages(this.selectedUser.id);
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des conversations', err);
+      }
+    });
+}
 
 
   // ...existing code...
@@ -114,61 +170,123 @@ export class ChatComponent implements OnInit, AfterViewInit {
     this.selectedPersonId = this.selectedUser.id;
 
     this.chatService.getMessagesByConversationId(id).subscribe({
-  next: (res) => {
-    const messages = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
-    this.selectedUserChatHistory = messages.map((msg) => ({
-      id: msg.id,
-      from: msg.senderType === 'ADMIN' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
-      to: msg.senderType === 'CUSTOMER' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
-      text: msg.content === '[Pièce jointe]'
-        ? (msg.attachments && msg.attachments.length > 0 ? msg.attachments[0] : '[Pièce jointe]')
-        : msg.content,
-      attachments: msg.attachments, // tu peux garder ce champ si tu veux l'utiliser dans le template
-      time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isMine: msg.senderType === 'ADMIN'
-    }));
-  },
-  error: (err) => {
-    this.selectedUserChatHistory = [];
-    console.error('Erreur lors de la récupération des messages', err);
-  }
-});
+      next: (res) => {
+        // console.log('Messages récupérés:', res.data);
+        const messages = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
+        this.selectedUserChatHistory = messages
+          .map((msg) => ({
+            id: msg.id,
+            from: msg.senderType === 'ADMIN' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+            to: msg.senderType === 'CUSTOMER' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+            text: msg.content === '[Attachment]'
+              ? (msg.attachments && msg.attachments.length > 0 ? msg.attachments[0] : '[Attachment]')
+              : msg.content,
+            attachments: msg.attachments,
+            time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            createdAt: new Date(msg.createdAt), // 🔑 garde la date réelle
+            isMine: msg.senderType === 'ADMIN'
+          }))
+          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()); // 🔑 tri ascendant
+
+      },
+      error: (err) => {
+        this.selectedUserChatHistory = [];
+        console.error('Erreur lors de la récupération des messages', err);
+      }
+    });
   }
   // ...existing code...
 
-  // send new message
- sendNewMessage() {
-  if (this.message.trim() !== '') {
-    const payload = {
-      conversationId: this.selectedPersonId,
-      content: this.message,
-      senderType: 'ADMIN', // utile pour l'API REST, pas pour le socket natif sauf si tu le gères côté serveur
-      attachments: []
-    };
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files);
 
-    // Envoi via le socket
-    this.socketService.sendMessage({
-      conversationId: payload.conversationId,
-      content: payload.content,
-      attachments: payload.attachments
-    });
+      this.isloadingattachments = true;
 
-    // Affichage immédiat côté front (optimiste)
-    this.selectedUserChatHistory.push({
-      id: (Math.max(...this.selectedUserChatHistory.map((m) => Number(m.id) || 0), 0) + 1).toString(),
-      from: 'Moi',
-      to: this.selectedUser.name,
-      text: this.message,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      isMine: true
-    });
+      this.chatService.uploadAttachments(files).subscribe({
+        next: (response) => {
+          // Ajoute les URLs retournées à attachments
+          this.attachments.push(...response.data);
 
-    this.message = '';
-    this.errorMessage = '';
-  } else {
-    this.errorMessage = 'Please Enter Any Message.';
+          this.isloadingattachments = false;
+          // Tu peux maintenant utiliser attachments dans sendNewMessage
+          this.snackbar.open('Fichiers uploadés avec succès', 'Fermer', {
+            duration: 3000
+          });
+
+        },
+        error: (error) => {
+          // Gère l’erreur (snackbar, etc.)
+
+          this.isloadingattachments = false;
+          console.error('Erreur lors de l\'upload des fichiers', error);
+          this.snackbar.open('Erreur lors de l\'upload des fichiers', 'Fermer', {
+            duration: 3000
+          });
+        }
+      });
+    }
   }
-}
+
+
+  // send new message
+  sendNewMessage() {
+    if (this.message.trim() !== '') {
+      const payload = {
+        conversationId: this.selectedPersonId,
+        content: this.message,
+        senderType: 'ADMIN',
+        attachments: this.attachments.length ? this.attachments : []
+      };
+
+
+
+      const sent = this.socketService.sendMessage({
+        conversationId: payload.conversationId,
+        content: payload.content,
+        attachments: payload.attachments
+      });
+
+      if (sent) {
+        console.log("✅ Message émis via socket:", payload);
+      } else {
+        console.error("❌ Impossible d’envoyer (socket non connectée)");
+      }
+
+      // Ajout optimiste côté front
+      this.selectedUserChatHistory.push({
+        id: (Math.max(...this.selectedUserChatHistory.map((m) => Number(m.id) || 0), 0) + 1).toString(),
+        from: 'Moi',
+        to: this.selectedUser.name,
+        text: this.message,
+        attachments: this.attachments.length ? [...this.attachments] : [],
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        createdAt: new Date(),
+        isMine: true
+      });
+      this.attachments = [];
+
+      this.message = '';
+      this.errorMessage = '';
+    } else {
+      this.errorMessage = 'Please Enter Any Message.';
+    }
+  }
+
+  deleteMessage(messageId: string) {
+    this.chatService.deleteMessage(messageId).subscribe({
+      next: () => {
+        this.selectedUserChatHistory = this.selectedUserChatHistory.filter(msg => msg.id !== messageId);
+        this.snackbar.open('Message deleted successfully', 'Close', { duration: 3000 });
+      },
+      error: (err) => {
+        console.error('Error deleting message', err);
+        this.snackbar.open('Error deleting message', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
 
   // user status
   setStatus(status: string) {
@@ -184,10 +302,37 @@ export class ChatComponent implements OnInit, AfterViewInit {
 
   // filter person form list
   filterPerson(searchTerm: string): void {
-    this.chatPersonList = chatPersonData.filter(
-      (person) =>
-        person.name.toLowerCase().includes(searchTerm.toLowerCase()) || person.status.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    if (!searchTerm.trim()) {
+      // Si la recherche est vide, restaurer la liste complète
+      this.chatService.getConversations().subscribe({
+        next: (res) => {
+          const items = res.data.items;
+          this.chatPersonList = items.map((conversation) =>
+            this.mapConversationToChatPerson(conversation)
+          );
+        },
+        error: (err) => {   
+          console.error('Erreur lors de la récupération des conversations', err);
+        }
+      });
+    } else {
+      this.chatService.getConversations().subscribe({
+        next: (res) => {
+          const items = res.data.items;
+          const fullList = items.map((conversation) =>
+            this.mapConversationToChatPerson(conversation)
+          );
+          this.chatPersonList = fullList.filter(
+            (person) =>
+              person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              person.status.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des conversations', err);
+        }
+      });
+    }
   }
 
   footer_icon = [
@@ -265,30 +410,30 @@ export class ChatComponent implements OnInit, AfterViewInit {
   }
 
   getAvatarColor(name: string): string {
-  // Génère une couleur à partir du nom
-  const colors = [
-    '#F44336', '#E91E63', '#9C27B0', '#3F51B5', '#03A9F4',
-    '#009688', '#4CAF50', '#FF9800', '#795548', '#607D8B'
-  ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % colors.length;
-  return colors[index];
-}
-
-changeConversationStatus(status: 'OPEN' | 'CLOSED') {
-  if (!this.selectedPersonId) return;
-  this.chatService.changeConversationStatus(this.selectedPersonId, status).subscribe({
-    next: () => {
-      this.selectedUser.status = status;
-      // Optionnel : message de succès ou rafraîchir la liste
-    },
-    error: (err) => {
-      console.error('Erreur lors du changement de statut de la conversation', err);
-      // Optionnel : afficher un message d'erreur à l'utilisateur
+    // Génère une couleur à partir du nom
+    const colors = [
+      '#F44336', '#E91E63', '#9C27B0', '#3F51B5', '#03A9F4',
+      '#009688', '#4CAF50', '#FF9800', '#795548', '#607D8B'
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
-  });
-}
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  }
+
+  changeConversationStatus(status: 'OPEN' | 'CLOSED') {
+    if (!this.selectedPersonId) return;
+    this.chatService.changeConversationStatus(this.selectedPersonId, status).subscribe({
+      next: () => {
+        this.selectedUser.status = status;
+        // Optionnel : message de succès ou rafraîchir la liste
+      },
+      error: (err) => {
+        console.error('Erreur lors du changement de statut de la conversation', err);
+        // Optionnel : afficher un message d'erreur à l'utilisateur
+      }
+    });
+  }
 }
