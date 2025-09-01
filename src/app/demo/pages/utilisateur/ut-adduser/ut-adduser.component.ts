@@ -5,6 +5,7 @@ import { UserService } from 'src/app/@theme/services/users.service';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-ut-adduser',
@@ -24,7 +25,8 @@ export class UtAdduserComponent {
     constructor(
       private fb: FormBuilder,
       private adminService: AdminService,
-      private userService: UserService
+      private userService: UserService,
+      private snackbar: MatSnackBar
     ) {
       this.invitationForm = this.fb.group({
         firstname: ['', [Validators.required, Validators.maxLength(50)]],
@@ -32,6 +34,8 @@ export class UtAdduserComponent {
         email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
         phone: ['', [Validators.pattern(/^[0-9]{9,15}$/)]],
         address: ['', [Validators.maxLength(200)]],
+        dateOfBirth: ['', Validators.required],
+        placeOfBirth: ['', Validators.required],
         roleId: [null, Validators.required]
       });
     }
@@ -64,29 +68,49 @@ export class UtAdduserComponent {
 
       const formData = this.invitationForm.value;
 
+      // Format dateOfBirth as DD/MM/YYYY string
+      const date = new Date(formData.dateOfBirth);
+      const formattedDateOfBirth = [
+        String(date.getDate()).padStart(2, '0'),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        date.getFullYear()
+      ].join('/');
+
       this.userService.createUser({
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
         phone: formData.phone,
         address: formData.address,
+        dateOfBirth: formattedDateOfBirth,
+        placeOfBirth: formData.placeOfBirth,
         roleId: formData.roleId
       }).subscribe({
         next: (response) => {
           if (response.status === 200) {
-            this.isSuccess = true;
             this.invitationForm.reset();
-            setTimeout(() => this.isSuccess = false, 3000);
+            this.isSuccess = true;
+        setTimeout(() => this.isSuccess = false, 3000);
+
+        this.snackbar.open('Utilisateur créé avec succès', 'Fermer', {
+          duration: 3000
+        });
           } else {
-            this.errorMessage = response.message || 'Erreur lors de la création';
+        this.errorMessage = response.message || 'Erreur lors de la création';
           }
         },
         error: (err) => {
-          console.error('API Error:', err);
+          // console.error('API Error:', err);
+          // console.log("Erreur lors de la création de l'utilisateur", formData);
+             this.isLoading = false;
+        this.snackbar.open(`Erreur lors de la création de l'utilisateur ${formData.firstname} ${formData.lastname}`, 'Fermer', {
+          duration: 3000
+        });
           this.errorMessage = this.getErrorMessage(err);
         },
         complete: () => {
           this.isLoading = false;
+
         }
       });
     }

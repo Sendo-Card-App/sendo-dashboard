@@ -60,10 +60,8 @@
           <h2 class="card-title">Progression du financement</h2>
 
           <div class="progress-container">
-            <mat-progress-bar
-                mode="determinate"
-                [value]="calculateFundedPercentage()"
-                [color]="calculateFundedPercentage() === 100 ? 'primary' : 'accent'">
+            <mat-progress-bar mode="determinate" [value]="calculateFundedPercentage()"
+              [color]="calculateFundedPercentage() === 100 ? 'primary' : 'accent'">
             </mat-progress-bar>
             <div class="progress-text">{{ calculateFundedPercentage() }}% financé</div>
           </div>
@@ -71,11 +69,13 @@
           <div class="amounts">
             <div class="amount-item">
               <span class="amount-label">Montant reçu</span>
-              <span class="amount-value">{{ formatCurrency(fundRequest.amount * calculateFundedPercentage() / 100) }}</span>
+              <span class="amount-value">{{ formatCurrency(fundRequest.amount * calculateFundedPercentage() / 100)
+                }}</span>
             </div>
             <div class="amount-item">
               <span class="amount-label">Reste à financer</span>
-              <span class="amount-value">{{ formatCurrency(fundRequest.amount * (100 - calculateFundedPercentage()) / 100) }}</span>
+              <span class="amount-value">{{ formatCurrency(fundRequest.amount * (100 - calculateFundedPercentage()) /
+                100) }}</span>
             </div>
           </div>
         </mat-card>
@@ -126,14 +126,16 @@
               Envoyer un rappel
             </button> -->
 
-           <button mat-stroked-button
-            color="warn"
-            (click)="confirmDelete()"
-            [disabled]="isLoading"
-            class="delete-button">
-      <mat-icon>delete</mat-icon>
-      Annuler la demande
-    </button>
+            <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER') ? 'Cette action est réservée uniquement aux admins' : 'Edit'"
+                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER'" style="width: 100%;">
+
+              <button style="width: 100%;" (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER') && confirmDelete()" mat-stroked-button color="warn" 
+              [disabled]="isLoading && currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER'"
+                class="delete-button">
+                <mat-icon>delete</mat-icon>
+                Annuler la demande
+              </button>
+            </div>
           </div>
         </mat-card>
       </div>

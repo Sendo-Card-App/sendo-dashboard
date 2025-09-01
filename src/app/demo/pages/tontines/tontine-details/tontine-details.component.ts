@@ -7,6 +7,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-tontine-details',
@@ -19,6 +20,7 @@ export class TontineDetailsComponent implements OnInit {
   tontine: Tontine | null = null;
   isLoading = false;
   isSuspending = false;
+  currentuserRole: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,10 +28,12 @@ export class TontineDetailsComponent implements OnInit {
     private snackBar: MatSnackBar,
     private datePipe: DatePipe,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private authentificationService: AuthenticationService
   ) {}
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.loadTontine();
   }
 

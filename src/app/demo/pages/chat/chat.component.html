@@ -303,6 +303,11 @@
                     </a>
                     <input #fileInput type="file" multiple style="display: none" (change)="onFilesSelected($event)"
                       accept="image/*,application/pdf" />
+                    <ng-container *ngIf="selectedImages?.length">
+                      <span *ngFor="let img of selectedImages" class="m-l-5">
+                      <img [src]="img" alt="preview" style="width:32px;height:32px;object-fit:cover;border-radius:4px;border:1px solid #eee;" />
+                      </span>
+                    </ng-container>
                   </li>
                 </ul>
                 <ul class="list-inline ms-auto mb-0">

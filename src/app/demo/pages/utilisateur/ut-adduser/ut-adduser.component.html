@@ -76,6 +76,30 @@
             </div>
           </div>
 
+          <!-- Date de naissance et Lieu de naissance -->
+          <div class="row">
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Date de naissance</mat-label>
+                <input matInput formControlName="dateOfBirth" [matDatepicker]="picker" required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="invitationForm.get('dateOfBirth')?.hasError('required')">
+                  Champ obligatoire
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Lieu de naissance</mat-label>
+                <input matInput formControlName="placeOfBirth" required>
+                <mat-error *ngIf="invitationForm.get('placeOfBirth')?.hasError('required')">
+                  Champ obligatoire
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
           <!-- Bouton de soumission -->
           <div class="row m-t-20">
             <div class="col-md-12 text-right">
@@ -96,7 +120,7 @@
         </form>
 
         <!-- Messages de feedback -->
-        @if (isSuccess) {
+        <!-- @if (isSuccess) {
           <div class="alert alert-success m-t-20">
             Utilisateur créé avec succès !
           </div>
@@ -105,7 +129,7 @@
           <div class="alert alert-danger m-t-20">
             {{ errorMessage }}
           </div>
-        }
+        } -->
       </div>
     </app-card>
   </div>

@@ -84,23 +84,31 @@
       <div class="actions-header">
         <h3>Gestion de la carte</h3>
         <div class="action-buttons">
-          <button mat-stroked-button
-                  color="primary"
-                  (click)="toggleCardStatus(card.status === 'ACTIVE' ? 'FREEZE' : 'UNFREEZE')"
-                  [disabled]="isUpdating">
-            <mat-icon>{{card.status === 'ACTIVE' ? 'lock' : 'lock_open'}}</mat-icon>
-            {{card.status === 'ACTIVE' ? 'Bloquer la carte' : 'Débloquer la carte'}}
-            <mat-spinner *ngIf="isUpdating" diameter="20"></mat-spinner>
-          </button>
+          <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER' && currentuserRole !== 'CARD_MANAGER') ? 'Cette action est réservée uniquement aux admins' : 'Voir détails'"
+                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER' || currentuserRole === 'CARD_MANAGER'">
 
-          <button mat-stroked-button
-                  color="warn"
-                  (click)="deleteCard()"
-                  [disabled]="isUpdating"
-                  class="delete-button">
-            <mat-icon>delete</mat-icon>
-            Supprimer la carte
-          </button>
+            <button mat-stroked-button
+                    color="primary"
+                    (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER' || currentuserRole === 'CARD_MANAGER') && toggleCardStatus(card.status === 'ACTIVE' ? 'FREEZE' : 'UNFREEZE')"
+                    [disabled]="isUpdating || currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER' && currentuserRole !== 'CARD_MANAGER'">
+              <mat-icon>{{card.status === 'ACTIVE' ? 'lock' : 'lock_open'}}</mat-icon>
+              {{card.status === 'ACTIVE' ? 'Bloquer la carte' : 'Débloquer la carte'}}
+              <mat-spinner *ngIf="isUpdating" diameter="20"></mat-spinner>
+            </button>
+          </div>
+
+          <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER' && currentuserRole !== 'CARD_MANAGER') ? 'Cette action est réservée uniquement aux admins' : 'Supprimer la carte'"
+               [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER' || currentuserRole === 'CARD_MANAGER'">
+
+            <button mat-stroked-button
+                    color="warn"
+                    (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER' || currentuserRole === 'CARD_MANAGER') && deleteCard()"
+                    [disabled]=" card.status === 'TERMINATED' || isUpdating || currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER' && currentuserRole !== 'CARD_MANAGER'"
+                    class="delete-button">
+              <mat-icon>delete</mat-icon>
+              Supprimer la carte
+            </button>
+          </div>
         </div>
       </div>
     </mat-card>

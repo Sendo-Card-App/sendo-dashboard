@@ -88,7 +88,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-   
+
     this.chatService.getConversations().subscribe({
       next: (res) => {
         const items = res.data.items;
@@ -197,10 +197,17 @@ refreshDom(): void {
   }
   // ...existing code...
 
+  selectedImages: string[] = [];
+
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const files = Array.from(input.files);
+
+      // Génère les previews pour les images sélectionnées
+      this.selectedImages = files
+        .filter(file => file.type.startsWith('image/'))
+        .map(file => URL.createObjectURL(file));
 
       this.isloadingattachments = true;
 
@@ -249,7 +256,8 @@ refreshDom(): void {
       });
 
       if (sent) {
-        console.log("✅ Message émis via socket:", payload);
+        this.selectedImages = [];
+        // console.log("✅ Message émis via socket:", payload);
       } else {
         console.error("❌ Impossible d’envoyer (socket non connectée)");
       }
@@ -311,7 +319,7 @@ refreshDom(): void {
             this.mapConversationToChatPerson(conversation)
           );
         },
-        error: (err) => {   
+        error: (err) => {
           console.error('Erreur lors de la récupération des conversations', err);
         }
       });

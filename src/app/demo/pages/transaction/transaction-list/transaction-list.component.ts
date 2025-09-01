@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -20,7 +20,7 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
       SharedModule
     ],
 })
-export class TransactionListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TransactionListComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'transactionId',
     'amount',
@@ -96,10 +96,10 @@ export class TransactionListComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
+  // ngAfterViewInit() {
+  //   this.dataSource.paginator = this.paginator;
+  //   this.dataSource.sort = this.sort;
+  // }
 
   loadTransactions(): void {
     this.isLoading = true;

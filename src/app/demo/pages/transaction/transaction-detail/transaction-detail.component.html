@@ -111,10 +111,16 @@
             <h3>Modification du statut</h3>
 
             <!-- Afficher le bouton si au moins une des deux conditions est vraie -->
-            <button mat-stroked-button (click)="toggleEdit()"
-              *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER'">
-              {{ isEditing ? 'Annuler' : 'Modifier' }}
-            </button>
+             <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : 'Edit'"
+                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN'">
+
+               <button mat-stroked-button 
+               (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN') && toggleEdit()"
+               [disabled]="currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN'"
+                 *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER'">
+                 {{ isEditing ? 'Annuler' : 'Modifier' }}
+               </button>
+             </div>
 
             <!-- Afficher le message uniquement si AUCUNE des deux conditions n’est vraie -->
             <div *ngIf="transaction?.method !== 'BANK_TRANSFER' && transaction?.type !== 'TRANSFER'"

@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BaseResponse } from 'src/app/@theme/models';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-card-onboarding-list',
@@ -38,6 +39,9 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy {
   totalItems = 0;
   itemsPerPage = 10;
   currentPage = 1;
+  currentuserRole: string | undefined;
+  sendocLoad: boolean = false;
+  summitload: boolean = false;
 
   selectedParty: SessionType | null = null;
   selectedKycDocuments: BaseResponse<KycDocument> | null = null;
@@ -47,10 +51,12 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy {
   constructor(
     private cardService: CardService,
     // private dialog: MatDialog
-    private snackBar: MatSnackBar // Assurez-vous d'importer MatSnackBar
+    private snackBar: MatSnackBar, // Assurez-vous d'importer MatSnackBar
+    private authentificationService: AuthenticationService
   ) { }
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.loadOnboardingRequests();
     this.intervalId = setInterval(() => {
       this.loadOnboardingRequests();
@@ -110,6 +116,8 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy {
     this.selectedParty = party;
     this.headerBlur = true;
     this.drawer.toggle();
+
+    console.log('View details for:', party);
 
     this.cardService.getKycDocuments(party.user.id).subscribe({
       next: (docs) => this.selectedKycDocuments = docs,
@@ -179,30 +187,40 @@ getDocumentType(docType: string): 'ID_PROOF' | 'ADDRESS_PROOF' | 'NIU_PROOF' | '
   }
 }
 
-sendDocumentToNeero(documentType: 'ID_PROOF' | 'ADDRESS_PROOF' | 'NIU_PROOF' | 'SELFIE', userId: number): void {
+
+
+loadingMap = new Map<number, boolean>();
+
+sendDocumentToNeero(documentType: 'ID_PROOF' | 'ADDRESS_PROOF' | 'NIU_PROOF' | 'SELFIE', userId: number, docId: number): void {
+  this.loadingMap.set(docId, true);
+
+  console.log('selectedParty : ', this.selectedParty);
+
   this.cardService.sendDocumentToNeero(documentType, userId).subscribe({
     next: () => {
-      this.snackBar.open(`Document ${documentType} envoyé avec succès`, 'Fermer', {
-        duration: 3000
-      });
+      this.loadingMap.set(docId, false);
+      this.snackBar.open(`Document ${documentType} envoyé avec succès`, 'Fermer', { duration: 3000 });
     },
     error: (err) => {
+      this.loadingMap.set(docId, false);
       console.error('Erreur lors de l\'envoi du document', err);
-      this.snackBar.open(`Erreur lors de l'envoi du document ${documentType}`, 'Fermer', {
-        duration: 3000
-      });
+      this.snackBar.open(`Erreur lors de l'envoi du document ${documentType}`, 'Fermer', { duration: 3000 });
     }
   });
 }
 
+
 submitDocumentsToNeero(userId: number) {
+  this.summitload = true;
   this.cardService.submitDocumentsToNeero(userId).subscribe({
     next: () => {
+      this.summitload = false;
       this.snackBar.open('Tous les documents ont été soumis avec succès', 'Fermer', {
         duration: 3000
       });
     },
     error: (err) => {
+      this.summitload = false;
       console.error('Erreur lors de la soumission des documents', err);
       this.snackBar.open('Erreur lors de la soumission des documents', 'Fermer', {
         duration: 3000

@@ -80,8 +80,12 @@
                 <td mat-cell *matCellDef="let party" class="text-nowrap">
                   <div class="text-center text-nowrap">
                     <ul class="list-inline p-l-0">
-                      <li class="list-inline-item m-r-10" matTooltip="Voir détails">
-                        <button mat-icon-button (click)="viewDetails(party)" color="primary">
+                      <li class="list-inline-item m-r-10"
+                        [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER' && currentuserRole !== 'CARD_MANAGER') ? 'Cette action est réservée uniquement aux admins' : 'Voir détails'"
+                        [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER' || currentuserRole === 'CARD_MANAGER'">
+                        <button
+                          (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER' || currentuserRole === 'CARD_MANAGER') && viewDetails(party)"
+                          mat-icon-button color="primary">
                           <i class="ti ti-eye f-18"></i>
                         </button>
                       </li>
@@ -178,9 +182,16 @@
             </button>
 
             <!-- Bouton Envoyer à Neero -->
-            <button mat-icon-button (click)="sendDocumentToNeero(doc.type, selectedParty.user.id)"
+            <button mat-icon-button
+              [disabled]="selectedParty?.sessionParty.onboardingSessionStatus !== 'WAITING_FOR_INFORMATION'"
+              (click)=" selectedParty?.sessionParty.onboardingSessionStatus === 'WAITING_FOR_INFORMATION' ? sendDocumentToNeero(doc.type, selectedParty.user.id, doc.id) : null"
               matTooltip="Envoyer à Neero" color="primary">
-              <i class="ti ti-send f-18"></i>
+              <ng-container *ngIf="!loadingMap.get(doc.id); else loading">
+                <i class="ti ti-send f-18"></i>
+              </ng-container>
+              <ng-template #loading>
+                <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
+              </ng-template>
             </button>
           </div>
         </div>
@@ -211,9 +222,17 @@
       </div>
 
       <!-- Bouton de soumission globale -->
-      <div class="submit-all-container">
-        <button mat-raised-button color="primary" (click)="submitDocumentsToNeero(selectedParty.user.id)">
-          <i class="ti ti-send f-18 m-r-5"></i>
+      <div class="submit-all-container"
+        *ngIf="selectedParty?.sessionParty.onboardingSessionStatus === 'WAITING_FOR_INFORMATION'">
+        <button mat-raised-button color="primary" (click)="submitDocumentsToNeero(selectedParty.user.id)"
+          [disabled]="summitload">
+          <ng-container *ngIf="!summitload; else loading">
+            <i class="ti ti-send f-18 m-r-5"></i>
+          </ng-container>
+          <ng-template #loading>
+            <mat-progress-spinner diameter="24" mode="indeterminate" color="accent" style="vertical-align: middle;"
+              [strokeWidth]="3"></mat-progress-spinner>
+          </ng-template>
           Soumettre tous les documents à Neero
         </button>
       </div>

@@ -1,10 +1,16 @@
 <div class="transaction-container">
   <!-- Ajoutez ceci dans votre template -->
 <div class="export-container">
-  <button mat-raised-button color="primary" (click)="openExportDialog(exportDialog)">
-    <mat-icon>download</mat-icon>
-    Exporter les transactions
-  </button>
+  <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : ''"
+                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN'" >
+
+    <button mat-raised-button color="primary"
+    (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN') && openExportDialog(exportDialog)"
+    [disabled]="currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN'">
+      <mat-icon>download</mat-icon>
+      Exporter les transactions
+    </button>
+  </div>
 
   <ng-template #exportDialog>
     <div class="export-dialog">

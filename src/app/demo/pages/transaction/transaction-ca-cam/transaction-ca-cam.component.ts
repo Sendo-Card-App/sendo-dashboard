@@ -13,6 +13,7 @@ import { DatePipe } from '@angular/common';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-transaction-ca-cam',
@@ -29,6 +30,7 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
   currentPage = 0; // Changé à 0 pour correspondre à l'index Material
   itemsPerPage = 10;
   currentSort: { active: string; direction: 'asc' | 'desc' | '' } = { active: '', direction: '' };
+  currentuserRole: string | undefined;
 
   filterForm: FormGroup;
   maxDate = new Date();
@@ -65,6 +67,7 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
     private datePipe: DatePipe,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
+    private authentificationService: AuthenticationService
   ) {
     this.filterForm = this.fb.group({
       search: [''],
@@ -77,6 +80,7 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.loadTransactions();
     this.setupFilterListeners();
 
@@ -102,8 +106,8 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    // this.dataSource.paginator = this.paginator;
+    // this.dataSource.sort = this.sort;
 
     this.sort.sortChange.subscribe(sort => {
       this.currentSort.active = sort.active;
