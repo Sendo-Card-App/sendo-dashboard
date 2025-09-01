@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 
 
@@ -21,6 +22,7 @@ export class FundRequestDetailComponent implements OnInit {
   fundRequest: FundRequest | null = null;
   isLoading = false;
   isDeadlinePassed = false;
+  currentuserRole: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,10 +30,12 @@ export class FundRequestDetailComponent implements OnInit {
     private datePipe: DatePipe,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private router:Router
+    private router:Router,
+    private authentificationService: AuthenticationService
   ) {}
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.loadFundRequest();
   }
 

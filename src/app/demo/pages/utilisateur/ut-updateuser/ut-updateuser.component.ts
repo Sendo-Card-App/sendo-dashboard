@@ -35,12 +35,14 @@ export class UtUpdateuserComponent implements OnInit {
   isLoading = false;
   isSubmitting = false;
   userRoles: RolePayload[] = [];
+  
 
   constructor(
     private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    
   ) {
     this.userForm = new FormGroup({
       firstname: new FormControl('', [Validators.required]),
@@ -60,6 +62,7 @@ export class UtUpdateuserComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
     this.userId = +this.route.snapshot.params['id'];
     this.loadUserData();
   }

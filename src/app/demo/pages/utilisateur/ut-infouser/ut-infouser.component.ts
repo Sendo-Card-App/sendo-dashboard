@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { AdminService } from 'src/app/@theme/services/admin.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-ut-infouser',
@@ -23,6 +24,7 @@ export class UtInfouserComponent implements OnInit {
   errorMessage = '';
   dataSource = new MatTableDataSource();
   displayedColumns: string[] = ['name', 'actions'];
+  currentuserRole: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,10 +32,12 @@ export class UtInfouserComponent implements OnInit {
     private dialog: MatDialog,
     private adminService: AdminService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private authentificationService: AuthenticationService
   ) {}
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) {
       this.errorMessage = 'Aucun identifiant fourni';

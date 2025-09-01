@@ -9,6 +9,7 @@ import { PubAdminService } from 'src/app/@theme/services/pub-admin.service';
 import { Publicite } from 'src/app/@theme/models/index';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-pub-list',
@@ -32,11 +33,13 @@ export class PubListComponent implements OnInit {
   currentPub: Publicite | null = null;
   isEditing = false;
   pubForm: FormGroup;
+  currentuserRole: string | undefined;
 
   constructor(
     private pubService: PubAdminService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authentificationService: AuthenticationService
   ) {
     this.filterForm = this.fb.group({
       search: ['']
@@ -53,6 +56,7 @@ export class PubListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.loadPublicites();
   }
 

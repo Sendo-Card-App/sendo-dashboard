@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-transaction-detail',
@@ -27,6 +28,7 @@ export class TransactionDetailComponent implements OnInit {
   isEditing = false;
   statusForm: FormGroup;
   statusOptions = ['PENDING', 'COMPLETED', 'FAILED','BLOCKED'];
+  currentuserRole: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,18 +36,18 @@ export class TransactionDetailComponent implements OnInit {
     private transactionsService: TransactionsService,
     private fb: FormBuilder,
      private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authentificationService: AuthenticationService
   ) {
      this.statusForm = this.fb.group({
     status: ['', Validators.required],
-    transactionReference: ['', Validators.required],
-    bankName: ['', Validators.required],
-    accountNumber: ['', Validators.required]
   });
 
   }
 
   ngOnInit(): void {
+
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.route.paramMap.subscribe(params => {
       const id = params.get('transactionId');
       if (id) {

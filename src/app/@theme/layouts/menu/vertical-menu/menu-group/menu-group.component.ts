@@ -32,6 +32,8 @@ export class MenuGroupVerticalComponent implements OnInit {
     const baseHref = this.location['_baseHref'] || '';
     this.current_url = baseHref + this.current_url;
 
+    // console.log('Current URL:', this.current_url, this.item());
+
     // Use a more reliable way to find and update the active group
     setTimeout(() => {
       const links = document.querySelectorAll('a.nav-link') as NodeListOf<HTMLAnchorElement>;

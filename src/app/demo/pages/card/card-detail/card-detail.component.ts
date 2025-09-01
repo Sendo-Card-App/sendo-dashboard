@@ -7,6 +7,7 @@ import { CommonModule, Location } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-card-detail',
@@ -19,6 +20,7 @@ export class CardDetailComponent implements OnInit {
   isUpdating = false;
   card: VirtualCard | null = null;
   cardId!: number;
+  currentuserRole: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,10 +28,12 @@ export class CardDetailComponent implements OnInit {
     private snackBar: MatSnackBar,
     private location: Location,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private authentificationService: AuthenticationService
   ) { }
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.cardId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadCardDetails();
   }
