@@ -13,6 +13,7 @@ import { DatePipe } from '@angular/common';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-tr-all-transaction',
@@ -29,6 +30,7 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
   currentPage = 0; // Changé à 0 pour correspondre à l'index Material
   itemsPerPage = 10;
   currentSort: { active: string; direction: 'asc' | 'desc' | '' } = { active: '', direction: '' };
+  currentuserRole: string | undefined;
 
   filterForm: FormGroup;
   maxDate = new Date();
@@ -45,14 +47,20 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
     { value: '', label: 'All' },
     { value: 'DEPOSIT', label: 'Deposit' },
     { value: 'WITHDRAWAL', label: 'Withdrawal' },
-    { value: 'TRANSFER', label: 'Transfer' }
+    { value: 'TRANSFER', label: 'Transfer' },
+    { value: 'FUND_REQUEST_PAYMENT', label: 'Fund Request Payment' },
+    { value: 'SHARED_PAYMENT', label: 'Shared Payment' },
+    { value: 'TONTINE_PAYMENT', label: 'Tontine Payment' },
+    { value: 'WALLET_TO_WALLET', label: 'Wallet to Wallet' },
+    { value: 'PAYMENT', label: 'Payment' },
   ];
 
   methodOptions = [
     { value: '', label: 'All' },
     { value: 'MOBILE_MONEY', label: 'Mobile Money' },
     { value: 'BANK_TRANSFER', label: 'Bank Transfer' },
-    { value: 'VIRTUAL_CARD', label: 'Virtual Card' }
+    { value: 'VIRTUAL_CARD', label: 'Virtual Card' },
+    { value: 'WALLET', label: 'Wallet' }
   ];
    private intervalId!: ReturnType<typeof setInterval>;
 
@@ -66,6 +74,7 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
     private datePipe: DatePipe,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
+    private authentificationService: AuthenticationService
   ) {
     this.filterForm = this.fb.group({
       search: [''],
@@ -80,6 +89,7 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.loadTransactions();
     this.setupFilterListeners();
 
@@ -106,8 +116,8 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
 }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    // this.dataSource.paginator = this.paginator;
+    // this.dataSource.sort = this.sort;
 
     this.sort.sortChange.subscribe(sort => {
       this.currentSort.active = sort.active;

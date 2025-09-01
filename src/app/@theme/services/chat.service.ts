@@ -136,11 +136,19 @@ deleteMessage(messageId: string) {
     );
 }
 
+uploadAttachments(files: File[]): Observable<BaseResponse<string[]>> {
+  const formData = new FormData();
+  files.forEach(file => formData.append('attachments', file));
+
+  return this.http.post<BaseResponse<string[]>>(
+    `${this.apiUrl}/chat/upload`,
+    formData, // <-- body doit être ici
+    this.getConfigAuthorizedFormData() // <-- options (headers, etc.)
+  );
+}
 
 
-
-
-  private getConfigAuthorized() {
+private getConfigAuthorized() {
     const dataRegistered = localStorage.getItem('login-sendo') || '{}'
     const data = JSON.parse(dataRegistered)
     return {
@@ -154,4 +162,14 @@ deleteMessage(messageId: string) {
       )
     }
   }
+
+  private getConfigAuthorizedFormData() {
+  const dataRegistered = localStorage.getItem('login-sendo') || '{}'
+  const data = JSON.parse(dataRegistered)
+  return {
+    headers: new HttpHeaders({
+      'Authorization': `Bearer ${data.accessToken}`
+    })
+  }
+}
 }

@@ -8,7 +8,8 @@ import { NavigationItem } from 'src/app/@theme/types/navigation';
 import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
-import { Role } from 'src/app/@theme/types/role';
+// import { Role } from 'src/app/@theme/types/role';
+import { Role1 } from 'src/app/@theme/types/user';
 
 @Component({
   selector: 'app-menu-item',
@@ -31,7 +32,7 @@ export class MenuItemVerticalComponent implements OnInit {
     /**
      * current login user role
      */
-    const CurrentUserRole = this.authenticationService.currentUserValue?.user.role || Role.Admin;
+    const CurrentUserRole = this.authenticationService.currentUserValue?.user.role || Role1.SUPER_ADMIN;
 
     /**
      * menu items
@@ -42,6 +43,8 @@ export class MenuItemVerticalComponent implements OnInit {
      * items parent role
      */
     const parentRoleValue = this.parentRole();
+
+    console.log('currentUserRole', CurrentUserRole, item, parentRoleValue);
 
     if (item.role && item.role.length > 0) {
       if (CurrentUserRole) {

@@ -11,7 +11,8 @@ import { MenuItemVerticalComponent } from '../menu-item/menu-item.component';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 //type
-import { Role } from 'src/app/@theme/types/role';
+// import { Role } from 'src/app/@theme/types/role';
+import { Role1 } from 'src/app/@theme/types/user';
 
 @Component({
   selector: 'app-menu-collapse',
@@ -71,7 +72,7 @@ export class MenuCollapseComponent implements OnInit {
     /**
      * current login user role
      */
-    const currentUserRole = this.authenticationService.currentUserValue?.user.role || Role.Admin;
+    const currentUserRole = this.authenticationService.currentUserValue?.user.role || Role1.SUPER_ADMIN;
 
     /**
      * items parent role

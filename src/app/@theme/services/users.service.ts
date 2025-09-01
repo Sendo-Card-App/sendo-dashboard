@@ -10,6 +10,8 @@ export interface UserCreateRequest {
   email: string;
   phone?: string;
   address?: string;
+  dateOfBirth?: string;
+  placeOfBirth?: string;
   roleId: number;
 }
 
@@ -48,7 +50,9 @@ export class UserService {
       email: userData.email.trim().toLowerCase(),
       phone: userData.phone?.trim() || null,
       address: userData.address?.trim() || null,
-      roleId: Number(userData.roleId) // Conversion explicite en number
+      dateOfBirth: userData.dateOfBirth ? String(userData.dateOfBirth) : null, // Assure que c'est un string
+      placeOfBirth: userData.placeOfBirth || null,
+      roleId: Number(userData.roleId)
     };
 
     return this.http.post<ApiResponse>(
@@ -86,7 +90,7 @@ export class UserService {
     );
   }
 
-  
+
 getUsers(
   page: number = 1,
   limit: number = 10

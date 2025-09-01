@@ -10,6 +10,7 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-all-request-niu',
@@ -35,6 +36,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   currentPage = 1;
   private destroy$ = new Subject<void>();
   direction: string = 'ltr';
+  currentuserRole: string | undefined;
 
   currentRequest: RequestItem | null = null;
   selectedAction: 'approve' | 'reject' | null = null;
@@ -44,7 +46,8 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private requestService: NiuService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authentificationService: AuthenticationService
   ) {
     this.filterForm = this.fb.group({
       search: [''],
@@ -58,6 +61,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.setupFormListeners();
     this.loadRequests();
 

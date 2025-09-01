@@ -83,6 +83,7 @@ export class LoginComponent implements OnInit {
       next: () => {
         // Redirige après succès (même si getUserIdentifiant a échoué)
         this.router.navigate(['/dashboard']);
+        window.location.reload();
       },
       error: (error) => {
         console.error('Login error:', error);

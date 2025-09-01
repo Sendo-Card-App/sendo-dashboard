@@ -105,11 +105,17 @@
     <mat-card class="actions-card">
       <div class="status-header">
         <h3>Gestion de la tontine</h3>
-        <button mat-stroked-button (click)="toggleSuspend()" [disabled]="isSuspending">
-          <mat-icon>{{ tontine.etat === 'ACTIVE' ? 'pause' : 'play_arrow' }}</mat-icon>
-          {{ tontine.etat === 'ACTIVE' ? 'Suspendre' : 'Activer' }}
-          <mat-spinner *ngIf="isSuspending" diameter="20"></mat-spinner>
-        </button>
+        <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER') ? 'Cette action est réservée uniquement aux admins' : 'Edit'"
+                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER'">
+          <button 
+          (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER') && toggleSuspend()"
+          mat-stroked-button 
+          [disabled]="isSuspending && currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER'">
+            <mat-icon>{{ tontine.etat === 'ACTIVE' ? 'pause' : 'play_arrow' }}</mat-icon>
+            {{ tontine.etat === 'ACTIVE' ? 'Suspendre' : 'Activer' }}
+            <mat-spinner *ngIf="isSuspending" diameter="20"></mat-spinner>
+          </button>
+        </div>
       </div>
     </mat-card>
 

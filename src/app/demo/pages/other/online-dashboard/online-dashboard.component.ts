@@ -19,6 +19,7 @@ import { TontineStatsComponent } from './tontine-stats/tontine-stats.component';
 import { courseStatesData } from 'src/app/fake-data/courseStates_data';
 import { AdminService } from 'src/app/@theme/services/admin.service'; // Importez votre service
 import { DashboardSummaryItem, StatisticsData, StatisticsResponse, WalletStats, WalletTop } from 'src/app/@theme/models/statistics'; // Importez votre interface
+import { CardStatsComponent } from './card-stats/card-stats.component';
 
 export interface activity_Data {
   image: string;
@@ -47,6 +48,7 @@ const courseStates_data = courseStatesData;
     InvitesGoalChartComponent,
     CourseReportBarChartComponent,
     StudentStatesChartComponent,
+    CardStatsComponent,
     // ActivityLineChartComponent,
     // VisitorsBarChartComponent,
     // EarningCoursesLineChartComponent,

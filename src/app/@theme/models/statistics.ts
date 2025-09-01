@@ -241,3 +241,4 @@ export interface TontineStats {
   topParticipants: TopTontineParticipant[];
   recentTontines: RecentTontine[];
 }
+

@@ -1,0 +1,71 @@
+<div class="card-stats-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="stats && !isLoading" class="stats-content">
+
+    <!-- Header with totals -->
+    <div class="stats-header">
+      <div class="stat-item">
+        <h3>{{ stats.totalCards }}</h3>
+        <span>Total Cartes</span>
+      </div>
+      <div class="stat-item">
+        <h3>{{ formatAmount(stats.totalAmountTransactionsCard) }}</h3>
+        <span>Montant Transactions</span>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+      <!-- Status Distribution -->
+      <div class="chart-card">
+        <h4>Distribution par Statut</h4>
+        <apx-chart
+          [series]="statusChartOptions.series"
+          [chart]="statusChartOptions.chart"
+          [labels]="statusChartOptions.labels"
+          [legend]="statusChartOptions.legend"
+          [dataLabels]="statusChartOptions.dataLabels"
+          [colors]="statusChartOptions.colors">
+        </apx-chart>
+      </div>
+
+      <!-- Recent Cards -->
+      <div class="chart-card">
+        <h4>Cartes Récentes</h4>
+        <apx-chart
+          [series]="recentCardsChartOptions.series"
+          [chart]="recentCardsChartOptions.chart"
+          [xaxis]="recentCardsChartOptions.xaxis"
+          [plotOptions]="recentCardsChartOptions.plotOptions"
+          [dataLabels]="recentCardsChartOptions.dataLabels"
+          [colors]="recentCardsChartOptions.colors">
+        </apx-chart>
+      </div>
+    </div>
+
+    <!-- Recent Cards List -->
+    <div class="recent-cards">
+      <h4>Dernières Cartes</h4>
+      <div class="cards-list">
+        <div *ngFor="let card of stats.recentCards.slice(0, 3)" class="card-item">
+          <div class="card-info">
+            <strong>{{ card.cardName }}</strong>
+            <span>#{{ card.cardId }}</span>
+          </div>
+          <div class="card-meta">
+            <span class="status" [class]="'status-' + card.status.toLowerCase()">
+              {{ translateStatus(card.status) }}
+            </span>
+            <span>{{ formatDate(card.createdAt) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

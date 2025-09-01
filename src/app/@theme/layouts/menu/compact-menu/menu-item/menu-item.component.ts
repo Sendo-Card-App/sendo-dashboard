@@ -42,6 +42,8 @@ export class MenuItemCompactComponent implements OnInit {
      */
     const parentRoleValue = this.parentRole();
 
+    
+
     if (item.role && item.role.length > 0) {
       if (CurrentUserRole) {
         const parentRole = this.parentRole();

@@ -1,5 +1,5 @@
 // ut-alluser.component.ts
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, OnInit } from '@angular/core';
 import { MatTableDataSource }          from '@angular/material/table';
 import { MatPaginator, PageEvent }    from '@angular/material/paginator';
 import { MatSort }                    from '@angular/material/sort';
@@ -15,15 +15,17 @@ import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog
 import { RolePayload } from '../ut-updateuser/ut-updateuser.component';
 import { AdminService } from 'src/app/@theme/services/admin.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-ut-alluser',
   templateUrl: './ut-alluser.component.html',
-  imports: [CommonModule, SharedModule, RouterModule],
+  imports: [CommonModule, SharedModule, RouterModule, MatTooltipModule],
   styleUrls: ['./ut-alluser.component.scss']
 })
-export class UtAlluserComponent implements AfterViewInit {
-  displayedColumns = ['name', 'email', 'role', 'phone', 'status', 'createdAt', 'action'];
+export class UtAlluserComponent implements AfterViewInit, OnInit {
+  displayedColumns = ['name', 'email', 'phone', 'status', 'createdAt', 'action'];
   dataSource = new MatTableDataSource<MeResponse>();
   filteredData: MeResponse[] = []; // Nouvelle propriété pour stocker les données filtrées
   isLoading = false;
@@ -32,6 +34,7 @@ export class UtAlluserComponent implements AfterViewInit {
   itemsPerPage = 10;
   searchText = '';
   filterForm: FormGroup;
+  currentuserRole: string | undefined;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -41,14 +44,13 @@ export class UtAlluserComponent implements AfterViewInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private adminService: AdminService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private authentificationService: AuthenticationService
   ) {
     this.filterForm = this.fb.group({
       status: [''], // Pour le filtre de rôle
     });
 
-    this.loadUsers();
-    this.setupFilterListeners();
   }
 
   private setupFilterListeners(): void {
@@ -58,9 +60,16 @@ export class UtAlluserComponent implements AfterViewInit {
     });
   }
 
+    ngOnInit(): void {
+
+      this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
+      this.loadUsers();
+      this.setupFilterListeners();
+    }
+
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    // this.dataSource.paginator = this.paginator;
+    // this.dataSource.sort = this.sort;
 
     this.dataSource.filterPredicate = (user, filter) => {
       const dataStr = [
@@ -73,9 +82,9 @@ export class UtAlluserComponent implements AfterViewInit {
     };
   }
 
-  loadUsers(page = this.currentPage, limit = this.itemsPerPage) {
+  loadUsers() {
     this.isLoading = true;
-    this.userService.getUsers(page, limit)
+    this.userService.getUsers(this.currentPage, this.itemsPerPage)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe(resp => {
         this.filteredData = resp.data.items; // Stocke les données originales
@@ -118,9 +127,9 @@ export class UtAlluserComponent implements AfterViewInit {
     }
 
     // Mise à jour de la pagination
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
+    // if (this.paginator) {
+    //   this.paginator.firstPage();
+    // }
   }
 
   resetFilters(): void {
@@ -134,7 +143,7 @@ export class UtAlluserComponent implements AfterViewInit {
   onPageChange(e: PageEvent) {
     this.itemsPerPage = e.pageSize;
     this.currentPage  = e.pageIndex + 1;
-    this.loadUsers(this.currentPage, this.itemsPerPage);
+    this.loadUsers();
   }
 
   formatUserName(user: MeResponse): string {

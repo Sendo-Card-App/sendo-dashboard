@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, finalize, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { User } from '../types/user';
+import { mapApiUserToUser, User } from '../types/user';
 import { BaseResponse, MeResponse, Login } from '../models';
 
 @Injectable({ providedIn: 'root' })
@@ -43,9 +43,17 @@ export class AuthenticationService {
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private httpClient: HttpClient) {
-    const stored = localStorage.getItem('currentUser');
+    const dataRegistered = localStorage.getItem('login-sendo') || '{}'
+    const data = JSON.parse(dataRegistered)
+    const apiUser = localStorage.getItem('user-info');
+    let stored: User | null = null;
+    if(apiUser){
+      stored = mapApiUserToUser(apiUser, data.accessToken);
+    }
+
     if (stored) {
-      this.currentUserSubject.next(JSON.parse(stored));
+      this.currentUserSubject.next(stored);
+      console.log('Stored user loaded:', this.currentUserSubject.value);
     }
   }
 

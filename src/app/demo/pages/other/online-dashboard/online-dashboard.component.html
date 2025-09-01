@@ -1,25 +1,25 @@
 <div class="row">
   @for (summary of dashboard_summary; track summary) {
-    <div  class="col-lg-3 col-md-6">
-      <app-card [showHeader]="false" [padding]="20">
-        <div class="flex align-item-center">
-          <div class="flex-shrink-0">
-            <div class="avatar avatar-s {{ summary.background }}">
-              <svg class="pc-icon">
-                <use attr.xlink:href="assets/fonts/custom-icon.svg{{ summary.icon }}"></use>
-              </svg>
-            </div>
-          </div>
-          <div class="flex-grow-1 m-l-15">
-            <p class="m-b-5 f-w-500">{{ summary.title }}</p>
-            <div class="flex align-item-center justify-content-between">
-              <div class="f-16 f-w-600">{{ summary.value }}</div>
-              <span class="{{ summary.color }}">{{ summary.percentage }}</span>
-            </div>
+  <div class="col-lg-3 col-md-6">
+    <app-card [showHeader]="false" [padding]="20">
+      <div class="flex align-item-center">
+        <div class="flex-shrink-0">
+          <div class="avatar avatar-s {{ summary.background }}">
+            <svg class="pc-icon">
+              <use attr.xlink:href="assets/fonts/custom-icon.svg{{ summary.icon }}"></use>
+            </svg>
           </div>
         </div>
-      </app-card>
-    </div>
+        <div class="flex-grow-1 m-l-15">
+          <p class="m-b-5 f-w-500">{{ summary.title }}</p>
+          <div class="flex align-item-center justify-content-between">
+            <div class="f-16 f-w-600">{{ summary.value }}</div>
+            <span class="{{ summary.color }}">{{ summary.percentage }}</span>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
   }
   <div class="col-lg-7 col-md-12">
     <app-statistics-chart [height]="250" />
@@ -28,22 +28,22 @@
     <app-invites-goal-chart />
   </div>
   <div class="col-lg-5 col-md-12">
-  <app-card cardTitle="Portefeuilles Top Clients" [padding]="0" cardClass="top-wallets">
-    <div class="p-3 border-bottom">
-      <div class="row text-center">
-        <div class="col-6">
-          <p class="m-b-5 text-muted">Total Solde</p>
-          <h4 class="f-w-600">{{ getFormattedTotalBalance() }}</h4>
-        </div>
-        <div class="col-6">
-          <p class="m-b-5 text-muted">Moyenne/Portefeuille</p>
-          <h4 class="f-w-600">{{ getFormattedAverageBalance() }}</h4>
+    <app-card cardTitle="Portefeuilles Top Clients" [padding]="0" cardClass="top-wallets">
+      <div class="p-3 border-bottom">
+        <div class="row text-center">
+          <div class="col-6">
+            <p class="m-b-5 text-muted">Total Solde</p>
+            <h4 class="f-w-600">{{ getFormattedTotalBalance() }}</h4>
+          </div>
+          <div class="col-6">
+            <p class="m-b-5 text-muted">Moyenne/Portefeuille</p>
+            <h4 class="f-w-600">{{ getFormattedAverageBalance() }}</h4>
+          </div>
         </div>
       </div>
-    </div>
 
-    <ul class="list-group list-group-flush">
-      @for (wallet of topWallets; track wallet.userId) {
+      <ul class="list-group list-group-flush">
+        @for (wallet of topWallets; track wallet.userId) {
         <li class="list-group-item">
           <div class="flex align-item-center">
             <div class="flex-shrink-0">
@@ -60,10 +60,10 @@
             </div>
           </div>
         </li>
-      }
-    </ul>
-  </app-card>
-</div>
+        }
+      </ul>
+    </app-card>
+  </div>
 
   <div class="col-lg-7 col-md-12">
     <app-card [showHeader]="false">
@@ -106,6 +106,20 @@
       <app-tontine-stats />
     </app-card>
   </div>
+  <app-card [showHeader]="false">
+      <div class="flex align-item-center justify-content-between">
+        <div class="f-16 f-w-600">Statistiques des cartes</div>
+        <a class="text-primary-500" routerLink="/card/all">Rapport complet</a>
+      </div>
+      <!-- <div class="f-24 f-w-600">$7,860</div>
+      <p class="flex align-item-center text-success-500 m-b-0">
+        <i class="ti ti-arrow-narrow-up m-r-5"></i>
+        2.1%
+      </p>
+      <p class="text-muted">Sales from 1-12 Dec, 2023</p> -->
+      <app-card-stats />
+    </app-card>
+
   <div class="col-lg-4 col-md-6">
     <app-card [showHeader]="false">
       <div class="flex align-item-center justify-content-between m-b-15">
@@ -120,6 +134,8 @@
       <app-student-states-chart />
     </app-card>
   </div>
+
+
 
   <!-- <div class="col-lg-4 col-md-6">
     <app-card [showHeader]="false">

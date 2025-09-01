@@ -5,8 +5,13 @@
         <app-card [showHeader]="false" [padding]="0">
           <div class="p-25">
             <div class="m-b-25 f-16 f-w-600">
-              Messages
-              <span class="avatar avatar-xs text-primary-500 bg-primary-50 b-rad-50">9</span>
+              Conversations
+              <span class="avatar avatar-xs text-primary-500 bg-primary-50 b-rad-50">
+                {{totalMessages}}
+              </span>
+              <a class="chat-header-button avatar avatar-s hover" (click)="refreshDom()">
+                    <i class="f-18 text-muted ti ti-refresh" ></i>
+                  </a>
             </div>
             <mat-form-field appearance="outline">
               <input matInput placeholder="Placeholder" [(ngModel)]="searchTerm" (input)="filterPerson(searchTerm)" />
@@ -17,7 +22,7 @@
               </mat-icon>
             </mat-form-field>
           </div>
-          <ng-scrollbar style="height: calc(100vh - 520px); position: relative" visibility="hover"
+          <ng-scrollbar style="height: calc(100vh - 394px); position: relative" visibility="hover"
             orientation="vertical" [dir]="direction">
             <div class="list-group list-group-flush user-list">
               @for (list of chatPersonList; track $index) {
@@ -60,7 +65,7 @@
           </ng-scrollbar>
 
           <div class="list-group list-group-flush">
-            <a href="javascript:"
+            <!-- <a href="javascript:"
               class="list-group-item list-group-item-action flex align-item-center text-accent-900 p-15">
               <i class="ti ti-power f-18 m-r-5"></i>
               <span>Logout</span>
@@ -69,7 +74,7 @@
               class="list-group-item list-group-item-action flex align-item-center text-accent-900 p-15">
               <i class="ti ti-settings f-18 m-r-5"></i>
               <span>Setting</span>
-            </a>
+            </a> -->
             <div class="list-group-item p-15 main-user">
               <div class="flex align-item-center">
                 <div class="chat-avatar">
@@ -155,16 +160,16 @@
                   </a>
                 </li>
                 <li class="list-inline-item">
-                  <!-- <a class="chat-header-button avatar avatar-s hover">
-                    <i class="ti ti-video f-18"></i>
+                  <!-- <a class="chat-header-button avatar avatar-s hover" (click)="infoSection.toggle()">
+                    <i class="ti ti-info-circle f-18"></i>
                   </a> -->
                 </li>
                 <li class="list-inline-item">
-                  <a class="chat-header-button avatar avatar-s hover" (click)="infoSection.toggle()">
-                    <i class="ti ti-info-circle f-18"></i>
-                  </a>
+                  <!-- <a class="chat-header-button avatar avatar-s hover" (click)="refreshDom()">
+                    <i class="f-18 text-muted ti ti-refresh" ></i>
+                  </a> -->
                 </li>
-                <li class="list-inline-item">
+                <!-- <li class="list-inline-item">
                   <a [matMenuTriggerFor]="menu" class="chat-header-button avatar avatar-s hover">
                     <i class="ti ti-dots f-18"></i>
                   </a>
@@ -174,7 +179,7 @@
                     <button mat-menu-item>Ratting</button>
                     <button mat-menu-item>Unread</button>
                   </mat-menu>
-                </li>
+                </li> -->
               </ul>
             </div>
           </mat-card-header>
@@ -216,19 +221,7 @@
                             </a>
                             <mat-menu #options>
                               <menu mat-menu-item>
-                                <i class="ti ti-player-track-prev-filled"></i>
-                                Reply
-                              </menu>
-                              <menu mat-menu-item>
-                                <i class="ti ti-player-track-next-filled"></i>
-                                Forward
-                              </menu>
-                              <menu mat-menu-item>
-                                <i class="ti ti-copy f-14"></i>
-                                Copy
-                              </menu>
-                              <menu mat-menu-item>
-                                <i class="ti ti-trash f-14"></i>
+                                <i class="ti ti-trash f-14" (click)="deleteMessage(message.id)"></i>
                                 Delete
                               </menu>
                             </mat-menu>
@@ -245,13 +238,22 @@
                       <div class="flex-grow-1 m-x-15">
                         <div class="msg-content border {{ message.isMine ? 'bg-primary-500' : '' }}">
                           <ng-container *ngIf="message.text && message.text.startsWith('file://'); else normalText">
-                            <a [href]="message.text" target="_blank" rel="noopener">
+                            <!-- <a [href]="message.text" target="_blank" rel="noopener">
                               📎 Voir la pièce jointe
-                            </a>
+                            </a> -->
                           </ng-container>
                           <ng-template #normalText>
                             <p class="m-b-0">{{ message.text }}</p>
                           </ng-template>
+                          <ng-container *ngIf="message.attachments && message.attachments.length">
+                            <ul class="list-inline m-b-0">
+                              <li class="list-inline-item" *ngFor="let attachment of message.attachments">
+                                <a [href]="attachment" target="_blank" rel="noopener">
+                                  📎 Voir la pièce jointe
+                                </a>
+                              </li>
+                            </ul>
+                          </ng-container>
                         </div>
                         <p class="m-b-0 text-muted mat-small {{ message.isMine ? 'text-end' : '' }}">{{ message.time }}
                         </p>
@@ -288,13 +290,25 @@
               </mat-form-field>
               <div class="file-upload">
                 <ul class="list-inline m-b-0">
-                  @for (task of footer_icon; track task) {
                   <li class="list-inline-item">
-                    <a href="javascript:" class="avatar avatar-xs hover" title="Input Type">
-                      <i class="f-18 text-muted {{ task.icon }}"></i>
+                    <mat-progress-spinner
+                      *ngIf="isLoadingAttachments"
+                      diameter="24"
+                      mode="indeterminate"
+                      color="primary"
+                      style="vertical-align: middle;">
+                    </mat-progress-spinner>
+                    <a href="javascript:" *ngIf="!isLoadingAttachments" class="avatar avatar-xs hover" title="Input Type" (click)="fileInput.click()">
+                      <i class="f-18 text-muted ti ti-paperclip"></i>
                     </a>
+                    <input #fileInput type="file" multiple style="display: none" (change)="onFilesSelected($event)"
+                      accept="image/*,application/pdf" />
+                    <ng-container *ngIf="selectedImages?.length">
+                      <span *ngFor="let img of selectedImages" class="m-l-5">
+                      <img [src]="img" alt="preview" style="width:32px;height:32px;object-fit:cover;border-radius:4px;border:1px solid #eee;" />
+                      </span>
+                    </ng-container>
                   </li>
-                  }
                 </ul>
                 <ul class="list-inline ms-auto mb-0">
                   <li class="list-inline-item">

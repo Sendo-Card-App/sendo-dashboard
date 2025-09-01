@@ -1,5 +1,5 @@
 import { Navigation } from 'src/app/@theme/types/navigation';
-import { Role } from 'src/app/@theme/types/role';
+import { Role1 } from 'src/app/@theme/types/user';
 
 export const menus: Navigation[] = [
   {
@@ -7,7 +7,9 @@ export const menus: Navigation[] = [
     title: 'Navigation',
     type: 'group',
     icon: 'icon-navigation',
-    role: [Role.Admin, Role.User],
+    role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+    Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR
+    ],
     children: [
       {
         id: 'sample-page',
@@ -25,14 +27,18 @@ export const menus: Navigation[] = [
     title: 'Pages',
     type: 'group',
     icon: 'icon-navigation',
-    role: [Role.Admin, Role.User],
+    role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+    Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR
+    ],
     children: [
+
       {
         id: 'Utilisateur',
         title: 'Utilisateurs',
         type: 'collapse',
         icon: '#custom-user',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'alluser',
@@ -40,7 +46,9 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/users/alluser',
             // target: true,
-            breadcrumbs: true
+            breadcrumbs: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+            Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
           },
           {
             id: 'adduser',
@@ -48,7 +56,8 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/users/adduser',
             // target: true,
-            breadcrumbs: true
+            breadcrumbs: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN]
           },
 
         ]
@@ -58,7 +67,8 @@ export const menus: Navigation[] = [
         title: 'Transactions',
         type: 'collapse',
         icon: '#custom-presentation-chart',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'alltransaction',
@@ -66,6 +76,8 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/transactions/alltransactions',
             // target: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+            Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
             breadcrumbs: true
           },
           {
@@ -74,16 +86,10 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/transactions/ca-cam',
             // target: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+            Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
             breadcrumbs: true
           },
-          // {
-          //   id: 'addtransaction',
-          //   title: 'Creer une transaction',
-          //   type: 'item',
-          //   url: '/transactions/addtransaction',
-          //   // target: true,
-          //   breadcrumbs: true
-          // },
 
         ]
       },
@@ -92,7 +98,8 @@ export const menus: Navigation[] = [
         title: 'KYC request',
         type: 'collapse',
         icon: '#custom-document-filter',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'allkyc',
@@ -100,7 +107,8 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/kyc/kyc-pending',
             // target: true,
-            breadcrumbs: true
+            breadcrumbs: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER],
           },
           {
             id: 'allkyc',
@@ -108,6 +116,8 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/kyc/kyc-all',
             // target: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+            Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
             breadcrumbs: true
           },
 
@@ -115,11 +125,12 @@ export const menus: Navigation[] = [
         ]
       },
       {
-        id: 'Request',
+        id: 'Requests',
         title: 'Requests',
         type: 'collapse',
         icon: '#custom-bill',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'allkyc',
@@ -138,7 +149,8 @@ export const menus: Navigation[] = [
         title: 'Depenses Partagées',
         type: 'collapse',
         icon: '#custom-level',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'allshared',
@@ -157,7 +169,8 @@ export const menus: Navigation[] = [
         title: 'Demandes de fonds',
         type: 'collapse',
         icon: '#custom-shield',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'allshared',
@@ -176,7 +189,8 @@ export const menus: Navigation[] = [
         title: 'Tontines',
         type: 'collapse',
         icon: '#custom-bill',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'alltontine',
@@ -195,7 +209,8 @@ export const menus: Navigation[] = [
         title: 'Demande de carte',
         type: 'collapse',
         icon: '#custom-bill',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'allrequest',
@@ -214,7 +229,8 @@ export const menus: Navigation[] = [
         title: 'Gestion de carte',
         type: 'collapse',
         icon: '#custom-bill',
-        role: [Role.Admin, Role.User],
+         role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
             id: 'allrequest',
@@ -235,20 +251,21 @@ export const menus: Navigation[] = [
     title: 'Publicité',
     type: 'group',
     icon: 'icon-navigation',
-    role: [Role.Admin, Role.User],
+     role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN,],
     children: [
       {
         id: 'publicite',
         title: 'Publicité',
         type: 'collapse',
         icon: '#custom-row-vertical',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN,],
         children: [
           {
             id: 'allpublicite',
             title: 'Liste des publicités',
             type: 'item',
             url: '/publicites/all',
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN,],
             // target: true,
             breadcrumbs: true
           },
@@ -258,6 +275,7 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/publicites/create',
             // target: true,
+            role: [Role1.SUPER_ADMIN,],
             breadcrumbs: true
           },
 
@@ -270,14 +288,14 @@ export const menus: Navigation[] = [
     title: 'Paramettres',
     type: 'group',
     icon: 'icon-navigation',
-    role: [Role.Admin, Role.User],
+    role: [Role1.SUPER_ADMIN,],
     children: [
       {
         id: 'configuration',
         title: 'Configuration',
         type: 'collapse',
         icon: '#custom-row-vertical',
-        role: [Role.Admin, Role.User],
+        role: [Role1.SUPER_ADMIN,],
         children: [
           {
             id: 'allconfiguration',
@@ -300,131 +318,4 @@ export const menus: Navigation[] = [
       },
     ]
   },
-  // {
-  //   id: 'other',
-  //   title: 'Other',
-  //   type: 'group',
-  //   icon: 'icon-navigation',
-  //   role: [Role.Admin, Role.User],
-  //   children: [
-  //     {
-  //       id: 'menu-levels',
-  //       title: 'Menu levels',
-  //       type: 'collapse',
-  //       icon: '#custom-level',
-  //       role: [Role.Admin, Role.User],
-  //       children: [
-  //         {
-  //           id: 'level-2-1',
-  //           title: 'Level 2.1',
-  //           type: 'item',
-  //           url: 'javascript:',
-  //           external: true
-  //         },
-  //         {
-  //           id: 'menu-level-2.2',
-  //           title: 'Menu Level 2.2',
-  //           type: 'collapse',
-  //           classes: 'edge',
-  //           role: [Role.Admin, Role.User],
-  //           children: [
-  //             {
-  //               id: 'menu-level-3.1',
-  //               title: 'Menu Level 3.1',
-  //               type: 'item',
-  //               url: 'javascript:',
-  //               external: true
-  //             },
-  //             {
-  //               id: 'menu-level-3.2',
-  //               title: 'Menu Level 3.2',
-  //               type: 'item',
-  //               url: 'javascript:',
-  //               external: true
-  //             },
-  //             {
-  //               id: 'menu-level-3.3',
-  //               title: 'Menu Level 3.3',
-  //               type: 'collapse',
-  //               classes: 'edge',
-  //               role: [Role.Admin, Role.User],
-  //               children: [
-  //                 {
-  //                   id: 'menu-level-4.1',
-  //                   title: 'Menu Level 4.1',
-  //                   type: 'item',
-  //                   url: 'javascript:',
-  //                   external: true
-  //                 },
-  //                 {
-  //                   id: 'menu-level-4.2',
-  //                   title: 'Menu Level 4.2',
-  //                   type: 'item',
-  //                   url: 'javascript:',
-  //                   external: true
-  //                 }
-  //               ]
-  //             }
-  //           ]
-  //         },
-  //         {
-  //           id: 'menu-level-2.3',
-  //           title: 'Menu Level 2.3',
-  //           type: 'collapse',
-  //           classes: 'edge',
-  //           role: [Role.Admin, Role.User],
-  //           children: [
-  //             {
-  //               id: 'menu-level-3.1',
-  //               title: 'Menu Level 3.1',
-  //               type: 'item',
-  //               url: 'javascript:',
-  //               external: true
-  //             },
-  //             {
-  //               id: 'menu-level-3.2',
-  //               title: 'Menu Level 3.2',
-  //               type: 'item',
-  //               url: 'javascript:',
-  //               external: true
-  //             },
-  //             {
-  //               id: 'menu-level-3.3',
-  //               title: 'Menu Level 3.3',
-  //               type: 'collapse',
-  //               classes: 'edge',
-  //               role: [Role.Admin, Role.User],
-  //               children: [
-  //                 {
-  //                   id: 'menu-level-4.1',
-  //                   title: 'Menu Level 4.1',
-  //                   type: 'item',
-  //                   url: 'javascript:',
-  //                   external: true
-  //                 },
-  //                 {
-  //                   id: 'menu-level-4.2',
-  //                   title: 'Menu Level 4.2',
-  //                   type: 'item',
-  //                   url: 'javascript:',
-  //                   external: true
-  //                 }
-  //               ]
-  //             }
-  //           ]
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       id: 'document',
-  //       title: 'Document',
-  //       type: 'item',
-  //       classes: 'nav-item',
-  //       url: 'https://phoenixcoded.gitbook.io/able-pro',
-  //       icon: '#custom-gitBook',
-  //       target: true,
-  //       external: true
-  //     }
-  //   ]
-  // }
 ];

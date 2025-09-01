@@ -14,6 +14,8 @@ export interface chatPersonType {
   birthdayText: string;
   unReadChatCount: number;
   online_status: string;
+  updatedAt?: Date;
+
 }
 
 export interface chatHistory {
@@ -23,4 +25,6 @@ export interface chatHistory {
   text: string;
   time: string;
   isMine?: boolean;
+  attachments?: string[];
+  createdAt?: Date;
 }
