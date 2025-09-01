@@ -47,6 +47,8 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 // project import
 import { CustomTranslateLoader } from './custom-translate-loader';
 import { CardComponent } from 'src/app/@theme/components/card/card.component';
+import { SocketIoModule } from 'ngx-socket-io';
+import { environment } from 'src/environments/environment';
 
 const MaterialModules = [
   MatToolbarModule,
@@ -86,6 +88,21 @@ const MaterialModules = [
   MatSnackBarModule
 ];
 
+const dataRegistered = localStorage.getItem('login-sendo') || '{}'
+const data = JSON.parse(dataRegistered)
+console.log('accessToken : ', data.accessToken)
+
+const config = {
+  url: environment.apiUrl,
+  options: {
+    path: '/socket.io',
+    transports: ['websocket'],
+    auth: {
+      token: data.accessToken
+    }
+  }
+};
+
 @NgModule({
   declarations: [],
   imports: [
@@ -100,7 +117,8 @@ const MaterialModules = [
         useClass: CustomTranslateLoader
       }
     }),
-    CardComponent
+    CardComponent,
+    SocketIoModule.forRoot(config)
   ],
   exports: [MaterialModules, FormsModule, ReactiveFormsModule, NgScrollbarModule, TranslateModule, CardComponent]
 })
