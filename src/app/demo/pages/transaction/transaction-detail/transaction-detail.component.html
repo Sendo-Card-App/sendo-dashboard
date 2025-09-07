@@ -50,7 +50,7 @@
               <div class="detail-row">
                 <mat-icon>payments</mat-icon>
                 <span>{{ transaction.user?.wallet?.balance | number:'1.2-2' }} {{ transaction.currency }}
-</span>
+                </span>
               </div>
             </div>
           </div>
@@ -60,6 +60,7 @@
       <!-- Transaction Details Column -->
       <div class="transaction-details-column">
         <!-- Transaction Summary -->
+
         <mat-card class="summary-card">
           <div class="summary-grid">
             <div class="summary-item">
@@ -111,16 +112,17 @@
             <h3>Modification du statut</h3>
 
             <!-- Afficher le bouton si au moins une des deux conditions est vraie -->
-             <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : 'Edit'"
-                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN'">
+            <div
+              [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : 'Edit'"
+              [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN'">
 
-               <button mat-stroked-button 
-               (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN') && toggleEdit()"
-               [disabled]="currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN'"
-                 *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER'">
-                 {{ isEditing ? 'Annuler' : 'Modifier' }}
-               </button>
-             </div>
+              <button mat-stroked-button
+                (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN') && toggleEdit()"
+                [disabled]="currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN'"
+                *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER'">
+                {{ isEditing ? 'Annuler' : 'Modifier' }}
+              </button>
+            </div>
 
             <!-- Afficher le message uniquement si AUCUNE des deux conditions n’est vraie -->
             <div *ngIf="transaction?.method !== 'BANK_TRANSFER' && transaction?.type !== 'TRANSFER'"
@@ -225,7 +227,33 @@
           </div>
         </mat-card>
 
+        <!-- Additional Information -->
+        <mat-card class="additional-info-card">
+          <h3>Informations receveur</h3>
 
+          <div class="additional-info-grid">
+            <div class="info-item">
+              <span class="info-label">Nom complet : </span>
+              <p class="info-value">{{ transaction.receiver.firstname || 'N/A' }} {{ transaction.receiver.lastname ||
+                'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Adresse</span>
+              <p class="info-value">{{ transaction.receiver.address || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Téléphone</span>
+              <p class="info-value">{{ transaction.receiver.phone || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Pays</span>
+              <p class="info-value">{{ transaction.receiver.country || 'N/A' }}</p>
+            </div>
+          </div>
+        </mat-card>
 
         <!-- Additional Information -->
         <mat-card class="additional-info-card">

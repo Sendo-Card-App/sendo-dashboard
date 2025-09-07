@@ -44,7 +44,7 @@ export class MenuItemVerticalComponent implements OnInit {
      */
     const parentRoleValue = this.parentRole();
 
-    console.log('currentUserRole', CurrentUserRole, item, parentRoleValue);
+    // console.log('currentUserRole', CurrentUserRole, item, parentRoleValue);
 
     if (item.role && item.role.length > 0) {
       if (CurrentUserRole) {

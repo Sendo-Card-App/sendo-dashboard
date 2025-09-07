@@ -25,6 +25,8 @@ export class UtInfouserComponent implements OnInit {
   dataSource = new MatTableDataSource();
   displayedColumns: string[] = ['name', 'actions'];
   currentuserRole: string | undefined;
+  amount: number | null = null;
+  
 
   constructor(
     private route: ActivatedRoute,
@@ -129,5 +131,31 @@ export class UtInfouserComponent implements OnInit {
 
   viewTransactions(transactionId: number): void {
     this.router.navigate(['/transactions/user', transactionId]);
+  }
+
+   makeDeposit(amount: number) {
+    this.userService.deposit(this.user!.wallet.matricule, amount).subscribe({
+      next: () => {
+        this.snackBar.open('Recharge réussie', 'Fermer', { duration: 3000 });
+        this.ngOnInit();
+      },
+      error: err => {
+        console.error('Erreur recharge', err);
+        this.snackBar.open('Erreur lors de la recharge', 'Fermer', { duration: 3000 });
+      }
+    });
+  }
+
+  makeWithdrawal(amount: number) {
+    this.userService.withdraw(this.user!.wallet.matricule, amount).subscribe({
+      next: () => {
+        this.snackBar.open('Retrait réussi', 'Fermer', { duration: 3000 });
+        this.ngOnInit();
+      },
+      error: err => {
+        console.error('Erreur retrait', err);
+        this.snackBar.open('Erreur lors du retrait', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 }

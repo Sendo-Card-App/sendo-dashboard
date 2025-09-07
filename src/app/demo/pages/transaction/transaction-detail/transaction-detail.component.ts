@@ -65,6 +65,7 @@ export class TransactionDetailComponent implements OnInit {
         this.transaction = res.data;
         this.statusForm.patchValue({ status: this.transaction?.status || 'PENDING' });
         this.isLoading = false;
+        console.log('Transaction loaded:', this.transaction);
       },
       error: () => {
         this.snackBar.open('Erreur lors du chargement de la transaction', 'Fermer', { duration: 3000 });

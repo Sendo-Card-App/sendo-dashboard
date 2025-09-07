@@ -1,11 +1,11 @@
 // ut-alluser.component.ts
 import { AfterViewInit, Component, ViewChild, OnInit } from '@angular/core';
-import { MatTableDataSource }          from '@angular/material/table';
-import { MatPaginator, PageEvent }    from '@angular/material/paginator';
-import { MatSort }                    from '@angular/material/sort';
-import { finalize }                   from 'rxjs/operators';
-import { ChangeUserStatusRequest, MeResponse }                 from 'src/app/@theme/models';
-import { UserService }                from 'src/app/@theme/services/users.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { finalize } from 'rxjs/operators';
+import { ChangeUserStatusRequest, MeResponse } from 'src/app/@theme/models';
+import { UserService } from 'src/app/@theme/services/users.service';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -17,6 +17,7 @@ import { AdminService } from 'src/app/@theme/services/admin.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { CountryService } from 'src/app/@theme/services/country.service';
 
 @Component({
   selector: 'app-ut-alluser',
@@ -35,6 +36,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
   searchText = '';
   filterForm: FormGroup;
   currentuserRole: string | undefined;
+  countries: string[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -45,10 +47,12 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
     private snackBar: MatSnackBar,
     private adminService: AdminService,
     private fb: FormBuilder,
-    private authentificationService: AuthenticationService
+    private authentificationService: AuthenticationService,
+    private countryService: CountryService
   ) {
     this.filterForm = this.fb.group({
       status: [''], // Pour le filtre de rôle
+      country: [''] // Pour le filtre de pays
     });
 
   }
@@ -57,15 +61,23 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
     // Écoute les changements du formulaire de filtrage
     this.filterForm.valueChanges.subscribe(() => {
       this.applyRoleFilter();
+      this.applyCountryFilter();
     });
   }
 
-    ngOnInit(): void {
+  ngOnInit(): void {
 
-      this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
-      this.loadUsers();
-      this.setupFilterListeners();
-    }
+    this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
+    this.loadUsers();
+    this.setupFilterListeners();
+    this.countryService.getCountries().subscribe({
+      next: (data) => {
+        console.log('Countries data:', data);
+        this.countries = data.sort((a, b) => a.localeCompare(b));
+      },
+      error: (err) => console.error('Erreur chargement pays', err)
+    });
+  }
 
   ngAfterViewInit() {
     // this.dataSource.paginator = this.paginator;
@@ -92,6 +104,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
         this.totalItems = resp.data.totalItems;
         this.currentPage = resp.data.page;
         this.applyRoleFilter(); // Applique le filtre après le chargement
+        this.applyCountryFilter(); // Applique le filtre après le chargement
       });
   }
 
@@ -101,6 +114,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
     if (this.paginator) {
       this.paginator.firstPage();
     }
+
   }
 
   applyRoleFilter(): void {
@@ -132,8 +146,24 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
     // }
   }
 
+  applyCountryFilter(): void {
+    const countryFilter = this.filterForm.get('country')?.value;
+
+    if (!countryFilter) {
+      this.dataSource.data = this.filteredData;
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.dataSource.data = this.filteredData.filter(user => (user as any).country === countryFilter);
+    }
+
+    // Mise à jour de la pagination
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+  }
+
   resetFilters(): void {
-    this.filterForm.reset({ status: '' });
+    this.filterForm.reset({ status: '', country: '' });
     this.searchText = '';
     this.applyFilter('');
   }
@@ -142,7 +172,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
 
   onPageChange(e: PageEvent) {
     this.itemsPerPage = e.pageSize;
-    this.currentPage  = e.pageIndex + 1;
+    this.currentPage = e.pageIndex + 1;
     this.loadUsers();
   }
 

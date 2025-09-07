@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminService, Role } from 'src/app/@theme/services/admin.service';
 import { UserService } from 'src/app/@theme/services/users.service';
@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CountryService } from 'src/app/@theme/services/country.service';
 
 @Component({
   selector: 'app-ut-adduser',
@@ -14,19 +15,21 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './ut-adduser.component.html',
   styleUrl: './ut-adduser.component.scss'
 })
-export class UtAdduserComponent {
+export class UtAdduserComponent implements OnInit {
 
   invitationForm: FormGroup;
     roles: Role[] = [];
     isLoading = false;
     isSuccess = false;
     errorMessage: string | null = null;
+    countries: string[] = [];
 
     constructor(
       private fb: FormBuilder,
       private adminService: AdminService,
       private userService: UserService,
-      private snackbar: MatSnackBar
+      private snackbar: MatSnackBar,
+      private countryService: CountryService
     ) {
       this.invitationForm = this.fb.group({
         firstname: ['', [Validators.required, Validators.maxLength(50)]],
@@ -36,12 +39,21 @@ export class UtAdduserComponent {
         address: ['', [Validators.maxLength(200)]],
         dateOfBirth: ['', Validators.required],
         placeOfBirth: ['', Validators.required],
-        roleId: [null, Validators.required]
+        roleId: [null, Validators.required],
+        country: ['', Validators.required]
       });
     }
 
     ngOnInit(): void {
       this.loadRoles();
+     this.countryService.getCountries().subscribe({
+  next: (data) => {
+    // console.log('Countries data:', data);
+    this.countries = data.sort((a, b) => a.localeCompare(b));
+  },
+  error: (err) => console.error('Erreur chargement pays', err)
+});
+
     }
 
     loadRoles(): void {
@@ -76,6 +88,8 @@ export class UtAdduserComponent {
         date.getFullYear()
       ].join('/');
 
+      console.log('Creating user with data:', formData);
+
       this.userService.createUser({
         firstname: formData.firstname,
         lastname: formData.lastname,
@@ -84,7 +98,8 @@ export class UtAdduserComponent {
         address: formData.address,
         dateOfBirth: formattedDateOfBirth,
         placeOfBirth: formData.placeOfBirth,
-        roleId: formData.roleId
+        roleId: formData.roleId,
+        country: formData.country
       }).subscribe({
         next: (response) => {
           if (response.status === 200) {
