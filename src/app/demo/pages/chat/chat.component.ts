@@ -91,10 +91,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
 
-    this.chatService.getConversations().subscribe({
+    this.chatService.getConversations('OPEN').subscribe({
       next: (res) => {
         const items = res.data.items;
-        console.log('Conversations récupérées:', items);
+        // console.log('Conversations récupérées:', items);
 
         this.totalMessages = items.length;
 
@@ -117,12 +117,25 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     //    this.pollingInterval = setInterval(() => {
     // }, 5000);
 
-     this.socketService.onNewMessage()
+    this.socketService.onNewMessage()
       .pipe(takeUntil(this.destroy$))
       .subscribe((msg) => {
-        this.onNewMessage(msg);
+      // Ne traite le message que s'il provient d'un autre utilisateur (pas ADMIN)
+      if (msg.senderType !== 'ADMIN') {
         this.playNotificationSound();
         this.snackbar.open(`Nouveau message reçu ${msg.content}`, 'Fermer', {
+        duration: 3000
+        });
+        this.onNewMessage(msg);
+      }
+      });
+
+    this.socketService.onNewMessageGlobal()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((msg) => {
+        console.log('Nouveau message global reçu dans component:', msg);
+        this.playNotificationSound();
+        this.snackbar.open(`Nouveau message global reçu`, 'Fermer', {
           duration: 3000
         });
       });
@@ -130,14 +143,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onNewMessage(msg: any) {
-    this.playNotificationSound();
-    console.log('Message reçu via socket dans component:', msg);
+    // this.playNotificationSound();
+    console.log('Message reçu via socket dans component:', msg, this.selectedPersonId);
     // Vérifie si le message concerne la conversation sélectionnée
     if (msg.conversationId === this.selectedPersonId) {
       this.selectedUserChatHistory.push({
         id: msg.id,
-        from: msg.senderType === 'ADMIN' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
-        to: msg.senderType === 'CUSTOMER' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+        from: msg.senderType === 'ADMIN' ? 'Moi' : this.selectedUser?.name || 'Utilisateur',
+        to: msg.senderType === 'CUSTOMER' ? 'Moi' : this.selectedUser?.name || 'Utilisateur',
         text: msg.content === '[Attachment]'
           ? (msg.attachments && msg.attachments.length > 0 ? msg.attachments[0] : '[Attachment]')
           : msg.content,
@@ -166,10 +179,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   refreshDom(): void {
-    this.chatService.getConversations().subscribe({
+    this.chatService.getConversations('OPEN').subscribe({
       next: (res) => {
         const items = res.data.items;
-        console.log('Conversations récupérées:', items);
+        // console.log('Conversations récupérées:', items);
 
         this.totalMessages = items.length;
 
@@ -350,7 +363,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   filterPerson(searchTerm: string): void {
     if (!searchTerm.trim()) {
       // Si la recherche est vide, restaurer la liste complète
-      this.chatService.getConversations().subscribe({
+      this.chatService.getConversations('OPEN').subscribe({
         next: (res) => {
           const items = res.data.items;
           this.chatPersonList = items.map((conversation) =>
@@ -362,7 +375,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     } else {
-      this.chatService.getConversations().subscribe({
+      this.chatService.getConversations('OPEN').subscribe({
         next: (res) => {
           const items = res.data.items;
           const fullList = items.map((conversation) =>

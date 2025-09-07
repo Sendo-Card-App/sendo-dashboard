@@ -6,10 +6,11 @@ import { Subject, Subscription } from 'rxjs';
 export class SocketService implements OnDestroy {
   private destroy$ = new Subject<void>();
   private newMessageSubscription?: Subscription;
+  private newMessageGlobalSubscription?: Subscription;
 
   constructor(private socket: Socket) {
-    this.setupConnectionListeners();
-    this.setupEventListeners();
+    // this.setupConnectionListeners();
+    // this.setupEventListeners();
   }
 
   private setupConnectionListeners() {
@@ -18,6 +19,7 @@ export class SocketService implements OnDestroy {
 
       // S'abonner à l'événement new_message uniquement après connexion
       this.subscribeToNewMessage();
+      this.subscribeToMessageGlobal();
     });
 
     this.socket.fromEvent('disconnect').subscribe((reason: string) => {
@@ -25,6 +27,7 @@ export class SocketService implements OnDestroy {
 
       // Nettoyer l'abonnement lors de la déconnexion
       this.unsubscribeFromNewMessage();
+      this.unsubscribeFromNewMessageGlobal();
     });
 
     this.socket.fromEvent('connect_error').subscribe((err: Error) => {
@@ -37,6 +40,21 @@ export class SocketService implements OnDestroy {
       this.newMessageSubscription = this.socket.fromEvent('new_message').subscribe(msg => {
         console.log('Nouveau message reçu:', msg);
       });
+    }
+  }
+
+  private subscribeToMessageGlobal(){
+    if (!this.newMessageGlobalSubscription) {
+      this.newMessageGlobalSubscription = this.socket.fromEvent('new_message_global').subscribe(msg => {
+        console.log('Nouveau message global reçu:', msg);
+      });
+    }
+  }
+
+  private unsubscribeFromNewMessageGlobal() {
+    if (this.newMessageGlobalSubscription) {
+      this.newMessageGlobalSubscription.unsubscribe();
+      this.newMessageGlobalSubscription = undefined;
     }
   }
 
@@ -70,6 +88,10 @@ export class SocketService implements OnDestroy {
 
   onNewMessage() {
     return this.socket.fromEvent('new_message');
+  }
+
+  onNewMessageGlobal() {
+    return this.socket.fromEvent('new_message_global');
   }
 
   joinConversation(conversationId: string) {
