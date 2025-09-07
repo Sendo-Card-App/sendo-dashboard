@@ -130,6 +130,8 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onNewMessage(msg: any) {
+    this.playNotificationSound();
+    console.log('Message reçu via socket dans component:', msg);
     // Vérifie si le message concerne la conversation sélectionnée
     if (msg.conversationId === this.selectedPersonId) {
       this.selectedUserChatHistory.push({
