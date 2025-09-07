@@ -21,6 +21,17 @@
           </mat-form-field>
         </div>
 
+        <!-- Country Filter -->
+        <div class="col-md-3">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Country</mat-label>
+            <mat-select formControlName="country">
+              <mat-option value="">Tous</mat-option>
+              <mat-option *ngFor="let country of countries" [value]="country">{{ country }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
         <!-- Reset Button -->
         <div class="col-md-2">
           <button mat-stroked-button (click)="resetFilters()" type="button" class="w-100">

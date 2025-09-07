@@ -55,6 +55,28 @@ getCotisationsByMembre(
   );
 }
 
+ /**
+   * Créditer le compte séquestre d'une tontine
+   * @param tontineId ID de la tontine
+   * @param amount Montant à déposer
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  deposit(tontineId: number, amount: number): Observable<any> {
+    const url = `${this.apiUrl}/tontines/${tontineId}/account/deposit`;
+    return this.http.post(url, { amount }, this.getConfigAuthorized());
+  }
+
+  /**
+   * Débiter le compte séquestre d'une tontine
+   * @param tontineId ID de la tontine
+   * @param amount Montant à retirer
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  withdraw(tontineId: number, amount: number): Observable<any> {
+    const url = `${this.apiUrl}/tontines/${tontineId}/account/withdrawal`;
+    return this.http.post(url, { amount }, this.getConfigAuthorized());
+  }
+
 
 
   private getConfigAuthorized() {

@@ -53,7 +53,7 @@ export class AuthenticationService {
 
     if (stored) {
       this.currentUserSubject.next(stored);
-      console.log('Stored user loaded:', this.currentUserSubject.value);
+      // console.log('Stored user loaded:', this.currentUserSubject.value);
     }
   }
 

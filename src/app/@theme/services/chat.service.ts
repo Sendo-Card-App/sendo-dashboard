@@ -12,19 +12,17 @@ export class ChatService {
   constructor(private http: HttpClient) { }
 
   getConversations(
-    page?: number,
-    limit?: number,
     status?: string
   ): Observable<BaseResponse<PaginatedData<Conversation>>> {
     let params = new HttpParams();
 
-    if (page !== undefined) {
-      params = params.set('page', page.toString());
-    }
+    // if (page !== undefined) {
+    //   params = params.set('page', page.toString());
+    // }
 
-    if (limit !== undefined) {
-      params = params.set('limit', limit.toString());
-    }
+    // if (limit !== undefined) {
+    //   params = params.set('limit', limit.toString());
+    // }
 
     if (status) {
       params = params.set('status', status);

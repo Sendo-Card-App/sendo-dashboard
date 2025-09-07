@@ -76,7 +76,7 @@ export class MenuCollapseCompactComponent implements OnInit {
     */
    const parentRoleValue = this.parentRole();
 
-   console.log('currentUserRole', currentUserRole, parentRoleValue);
+  //  console.log('currentUserRole', currentUserRole, parentRoleValue);
 
 
     if (this.item()!.role && this.item()!.role!.length > 0) {

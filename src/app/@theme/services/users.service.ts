@@ -13,6 +13,7 @@ export interface UserCreateRequest {
   dateOfBirth?: string;
   placeOfBirth?: string;
   roleId: number;
+  country: string;
 }
 
 interface ApiResponse<T = unknown> {
@@ -39,8 +40,9 @@ export interface UsersResponse {
 })
 export class UserService {
   private apiUrl = `${environment.apiUrl}/users`;
+  private apiUrl1 = `${environment.apiUrl}`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   createUser(userData: UserCreateRequest): Observable<ApiResponse> {
     // Construction du payload exact selon les exigences du backend
@@ -52,7 +54,8 @@ export class UserService {
       address: userData.address?.trim() || null,
       dateOfBirth: userData.dateOfBirth ? String(userData.dateOfBirth) : null, // Assure que c'est un string
       placeOfBirth: userData.placeOfBirth || null,
-      roleId: Number(userData.roleId)
+      roleId: Number(userData.roleId),
+      country: userData.country?.trim() || null
     };
 
     return this.http.post<ApiResponse>(
@@ -91,20 +94,25 @@ export class UserService {
   }
 
 
-getUsers(
-  page: number = 1,
-  limit: number = 10
-): Observable<UsersResponse> {
-  const params = new HttpParams()
-    .set('page',  page.toString())
-    .set('limit', limit.toString());
+  getUsers(
+    page: number = 1,
+    limit: number = 10,
+    country: string | null = null
+  ): Observable<UsersResponse> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
 
-  const config = this.getConfigAuthorized();
-  return this.http.get<UsersResponse>(`${this.apiUrl}`, {
-    params,
-    headers: config.headers
-  });
-}
+    if (country) {
+      params.set('country', country);
+    }
+
+    const config = this.getConfigAuthorized();
+    return this.http.get<UsersResponse>(`${this.apiUrl}`, {
+      params,
+      headers: config.headers
+    });
+  }
 
 
   getUserById(userId: string | number): Observable<ApiResponse<MeResponse>> {
@@ -141,6 +149,28 @@ getUsers(
       userData,
       this.getConfigAuthorized()
     );
+  }
+
+  /**
+   * Recharger un portefeuille (ADMIN)
+   * @param matriculeWallet identifiant du portefeuille
+   * @param amount montant à recharger
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  deposit(matriculeWallet: string, amount: number): Observable<any> {
+    const url = `${this.apiUrl1}/wallet/deposit`;
+    return this.http.post(url, { matriculeWallet, amount }, this.getConfigAuthorized());
+  }
+
+  /**
+   * Retirer un montant d'un portefeuille (ADMIN)
+   * @param matriculeWallet identifiant du portefeuille
+   * @param amount montant à retirer
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  withdraw(matriculeWallet: string, amount: number): Observable<any> {
+    const url = `${this.apiUrl1}/wallet/withdrawal`;
+    return this.http.post(url, { matriculeWallet, amount }, this.getConfigAuthorized());
   }
 
 

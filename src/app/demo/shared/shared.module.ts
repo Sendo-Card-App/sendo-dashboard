@@ -90,7 +90,7 @@ const MaterialModules = [
 
 const dataRegistered = localStorage.getItem('login-sendo') || '{}'
 const data = JSON.parse(dataRegistered)
-console.log('accessToken : ', data.accessToken)
+// console.log('accessToken : ', data.accessToken)
 
 const config = {
   url: environment.apiUrl,
