@@ -24,6 +24,7 @@ import { Conversation } from 'src/app/@theme/models/chat';
 import { ChatService } from 'src/app/@theme/services/chat.service';
 import { SocketService } from 'src/app/@theme/services/socket.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -63,6 +64,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   searchTerm: string = '';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pollingInterval: any;
+  private destroy$ = new Subject<void>();
 
   // constructor
   constructor(private chatService: ChatService, private socketService: SocketService, private snackbar: MatSnackBar) {
@@ -112,33 +114,57 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
         console.error('Erreur lors de la récupération des conversations', err);
       }
     });
-  //    this.pollingInterval = setInterval(() => {
-  // }, 5000);
+    //    this.pollingInterval = setInterval(() => {
+    // }, 5000);
 
-   this.socketService.onNewMessage().subscribe((msg) => {
-    this.playNotificationSound();
-    this.snackbar.open(`Nouveau message reçu ${msg.content}`, 'Fermer', {
-      duration: 3000
-    });
-  });
+     this.socketService.onNewMessage()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((msg) => {
+        this.onNewMessage(msg);
+        this.playNotificationSound();
+        this.snackbar.open(`Nouveau message reçu ${msg.content}`, 'Fermer', {
+          duration: 3000
+        });
+      });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onNewMessage(msg: any) {
+    // Vérifie si le message concerne la conversation sélectionnée
+    if (msg.conversationId === this.selectedPersonId) {
+      this.selectedUserChatHistory.push({
+        id: msg.id,
+        from: msg.senderType === 'ADMIN' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+        to: msg.senderType === 'CUSTOMER' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+        text: msg.content === '[Attachment]'
+          ? (msg.attachments && msg.attachments.length > 0 ? msg.attachments[0] : '[Attachment]')
+          : msg.content,
+        attachments: msg.attachments,
+        time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        createdAt: new Date(msg.createdAt),
+        isMine: msg.senderType === 'ADMIN'
+      });
+    }
   }
 
   playNotificationSound(): void {
-  const audio = new Audio('assets/sound/sound 2.mp3');
-  audio.play();
-}
+    const audio = new Audio('assets/sound/sound 2.mp3');
+    audio.play();
+  }
 
   ngAfterViewInit() {
     this.rtlMode = AbleProConfig.isRtlLayout;
   }
   ngOnDestroy() {
-  if (this.pollingInterval) {
-    clearInterval(this.pollingInterval);
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
-}
 
-refreshDom(): void {
-  this.chatService.getConversations().subscribe({
+  refreshDom(): void {
+    this.chatService.getConversations().subscribe({
       next: (res) => {
         const items = res.data.items;
         console.log('Conversations récupérées:', items);
@@ -161,40 +187,49 @@ refreshDom(): void {
         console.error('Erreur lors de la récupération des conversations', err);
       }
     });
-}
+  }
 
 
   // ...existing code...
   chatPerson(id: string) {
-    this.selectedUser = this.chatPersonList.find((x) => x.id === id)!;
-    this.selectedPersonId = this.selectedUser.id;
-
-    this.chatService.getMessagesByConversationId(id).subscribe({
-      next: (res) => {
-        // console.log('Messages récupérés:', res.data);
-        const messages = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
-        this.selectedUserChatHistory = messages
-          .map((msg) => ({
-            id: msg.id,
-            from: msg.senderType === 'ADMIN' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
-            to: msg.senderType === 'CUSTOMER' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
-            text: msg.content === '[Attachment]'
-              ? (msg.attachments && msg.attachments.length > 0 ? msg.attachments[0] : '[Attachment]')
-              : msg.content,
-            attachments: msg.attachments,
-            time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            createdAt: new Date(msg.createdAt), // 🔑 garde la date réelle
-            isMine: msg.senderType === 'ADMIN'
-          }))
-          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()); // 🔑 tri ascendant
-
-      },
-      error: (err) => {
-        this.selectedUserChatHistory = [];
-        console.error('Erreur lors de la récupération des messages', err);
-      }
-    });
+  // Quitter l'ancienne conversation si elle existe
+  if (this.selectedPersonId) {
+    this.socketService.leaveConversation(this.selectedPersonId);
   }
+
+  this.selectedUser = this.chatPersonList.find((x) => x.id === id)!;
+  this.selectedPersonId = this.selectedUser.id;
+
+  // Rejoindre la nouvelle conversation
+  this.socketService.joinConversation(id);
+
+  // console.log('id chat personne', id);
+
+  // Charger les messages
+  this.chatService.getMessagesByConversationId(id).subscribe({
+    next: (res) => {
+      const messages = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
+      this.selectedUserChatHistory = messages
+        .map((msg) => ({
+          id: msg.id,
+          from: msg.senderType === 'ADMIN' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+          to: msg.senderType === 'CUSTOMER' ? 'Moi' : `${msg.user.firstname} ${msg.user.lastname}`,
+          text: msg.content === '[Attachment]'
+            ? (msg.attachments && msg.attachments.length > 0 ? msg.attachments[0] : '[Attachment]')
+            : msg.content,
+          attachments: msg.attachments,
+          time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          createdAt: new Date(msg.createdAt),
+          isMine: msg.senderType === 'ADMIN'
+        }))
+        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    },
+    error: (err) => {
+      this.selectedUserChatHistory = [];
+      console.error('Erreur lors de la récupération des messages', err);
+    }
+  });
+}
   // ...existing code...
 
   selectedImages: string[] = [];
@@ -252,7 +287,8 @@ refreshDom(): void {
       const sent = this.socketService.sendMessage({
         conversationId: payload.conversationId,
         content: payload.content,
-        attachments: payload.attachments
+        attachments: payload.attachments,
+        senderType: payload.senderType
       });
 
       if (sent) {

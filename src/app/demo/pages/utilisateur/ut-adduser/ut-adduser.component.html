@@ -99,24 +99,36 @@
               </mat-form-field>
             </div>
           </div>
+          <div>
+            <div class="col-md-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Pays</mat-label>
+                <mat-select formControlName="country" required>
+                  <mat-option *ngFor="let country of countries" [value]="country">
+                    {{ country }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="invitationForm.get('country')?.hasError('required')">
+                  Sélectionnez un pays
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
 
           <!-- Bouton de soumission -->
           <div class="row m-t-20">
             <div class="col-md-12 text-right">
-              <button
-                mat-flat-button
-                color="primary"
-                type="submit"
-                [disabled]="invitationForm.invalid || isLoading"
-              >
+              <button mat-flat-button color="primary" type="submit" [disabled]="invitationForm.invalid || isLoading">
                 @if (isLoading) {
-                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                <mat-spinner diameter="20" class="mr-2"></mat-spinner>
                 } @else {
-                  Créer l'utilisateur
+                Créer l'utilisateur
                 }
               </button>
             </div>
           </div>
+
+
         </form>
 
         <!-- Messages de feedback -->

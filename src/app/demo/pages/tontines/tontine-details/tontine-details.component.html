@@ -44,22 +44,22 @@
           <!-- Informations -->
           <div style="padding: 5px;">
             <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
-            <mat-icon class="m-r-10">update</mat-icon>
-            <div>{{ tontine.frequence === 'WEEKLY' ? 'Hebdomadaire' : 'Mensuelle' }}</div>
-          </div>
+              <mat-icon class="m-r-10">update</mat-icon>
+              <div>{{ tontine.frequence === 'WEEKLY' ? 'Hebdomadaire' : 'Mensuelle' }}</div>
+            </div>
 
-          <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
-            <mat-icon class="m-r-10">payments</mat-icon>
-            <div >{{ formatCurrency(tontine.compteSequestre.soldeActuel) }} solde</div>
-          </div>
+            <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
+              <mat-icon class="m-r-10">payments</mat-icon>
+              <div>{{ formatCurrency(tontine.compteSequestre.soldeActuel) }} solde</div>
+            </div>
 
-          <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
-            <mat-icon class="m-r-10">vpn_key</mat-icon>
-            <div >{{ tontine.invitationCode }}</div>
-            <button mat-icon-button (click)="copyInvitationCode()" matTooltip="Copier le code">
-              <mat-icon>content_copy</mat-icon>
-            </button>
-          </div>
+            <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
+              <mat-icon class="m-r-10">vpn_key</mat-icon>
+              <div>{{ tontine.invitationCode }}</div>
+              <button mat-icon-button (click)="copyInvitationCode()" matTooltip="Copier le code">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -72,30 +72,27 @@
       </mat-card-header>
 
       <mat-card-content>
-  <div class="members-list">
-    <div *ngFor="let member of tontine.membres" class="member-item">
-      <div class="member-main-info">
-        <div class="member-avatar" [style.background]="getMemberColor(member)">
-          {{ member.user.firstname.charAt(0) }}{{ member.user.lastname.charAt(0) }}
-        </div>
-        <div class="member-info">
-          <div class="member-name">{{ member.user.firstname }} {{ member.user.lastname }}</div>
-          <div class="member-role" [ngClass]="{'admin': member.role === 'ADMIN'}">
-            {{ member.role === 'ADMIN' ? 'Administrateur' : 'Membre' }}
+        <div class="members-list">
+          <div *ngFor="let member of tontine.membres" class="member-item">
+            <div class="member-main-info">
+              <div class="member-avatar" [style.background]="getMemberColor(member)">
+                {{ member.user.firstname.charAt(0) }}{{ member.user.lastname.charAt(0) }}
+              </div>
+              <div class="member-info">
+                <div class="member-name">{{ member.user.firstname }} {{ member.user.lastname }}</div>
+                <div class="member-role" [ngClass]="{'admin': member.role === 'ADMIN'}">
+                  {{ member.role === 'ADMIN' ? 'Administrateur' : 'Membre' }}
+                </div>
+              </div>
+            </div>
+
+            <button mat-icon-button color="primary" class="history-button" (click)="viewMemberContributions(member)"
+              matTooltip="Voir l'historique des cotisations">
+              <mat-icon>history</mat-icon>
+            </button>
           </div>
         </div>
-      </div>
-
-      <button mat-icon-button
-              color="primary"
-              class="history-button"
-              (click)="viewMemberContributions(member)"
-              matTooltip="Voir l'historique des cotisations">
-        <mat-icon>history</mat-icon>
-      </button>
-    </div>
-  </div>
-</mat-card-content>
+      </mat-card-content>
     </mat-card>
   </div>
 
@@ -105,12 +102,13 @@
     <mat-card class="actions-card">
       <div class="status-header">
         <h3>Gestion de la tontine</h3>
-        <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER') ? 'Cette action est réservée uniquement aux admins' : 'Edit'"
-                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER'">
-          <button 
-          (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER') && toggleSuspend()"
-          mat-stroked-button 
-          [disabled]="isSuspending && currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER'">
+        <div
+          [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER') ? 'Cette action est réservée uniquement aux admins' : 'Edit'"
+          [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER'">
+          <button
+            (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER') && toggleSuspend()"
+            mat-stroked-button
+            [disabled]="isSuspending && currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER'">
             <mat-icon>{{ tontine.etat === 'ACTIVE' ? 'pause' : 'play_arrow' }}</mat-icon>
             {{ tontine.etat === 'ACTIVE' ? 'Suspendre' : 'Activer' }}
             <mat-spinner *ngIf="isSuspending" diameter="20"></mat-spinner>
@@ -118,6 +116,28 @@
         </div>
       </div>
     </mat-card>
+
+    <mat-card class="actions-card" *ngIf="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER'">
+      <h3 style="margin: 10px;">Actions sur la tontine</h3>
+      <mat-card-content>
+        <!-- Champ pour saisir le montant -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Montant</mat-label>
+          <input matInput type="number" [(ngModel)]="montant" placeholder="Entrez un montant" />
+        </mat-form-field>
+
+        <!-- Boutons dépôt et retrait -->
+        <div class="mt-3 flex gap-2">
+          <button mat-raised-button color="primary" (click)="makeDeposit(montant)" [disabled]="!montant">
+            Dépôt
+          </button>
+          <button mat-raised-button color="warn" (click)="makeWithdrawal(montant)" [disabled]="!montant">
+            Retrait
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
 
     <!-- Carte Détails -->
     <mat-card class="details-card">

@@ -199,6 +199,8 @@ sendDocumentToNeero(documentType: 'ID_PROOF' | 'ADDRESS_PROOF' | 'NIU_PROOF' | '
   this.cardService.sendDocumentToNeero(documentType, userId).subscribe({
     next: () => {
       this.loadingMap.set(docId, false);
+
+
       this.snackBar.open(`Document ${documentType} envoyé avec succès`, 'Fermer', { duration: 3000 });
     },
     error: (err) => {

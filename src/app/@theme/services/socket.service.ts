@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Socket } from 'ngx-socket-io';
-import {  Subject, takeUntil } from 'rxjs';
+import {  Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService implements OnDestroy {
@@ -60,7 +60,7 @@ export class SocketService implements OnDestroy {
     });
   }
 
-sendMessage(data: { conversationId: string; content: string; attachments?: string[] }) {
+sendMessage(data: { conversationId: string; content: string; attachments?: string[], senderType: string }) {
   if (!this.socket.connected) {
     console.warn('⚠️ Socket not connected');
     return false;
@@ -72,15 +72,12 @@ sendMessage(data: { conversationId: string; content: string; attachments?: strin
 }
 
 
-
-
   onNewMessage() {
-    return this.socket.fromEvent('new_message').pipe(
-      takeUntil(this.destroy$)
-    );
-  }
+  return this.socket.fromEvent('new_message');
+}
 
   joinConversation(conversationId: string) {
+    console.log('📥 Joining conversation:', conversationId);
     this.socket.emit('join_conversation', { conversationId });
   }
 
