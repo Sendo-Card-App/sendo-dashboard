@@ -1,0 +1,204 @@
+<!-- commission-list.component.html -->
+<div class="commission-container">
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <mat-card class="summary-card">
+      <mat-card-content style="display: flex;">
+        <div class="card-icon total">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="card-details">
+          <h3>Total des commissions</h3>
+          <p class="amount">{{ totalFees | currency:'XAF':'symbol':'1.0-0' }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content style="display: flex;">
+        <div class="card-icon average">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="card-details">
+          <h3>Moyenne des commissions</h3>
+          <p class="amount">{{ averageFees | currency:'XAF':'symbol':'1.2-2' }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content style="display: flex;">
+        <div class="card-icon types">
+          <mat-icon>pie_chart</mat-icon>
+        </div>
+        <div class="card-details">
+          <h3>Types de transactions</h3>
+          <p class="amount">{{ feesByType.length }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Fees by Type Chart -->
+  <mat-card class="chart-card">
+    <mat-card-header>
+      <mat-card-title>Répartition par type</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="fees-by-type">
+        <div *ngFor="let item of feesByType" class="type-item">
+          <div class="type-details">
+            <span class="type-label">{{ getTypeLabel(item.type) }}</span>
+            <span class="type-value">{{ item.totalFees | currency:'XAF':'symbol':'1.0-0' }}</span>
+          </div>
+          <mat-progress-bar
+            mode="determinate"
+            [value]="(item.totalFees / totalFees) * 100"
+            class="type-progress">
+          </mat-progress-bar>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filter Section -->
+  <mat-card class="filter-card">
+    <mat-card-header>
+      <mat-card-title>Filtres</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filter-section">
+        <form [formGroup]="filterForm">
+          <div class="filter-row">
+            <!-- Type Filter -->
+            <mat-form-field appearance="outline">
+              <mat-label>Type de transaction</mat-label>
+              <mat-select formControlName="type">
+                <mat-option *ngFor="let option of typeOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Status Filter -->
+            <mat-form-field appearance="outline">
+              <mat-label>Statut</mat-label>
+              <mat-select formControlName="status">
+                <mat-option *ngFor="let option of statusOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Start Date Filter -->
+            <mat-form-field appearance="outline">
+              <mat-label>Date de début</mat-label>
+              <input matInput [matDatepicker]="startDatePicker" formControlName="startDate">
+              <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #startDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- End Date Filter -->
+            <mat-form-field appearance="outline">
+              <mat-label>Date de fin</mat-label>
+              <input matInput [matDatepicker]="endDatePicker" formControlName="endDate">
+              <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #endDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Action Buttons -->
+            <button mat-stroked-button (click)="resetFilters()" class="filter-button">
+              Réinitialiser
+            </button>
+            <button mat-raised-button color="primary" (click)="applyFilters()" class="filter-button">
+              Appliquer
+            </button>
+          </div>
+        </form>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table Section -->
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Commissions récentes</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-section">
+        <div class="table-responsive">
+          <table mat-table [dataSource]="dataSource" matSort>
+            <!-- Transaction ID Column -->
+            <ng-container matColumnDef="transactionId">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Référence</th>
+              <td mat-cell *matCellDef="let transaction">{{ transaction.transactionId }}</td>
+            </ng-container>
+
+            <!-- Amount Column -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>
+              <td mat-cell *matCellDef="let transaction">
+                {{ transaction.amount | currency:'XAF':'symbol':'1.0-0' }}
+              </td>
+            </ng-container>
+
+            <!-- Commission Column -->
+            <ng-container matColumnDef="sendoFees">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Commission</th>
+              <td mat-cell *matCellDef="let transaction">
+                {{ transaction.sendoFees | currency:'XAF':'symbol':'1.0-0' }}
+              </td>
+            </ng-container>
+
+            <!-- Type Column -->
+            <ng-container matColumnDef="type">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+              <td mat-cell *matCellDef="let transaction">
+                <span class="type-badge">{{ getTypeLabel(transaction.type) }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+              <td mat-cell *matCellDef="let transaction">
+                <span class="status-badge" [ngClass]="getStatusClass(transaction.status)">
+                  {{ getStatusLabel(transaction.status) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Date Column -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+              <td mat-cell *matCellDef="let transaction">
+                {{ formatDate(transaction.createdAt) }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- Loading/No Data Row -->
+            <tr *matNoDataRow>
+              <td [colSpan]="displayedColumns.length">
+                <div class="no-data-message">
+                  <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
+                  <span *ngIf="!isLoading && dataSource.data.length === 0">
+                    Aucune commission trouvée
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <mat-paginator [length]="dataSource.data.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"
+          showFirstLastButtons aria-label="Select page of commissions">
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
