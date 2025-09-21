@@ -316,6 +316,15 @@ export const menus: Navigation[] = [
         url: '/chat',
         icon: '#custom-message-2'
       },
+      {
+        id: 'commission',
+        title: 'Commissions',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/commission/all',
+        icon: '#custom-message-2',
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.TECHNICAL_DIRECTOR],
+      },
     ]
   },
 ];

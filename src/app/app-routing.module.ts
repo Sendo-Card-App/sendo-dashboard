@@ -226,6 +226,19 @@ const routes: Routes = [
     ]
   },
    {
+    path: 'commission',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'all',
+        loadComponent: () => import('./demo/pages/commision/commission-list/commission-list.component').then((c) => c.CommissionListComponent),
+        data: { roles: ['SUPER_ADMIN','TECHNICAL_DIRECTOR','SYSTEM_ADMIN'] }
+      },
+
+    ]
+  },
+   {
     path: 'card',
     component: AdminComponent,
     canActivateChild: [RoleGuard],

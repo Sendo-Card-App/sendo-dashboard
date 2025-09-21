@@ -91,6 +91,8 @@ loadStatistics(): void {
       next: (response: StatisticsResponse) => {
         this.updateDashboardSummary(response.data);
         // Vous pouvez aussi mettre à jour d'autres parties du dashboard ici
+
+        console.log('Statistics loaded:', response.data);
       },
       error: (err) => console.error('Failed to load statistics', err)
     });
