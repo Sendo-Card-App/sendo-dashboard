@@ -129,6 +129,34 @@ export class AdminService {
     );
   }
 
+  /**
+   * GET /admin/commission
+   * Récupère toutes les commissions du système
+   * parameters startDate, endDate, type (optional, query params)
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getCommissions(startDate?: string, endDate?: string, type?: string): Observable<any> {
+    let params = new HttpParams();
+    if (startDate) {
+      params = params.set('startDate', startDate);
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate);
+    }
+    if (type) {
+      params = params.set('type', type);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.http.get<any>(
+      `${this.apiUrl}/commission`,
+      {
+        ...this.getConfigAuthorized(),
+        params
+      }
+    );
+  }
+
+
 
 
   private getConfigAuthorized() {
