@@ -109,6 +109,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
           this.selectedPersonId = this.selectedUser.id;
           // this.loadMessages(this.selectedUser.id);
         }
+        console.log('Liste des personnes de chat:', this.chatPersonList);
       },
       error: (err) => {
         console.error('Erreur lors de la récupération des conversations', err);
@@ -133,11 +134,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.socketService.onNewMessageGlobal()
       .pipe(takeUntil(this.destroy$))
       .subscribe((msg) => {
+         if (msg.senderType !== 'ADMIN') {
         console.log('Nouveau message global reçu dans component:', msg);
         this.playNotificationSound();
         this.snackbar.open(`Nouveau message global reçu`, 'Fermer', {
           duration: 3000
         });
+      }
+
       });
   }
 
@@ -464,7 +468,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
       lastMessage: '', // à compléter avec un call pour récupérer le dernier message
       birthdayText: '', // si applicable
       unReadChatCount: 0, // valeur par défaut ou à compléter si tu as une API pour ça
-      online_status: 'available' // à adapter selon le système de présence
+      online_status: 'available', // à adapter selon le système de présence
+      updatedAt: conversation.updatedAt,
+      createdAt: conversation.createdAt
+
     };
   }
 
