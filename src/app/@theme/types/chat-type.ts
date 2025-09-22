@@ -14,7 +14,8 @@ export interface chatPersonType {
   birthdayText: string;
   unReadChatCount: number;
   online_status: string;
-  updatedAt?: Date;
+  updatedAt?: string;
+  createdAt?: string;
 
 }
 
