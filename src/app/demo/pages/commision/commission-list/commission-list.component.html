@@ -139,7 +139,7 @@
             <ng-container matColumnDef="amount">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>
               <td mat-cell *matCellDef="let transaction">
-                {{ transaction.amount | currency:'XAF':'symbol':'1.0-0' }}
+                {{ transaction.amount   }}  FCFA
               </td>
             </ng-container>
 
@@ -147,7 +147,7 @@
             <ng-container matColumnDef="sendoFees">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Commission</th>
               <td mat-cell *matCellDef="let transaction">
-                {{ transaction.sendoFees | currency:'XAF':'symbol':'1.0-0' }}
+                {{ transaction.sendoFees }} FCFA
               </td>
             </ng-container>
 

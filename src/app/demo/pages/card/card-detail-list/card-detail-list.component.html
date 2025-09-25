@@ -8,7 +8,7 @@
           expiration: {{ formatDate(InfoUser?.expirationDate) }}
         </div>
         <!-- <div class="card-meta">
-          <span *ngIf="dataSource.data.length">Affichage de {{currentPage * itemsPerPage + 1}} à 
+          <span *ngIf="dataSource.data.length">Affichage de {{currentPage * itemsPerPage + 1}} à
             {{Math.min((currentPage + 1) * itemsPerPage, totalItems)}} sur {{totalItems}} transactions</span>
         </div> -->
       </div>
@@ -32,7 +32,7 @@
           </mat-select>
         </mat-form-field>
 
-        
+
         <mat-form-field appearance="outline">
           <mat-label>Type</mat-label>
           <mat-select formControlName="type">
@@ -42,7 +42,7 @@
           </mat-select>
         </mat-form-field>
 
-        
+
         <mat-form-field appearance="outline">
           <mat-label>Date de début</mat-label>
           <input matInput [matDatepicker]="startPicker" formControlName="startDate">
@@ -50,7 +50,7 @@
           <mat-datepicker #startPicker></mat-datepicker>
         </mat-form-field>
 
-        
+
         <mat-form-field appearance="outline">
           <mat-label>Date de fin</mat-label>
           <input matInput [matDatepicker]="endPicker" formControlName="endDate">
@@ -58,7 +58,7 @@
           <mat-datepicker #endPicker></mat-datepicker>
         </mat-form-field>
 
-        
+
         <div class="filter-actions">
           <button mat-stroked-button type="button" (click)="resetFilters()">
             <mat-icon>refresh</mat-icon>
@@ -106,7 +106,7 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>
           <td mat-cell *matCellDef="let transaction"
             [class.negative-amount]="transaction.type === 'WITHDRAWAL' || transaction.type === 'PAYMENT'">
-            {{ formatCurrency(transaction.amount) }}
+            {{ transaction.amount }} FCFA
           </td>
         </ng-container>
 
@@ -114,7 +114,7 @@
         <ng-container matColumnDef="fees">
           <th mat-header-cell *matHeaderCellDef>Frais</th>
           <td mat-cell *matCellDef="let transaction">
-            {{ formatCurrency(transaction.sendoFees + transaction.partnerFees) }}
+            {{ transaction.sendoFees }} FCFA
           </td>
         </ng-container>
 
