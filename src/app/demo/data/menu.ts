@@ -18,7 +18,16 @@ export const menus: Navigation[] = [
         classes: 'nav-item',
         url: '/dashboard',
         icon: '#custom-status-up'
-      }
+      },
+      {
+        id: 'commission',
+        title: 'Commissions',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/commission/all',
+        icon: '#custom-message-2',
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.TECHNICAL_DIRECTOR],
+      },
     ]
   },
 
@@ -315,15 +324,6 @@ export const menus: Navigation[] = [
         classes: 'nav-item',
         url: '/chat',
         icon: '#custom-message-2'
-      },
-      {
-        id: 'commission',
-        title: 'Commissions',
-        type: 'item',
-        classes: 'nav-item',
-        url: '/commission/all',
-        icon: '#custom-message-2',
-        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.TECHNICAL_DIRECTOR],
       },
     ]
   },
