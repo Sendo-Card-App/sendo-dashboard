@@ -125,7 +125,7 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/kyc/kyc-all',
             // target: true,
-            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER,
             Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
             breadcrumbs: true
           },
@@ -238,7 +238,7 @@ export const menus: Navigation[] = [
         title: 'Gestion de carte',
         type: 'collapse',
         icon: '#custom-bill',
-         role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+         role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER,
         Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
@@ -297,14 +297,14 @@ export const menus: Navigation[] = [
     title: 'Paramettres',
     type: 'group',
     icon: 'icon-navigation',
-    role: [Role1.SUPER_ADMIN,],
+    role: [Role1.SUPER_ADMIN, Role1.CUSTOMER_ADVISER,],
     children: [
       {
         id: 'configuration',
         title: 'Configuration',
         type: 'collapse',
         icon: '#custom-row-vertical',
-        role: [Role1.SUPER_ADMIN,],
+        role: [Role1.SUPER_ADMIN, Role1.CUSTOMER_ADVISER],
         children: [
           {
             id: 'allconfiguration',
@@ -312,7 +312,8 @@ export const menus: Navigation[] = [
             type: 'item',
             url: '/configuration/allconfiguration',
             // target: true,
-            breadcrumbs: true
+            breadcrumbs: true,
+            role: [Role1.SUPER_ADMIN,]
           },
 
         ]
