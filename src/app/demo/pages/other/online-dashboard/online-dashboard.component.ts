@@ -1,3 +1,4 @@
+import { AuthenticationService } from './../../../../@theme/services/authentication.service';
 // angular import
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -75,7 +76,8 @@ export class OnlineDashboardComponent implements OnInit {
   currencySymbol = 'XAF';
 
   constructor(
-    private statisticsService: AdminService // Injectez le service dans le constructeur
+    private statisticsService: AdminService, // Injectez le service dans le constructeur
+    private Auth: AuthenticationService
   ) {
     this.selected = new Date();
   }
@@ -92,9 +94,14 @@ loadStatistics(): void {
         this.updateDashboardSummary(response.data);
         // Vous pouvez aussi mettre à jour d'autres parties du dashboard ici
 
-        console.log('Statistics loaded:', response.data);
+        // console.log('Statistics loaded:', response.data);
       },
-      error: (err) => console.error('Failed to load statistics', err)
+      error: (err) => {
+        if (err === "Token invalide") {
+          this.Auth.clearSession();
+          window.location.reload();
+        }
+      }
     });
   }
 

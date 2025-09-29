@@ -5,6 +5,7 @@ import { AdminService } from 'src/app/@theme/services/admin.service';
 import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
 import { CommonModule, DatePipe } from '@angular/common';
 import { subDays } from 'date-fns';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 // Interfaces pour le typage fort
 interface Transaction {
@@ -49,6 +50,7 @@ export class StatisticsChartComponent implements OnInit {
   // private themeService = inject(ThemeLayoutService);
   private statisticsService = inject(AdminService);
   private datePipe = inject(DatePipe);
+  private Auth = inject(AuthenticationService);
 
   chartOptions!: Partial<ApexOptions>;
   selectType: '5days' | '7days' = '5days';
@@ -130,6 +132,11 @@ export class StatisticsChartComponent implements OnInit {
       error: (err) => {
         console.error('Erreur lors du chargement des transactions', err);
         this.isLoading = false;
+
+        if (err === "Token invalide") {
+          this.Auth.clearSession();
+          window.location.reload();
+        }
       }
     });
   }

@@ -303,7 +303,7 @@ const routes: Routes = [
        {
         path: 'chat',
         loadComponent: () => import('./demo/pages/chat/chat.component').then((c) => c.ChatComponent),
-        data: { roles: ['SUPER_ADMIN'] }
+        data: { roles: ['SUPER_ADMIN','CUSTOMER_ADVISER'] }
       },
       {
         path: '',
