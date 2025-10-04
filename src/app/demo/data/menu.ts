@@ -26,7 +26,7 @@ export const menus: Navigation[] = [
         classes: 'nav-item',
         url: '/commission/all',
         icon: '#custom-message-2',
-        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.TECHNICAL_DIRECTOR],
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN],
       },
     ]
   },
@@ -313,7 +313,7 @@ export const menus: Navigation[] = [
             url: '/configuration/allconfiguration',
             // target: true,
             breadcrumbs: true,
-            role: [Role1.SUPER_ADMIN,]
+            role: [Role1.SUPER_ADMIN, Role1.TECHNICAL_DIRECTOR, Role1.MANAGEMENT_CONTROLLER]
           },
 
         ]

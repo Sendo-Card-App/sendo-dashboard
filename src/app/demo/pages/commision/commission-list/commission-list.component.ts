@@ -1,5 +1,5 @@
 // commission-list.component.ts
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -14,7 +14,7 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
   styleUrls: ['./commission-list.component.scss'],
   imports: [CommonModule, SharedModule]
 })
-export class CommissionListComponent implements OnInit, AfterViewInit {
+export class CommissionListComponent implements OnInit, AfterViewInit, OnDestroy {
   filterForm: FormGroup;
   isLoading = false;
   totalFees = 0;
@@ -28,6 +28,7 @@ export class CommissionListComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  private intervalId!: ReturnType<typeof setInterval>;
 
   // Filter options
   typeOptions = [
@@ -60,6 +61,16 @@ export class CommissionListComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadCommissions();
+
+    this.intervalId = setInterval(() => {
+      this.loadCommissions();
+    }, 30000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   ngAfterViewInit() {

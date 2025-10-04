@@ -95,24 +95,29 @@ export class UserService {
 
 
   getUsers(
-    page: number = 1,
-    limit: number = 10,
-    country: string | null = null
-  ): Observable<UsersResponse> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+  page: number = 1,
+  limit: number = 10,
+  country: string | null = null,
+  search: string | null = null
+): Observable<UsersResponse> {
+  let params = new HttpParams()
+    .set('page', page.toString())
+    .set('limit', limit.toString());
 
-    if (country) {
-      params.set('country', country);
-    }
-
-    const config = this.getConfigAuthorized();
-    return this.http.get<UsersResponse>(`${this.apiUrl}`, {
-      params,
-      headers: config.headers
-    });
+  // Correction : HttpParams est immuable, il faut réassigner
+  if (country) {
+    params = params.set('country', country);
   }
+  if (search) {
+    params = params.set('search', search);
+  }
+
+  const config = this.getConfigAuthorized();
+  return this.http.get<UsersResponse>(`${this.apiUrl}`, {
+    params,
+    headers: config.headers
+  });
+}
 
 
   getUserById(userId: string | number): Observable<ApiResponse<MeResponse>> {

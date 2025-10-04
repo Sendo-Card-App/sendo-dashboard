@@ -233,7 +233,7 @@ const routes: Routes = [
       {
         path: 'all',
         loadComponent: () => import('./demo/pages/commision/commission-list/commission-list.component').then((c) => c.CommissionListComponent),
-        data: { roles: ['SUPER_ADMIN','TECHNICAL_DIRECTOR','SYSTEM_ADMIN'] }
+        data: { roles: ['SUPER_ADMIN','SYSTEM_ADMIN'] }
       },
 
     ]
@@ -285,7 +285,7 @@ const routes: Routes = [
       {
         path: 'allconfiguration',
         loadComponent: () => import('./demo/pages/conigs/list-config/list-config.component').then((c) => c.ListConfigComponent),
-        data: { roles: ['SUPER_ADMIN'] }
+        data: { roles: ['SUPER_ADMIN','TECHNICAL_DIRECTOR','MANAGEMENT_CONTROLLER'] }
       },
 
     ]

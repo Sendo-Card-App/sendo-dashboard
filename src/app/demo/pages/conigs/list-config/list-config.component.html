@@ -64,7 +64,10 @@
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
-              <button mat-button (click)="openConfigDrawer(config)">
+              <button mat-button
+              (click)="(currentuserRole === 'SUPER_ADMIN') && openConfigDrawer(config)"
+
+              >
                 <mat-icon>visibility</mat-icon>
                 Voir détails
               </button>

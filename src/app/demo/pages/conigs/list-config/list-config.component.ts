@@ -11,6 +11,7 @@ import { Config, BaseResponse } from 'src/app/@theme/models';
 import { ConfigService, UpdateConfigRequest } from 'src/app/@theme/services/config.service';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { CommonModule } from '@angular/common';
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-list-config',
@@ -31,6 +32,7 @@ export class ListConfigComponent implements OnInit, OnDestroy {
   itemsPerPage = 10;
   currentPage = 1;
   private destroy$ = new Subject<void>();
+  currentuserRole: string | undefined;
 
   currentConfig: Config | null = null;
   configForm: FormGroup;
@@ -39,7 +41,8 @@ export class ListConfigComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private configService: ConfigService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authentificationService: AuthenticationService
   ) {
     this.filterForm = this.fb.group({
       search: ['']
@@ -52,8 +55,10 @@ export class ListConfigComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+     this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
     this.setupFormListeners();
     this.loadConfigs();
+
   }
 
   ngOnDestroy(): void {
