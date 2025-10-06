@@ -33,7 +33,7 @@ export class PubListComponent implements OnInit {
   currentPub: Publicite | null = null;
   isEditing = false;
   pubForm: FormGroup;
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
 
   constructor(
     private pubService: PubAdminService,

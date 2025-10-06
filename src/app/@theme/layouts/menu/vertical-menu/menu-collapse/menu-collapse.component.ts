@@ -10,10 +10,6 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { MenuItemVerticalComponent } from '../menu-item/menu-item.component';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
-//type
-// import { Role } from 'src/app/@theme/types/role';
-import { Role1 } from 'src/app/@theme/types/user';
-
 @Component({
   selector: 'app-menu-collapse',
   imports: [SharedModule, RouterModule, MenuItemVerticalComponent, CommonModule],
@@ -34,10 +30,9 @@ export class MenuCollapseComponent implements OnInit {
   private authenticationService = inject(AuthenticationService);
 
   // public props
-  current_url: string = ''; // Add current URL property
+  current_url: string = '';
   isEnabled: boolean = false;
 
-  // all Version Get Item(Component Name Take)
   readonly item = input<NavigationItem>();
   readonly parentRole = input<string[]>();
 
@@ -49,7 +44,7 @@ export class MenuCollapseComponent implements OnInit {
     this.current_url = this.location.path();
     //eslint-disable-next-line
     //@ts-ignore
-    const baseHref = this.location['_baseHref'] || ''; // Use baseHref if necessary
+    const baseHref = this.location['_baseHref'] || '';
     this.current_url = baseHref + this.current_url;
 
     // Timeout to allow DOM to fully render before checking for the links
@@ -69,35 +64,66 @@ export class MenuCollapseComponent implements OnInit {
       });
     }, 0);
 
-    /**
-     * current login user role
-     */
-    const currentUserRole = this.authenticationService.currentUserValue?.user.role || Role1.SUPER_ADMIN;
+    this.checkPermission();
+  }
 
-    /**
-     * items parent role
-     */
-    const parentRoleValue = this.parentRole();
+  private checkPermission(): void {
+    const currentUserRole = this.authenticationService.currentUserValue?.user?.role;
+    const item = this.item();
+    const parentRoles = this.parentRole() || [];
 
-    if (this.item()!.role && this.item()!.role!.length > 0) {
-      if (currentUserRole) {
-        const parentRole = this.parentRole();
-        const allowedFromParent =
-          this.item()!.isMainParent || (parentRole && parentRole.length > 0 && parentRole.includes(currentUserRole));
-        if (allowedFromParent) {
-          this.isEnabled = this.item()!.role!.includes(currentUserRole);
-        }
-      }
-    } else if (parentRoleValue && parentRoleValue.length > 0) {
-      // If item.role is empty, check parentRole
-      if (currentUserRole) {
-        this.isEnabled = parentRoleValue.includes(currentUserRole);
-      }
+    // Si pas de rôle utilisateur, désactiver
+    if (!currentUserRole || !item) {
+      this.isEnabled = false;
+      return;
     }
+
+    // Si l'item a des rôles spécifiques
+    if (item.role && item.role.length > 0) {
+      this.isEnabled = this.hasRoleAccess(item.role, currentUserRole);
+    }
+    // Si l'item n'a pas de rôles mais le parent en a
+    else if (parentRoles.length > 0) {
+      this.isEnabled = this.hasRoleAccess(parentRoles, currentUserRole);
+    }
+    // Si aucun rôle n'est défini, autoriser par défaut
+    else {
+      this.isEnabled = true;
+    }
+
+    console.log('MenuCollapse Permission check:', {
+      item: item.title,
+      currentUserRole,
+      itemRoles: item.role,
+      parentRoles,
+      isEnabled: this.isEnabled
+    });
+  }
+
+  private hasRoleAccess(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requiredRoles: any[],
+    userRole: string | string[],
+  ): boolean {
+    // Convertir les rôles en noms de string
+    const roleNames = requiredRoles.map(role =>
+      typeof role === 'string' ? role : role.name
+    );
+
+    // Vérifier si le rôle utilisateur est dans les rôles requis
+    if (Array.isArray(userRole)) {
+      return userRole.some(role => roleNames.includes(role));
+    }
+    return roleNames.includes(userRole);
   }
 
   // Method to handle the collapse of the navigation menu
   navCollapse(e: MouseEvent) {
+    if (!this.isEnabled) {
+      e.preventDefault();
+      return;
+    }
+
     let parent = e.target as HTMLElement;
 
     if (parent?.tagName === 'SPAN') {

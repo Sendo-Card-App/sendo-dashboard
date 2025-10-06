@@ -65,7 +65,7 @@
             </button>
             <mat-menu #menu="matMenu">
               <button mat-button
-              (click)="(currentuserRole === 'SUPER_ADMIN') && openConfigDrawer(config)"
+              (click)="(currentuserRole?.includes('SUPER_ADMIN')) && openConfigDrawer(config)"
 
               >
                 <mat-icon>visibility</mat-icon>

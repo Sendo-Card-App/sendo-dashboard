@@ -20,7 +20,7 @@ export class TontineDetailsComponent implements OnInit {
   tontine: Tontine | null = null;
   isLoading = false;
   isSuspending = false;
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
 
   constructor(
     private route: ActivatedRoute,

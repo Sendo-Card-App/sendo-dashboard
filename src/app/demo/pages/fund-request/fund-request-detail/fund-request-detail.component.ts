@@ -22,7 +22,7 @@ export class FundRequestDetailComponent implements OnInit {
   fundRequest: FundRequest | null = null;
   isLoading = false;
   isDeadlinePassed = false;
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
 
   constructor(
     private route: ActivatedRoute,

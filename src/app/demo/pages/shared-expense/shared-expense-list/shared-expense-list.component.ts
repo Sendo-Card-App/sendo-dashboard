@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -18,7 +18,7 @@ import { Router } from '@angular/router';
   providers: [DatePipe],
   imports: [CommonModule,SharedModule]
 })
-export class SharedExpenseListComponent implements OnInit {
+export class SharedExpenseListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['id', 'description', 'totalAmount', 'initiatorPart', 'limitDate', 'status', 'actions'];
   dataSource = new MatTableDataSource<SharedExpense>();
   isLoading = false;

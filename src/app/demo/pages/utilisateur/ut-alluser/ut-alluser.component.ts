@@ -35,7 +35,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
   itemsPerPage = 10;
   searchText = '';
   filterForm: FormGroup;
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
   countries: string[] = [];
 
   // Subject pour la recherche avec debounce
@@ -67,6 +67,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ).subscribe(searchText => {
       this.currentPage = 1; // Reset à la première page
       this.loadUsers();

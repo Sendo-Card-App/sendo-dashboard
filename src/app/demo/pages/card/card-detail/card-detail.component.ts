@@ -20,7 +20,7 @@ export class CardDetailComponent implements OnInit {
   isUpdating = false;
   card: VirtualCard | null = null;
   cardId!: number;
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
 
   constructor(
     private route: ActivatedRoute,

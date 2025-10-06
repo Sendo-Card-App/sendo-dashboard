@@ -28,7 +28,7 @@ export class TransactionDetailComponent implements OnInit {
   isEditing = false;
   statusForm: FormGroup;
   statusOptions = ['PENDING', 'COMPLETED', 'FAILED','BLOCKED'];
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
 
   constructor(
     private route: ActivatedRoute,

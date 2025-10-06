@@ -17,7 +17,7 @@ export class User {
     email: string;
     password: string;
     name: string;
-    role: Role1;
+    role: Role1[];
     country: string | null;
   };
 }
@@ -35,7 +35,8 @@ export function mapApiUserToUser(apiUser: any, serviceToken: string = ''): User 
       email: apiUser.email,
       password: apiUser.password, // peut être absent
       name: apiUser.firstname && apiUser.lastname ? `${apiUser.firstname} ${apiUser.lastname}` : apiUser.firstname || apiUser.lastname || '',
-      role: apiUser.roles && apiUser.roles.length > 0 ? apiUser.roles[0].name : 'UNKNOWN',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      role: Array.isArray(apiUser.roles) ? apiUser.roles.map((r: any) => r.name) : [],
       country: apiUser.country || null
     }
   };

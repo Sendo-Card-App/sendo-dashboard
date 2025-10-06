@@ -3,16 +3,17 @@
     <li
       [ngClass]="item().classes!"
       [routerLinkActive]="['active']"
-      matTooltip="{{ !isEnabled ? 'Logout and Login with Admin to view this page ' : '' }}"
+      [matTooltip]="!isEnabled ? 'Logout and Login with Admin to view this page' : ''"
     >
       <a
         class="nav-link"
         [target]="item().target ? '_blank' : '_self'"
-        [ngClass]="{ disabled: !isEnabled }"
-        [routerLink]="[item().url]"
-        (click)="toggleMenu($event)"
+        [class.disabled]="!isEnabled"
+        [routerLink]="isEnabled ? [item().url] : null"
+        (click)="isEnabled ? toggleMenu($event) : $event.preventDefault()"
         [routerLinkActive]="['active']"
       >
+        <!-- Icône -->
         @if (!isEnabled) {
           <span class="coded-micon">
             <svg class="pc-icon">
@@ -23,40 +24,35 @@
           @if (item().icon) {
             <span class="coded-micon">
               <svg class="pc-icon">
-                <use attr.xlink:href="assets/fonts/custom-icon.svg{{ item().icon }}"></use>
+                <use [attr.xlink:href]="'assets/fonts/custom-icon.svg' + item().icon"></use>
               </svg>
             </span>
           }
         }
-        @if (item().icon) {
-          <span class="coded-mtext">{{ item().title | translate }}</span>
-        } @else {
-          @if (!isEnabled) {
-            <span class="coded-micon">
-              <svg class="pc-icon">
-                <use attr.xlink:href="assets/fonts/custom-icon.svg{{ item().icon }}"></use>
-              </svg>
-            </span>
-          }
-          {{ item().title | translate }}
-        }
+
+        <!-- Texte -->
+        <span class="coded-mtext">{{ item().title | translate }}</span>
       </a>
     </li>
   } @else if (item().url && item().external) {
-    <li [ngClass]="item().classes!" matTooltip="{{ !isEnabled ? 'Logout and Login with Admin to view this page ' : '' }}">
-      <a [target]="item().target ? '_blank' : '_self'" [href]="item().url" [ngClass]="{ disabled: !isEnabled }">
+    <li
+      [ngClass]="item().classes!"
+      [matTooltip]="!isEnabled ? 'Logout and Login with Admin to view this page' : ''"
+    >
+      <a
+        [target]="item().target ? '_blank' : '_self'"
+        [href]="isEnabled ? item().url : null"
+        [class.disabled]="!isEnabled"
+        (click)="!isEnabled ? $event.preventDefault() : null"
+      >
         @if (item().icon) {
           <span class="coded-micon">
             <svg class="pc-icon">
-              <use attr.xlink:href="assets/fonts/custom-icon.svg{{ item().icon }}"></use>
+              <use [attr.xlink:href]="'assets/fonts/custom-icon.svg' + item().icon"></use>
             </svg>
           </span>
         }
-        @if (item().icon) {
-          <span class="coded-mtext">{{ item().title | translate }}</span>
-        } @else {
-          {{ item().title | translate }}
-        }
+        <span class="coded-mtext">{{ item().title | translate }}</span>
       </a>
     </li>
   }

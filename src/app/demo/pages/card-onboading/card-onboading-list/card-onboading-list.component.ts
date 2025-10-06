@@ -39,7 +39,7 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy {
   totalItems = 0;
   itemsPerPage = 10;
   currentPage = 1;
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
   sendocLoad: boolean = false;
   summitload: boolean = false;
 

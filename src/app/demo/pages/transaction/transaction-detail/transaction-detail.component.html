@@ -113,12 +113,12 @@
 
             <!-- Afficher le bouton si au moins une des deux conditions est vraie -->
             <div
-              [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : 'Edit'"
-              [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN'">
+              [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) ? 'Edit' : 'Cette action est réservée uniquement aux admins'"
+              [matTooltipDisabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')">
 
               <button mat-stroked-button
-                (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN') && toggleEdit()"
-                [disabled]="currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN'"
+                (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) && toggleEdit()"
+                [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')"
                 *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.type === 'TRANSFER'">
                 {{ isEditing ? 'Annuler' : 'Modifier' }}
               </button>

@@ -27,41 +27,66 @@ export class MenuItemCompactComponent implements OnInit {
 
   //life cycle hook
   ngOnInit() {
-    /**
-     * current login user role
-     */
-    const CurrentUserRole = this.authenticationService.currentUserValue?.user.role;
+    this.checkPermission();
+  }
 
-    /**
-     * menu items
-     */
+  private checkPermission(): void {
+    const currentUserRole = this.authenticationService.currentUserValue?.user?.role;
     const item = this.item();
+    const parentRoles = this.parentRole() || [];
 
-    /**
-     * items parent role
-     */
-    const parentRoleValue = this.parentRole();
-
-    
-
-    if (item.role && item.role.length > 0) {
-      if (CurrentUserRole) {
-        const parentRole = this.parentRole();
-        const allowedFromParent = item.isMainParent || (parentRole && parentRole.length > 0 && parentRole.includes(CurrentUserRole));
-        if (allowedFromParent) {
-          this.isEnabled = item.role.includes(CurrentUserRole);
-        }
-      }
-    } else if (parentRoleValue && parentRoleValue.length > 0) {
-      // If item.role is empty, check parentRole
-      if (CurrentUserRole) {
-        this.isEnabled = parentRoleValue.includes(CurrentUserRole);
-      }
+    // Si pas de rôle utilisateur, désactiver
+    if (!currentUserRole) {
+      this.isEnabled = false;
+      return;
     }
+
+    // Si l'item a des rôles spécifiques
+    if (item.role && item.role.length > 0) {
+      this.isEnabled = this.hasRoleAccess(item.role, currentUserRole);
+    }
+    // Si l'item n'a pas de rôles mais le parent en a
+    else if (parentRoles.length > 0) {
+      this.isEnabled = this.hasRoleAccess(parentRoles, currentUserRole);
+    }
+    // Si aucun rôle n'est défini, autoriser par défaut
+    else {
+      this.isEnabled = true;
+    }
+
+    console.log('MenuItemCompact Permission check:', {
+      item: item.title,
+      currentUserRole,
+      itemRoles: item.role,
+      parentRoles,
+      isEnabled: this.isEnabled
+    });
+  }
+
+  private hasRoleAccess(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requiredRoles: any[],
+    userRole: string | string[],
+  ): boolean {
+    // Convertir les rôles en noms de string
+    const roleNames = requiredRoles.map(role =>
+      typeof role === 'string' ? role : role.name
+    );
+
+    // Vérifier si le rôle utilisateur est dans les rôles requis
+    if (Array.isArray(userRole)) {
+      return userRole.some(role => roleNames.includes(role));
+    }
+    return roleNames.includes(userRole);
   }
 
   // public method
   toggleMenu(event: MouseEvent) {
+    if (!this.isEnabled) {
+      event.preventDefault();
+      return;
+    }
+
     if (window.innerWidth < 1025) {
       this.themeService.toggleSideDrawer();
     }
@@ -71,6 +96,7 @@ export class MenuItemCompactComponent implements OnInit {
       const parent = ele.parentElement as HTMLElement;
       const up_parent = ((parent.parentElement as HTMLElement).parentElement as HTMLElement).parentElement as HTMLElement;
       const last_parent = (up_parent.parentElement as HTMLElement).parentElement as HTMLElement;
+
       if (last_parent.classList.contains('coded-submenu')) {
         up_parent.classList.remove('coded-trigger');
         up_parent.classList.remove('active');

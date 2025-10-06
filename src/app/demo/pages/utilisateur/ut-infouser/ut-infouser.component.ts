@@ -24,9 +24,9 @@ export class UtInfouserComponent implements OnInit {
   errorMessage = '';
   dataSource = new MatTableDataSource();
   displayedColumns: string[] = ['name', 'actions'];
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
   amount: number | null = null;
-  
+
 
   constructor(
     private route: ActivatedRoute,
@@ -40,6 +40,8 @@ export class UtInfouserComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
+
+    // console.log('Rôle utilisateur courant:', this.currentuserRole);
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) {
       this.errorMessage = 'Aucun identifiant fourni';
@@ -53,7 +55,7 @@ export class UtInfouserComponent implements OnInit {
       next: resp => {
         this.user = resp.data;
 
-        console.log('Utilisateur récupéré:', this.user);
+        // console.log('Utilisateur récupéré:', this.user);
         if (this.user?.roles) {
           this.dataSource.data = this.user.roles;
         }
@@ -98,7 +100,7 @@ export class UtInfouserComponent implements OnInit {
 
   openAddRoleDialog(user: MeResponse): void {
     if (!user) return;
-    console.log('Ouverture du dialogue d\'ajout de rôle pour l\'utilisateur', user);
+    // console.log('Ouverture du dialogue d\'ajout de rôle pour l\'utilisateur', user);
 
     const dialogRef = this.dialog.open(RoleAddComponent, {
       width: '450px',
@@ -117,8 +119,8 @@ export class UtInfouserComponent implements OnInit {
     const request: RemoveRoleRequest = { userId, roleId };
 
     this.adminService.removeUserRole(request).subscribe({
-      next: (response) => {
-        console.log('Rôle retiré:', response);
+      next: () => {
+        // console.log('Rôle retiré:', response);
         this.snackBar.open('Rôle supprimer avec succes', 'Fermer', { duration: 3000 });
         this.ngOnInit(); // Actualiser les données
       },

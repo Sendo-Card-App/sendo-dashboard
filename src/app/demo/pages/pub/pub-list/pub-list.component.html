@@ -68,22 +68,22 @@
                 <td mat-cell *matCellDef="let pub" class="text-nowrap">
                   <div class="text-center text-nowrap">
                     <ul class="list-inline p-l-0">
-                      <li 
-                      [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' ) ? 'Cette action est réservée uniquement aux admins' : 'View'"
-                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' "
+                      <li
+                      [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') ) ? 'Cette action est réservée uniquement aux admins' : 'View'"
+                      [matTooltipDisabled]="currentuserRole?.includes('SUPER_ADMIN') "
                       class="list-inline-item m-r-10" >
-                        <a href="javascript:" 
-                         (click)="(currentuserRole === 'SUPER_ADMIN') && openDetails(pub)"
+                        <a href="javascript:"
+                         (click)="(currentuserRole?.includes('SUPER_ADMIN')) && openDetails(pub)"
                          class="avatar avatar-xs text-muted">
                           <i class="ti ti-eye f-18"></i>
                         </a>
                       </li>
-                      <li 
-                      [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' ) ? 'Cette action est réservée uniquement aux admins' : 'Supprimer'"
-                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' "
+                      <li
+                      [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') ) ? 'Cette action est réservée uniquement aux admins' : 'Supprimer'"
+                      [matTooltipDisabled]="currentuserRole?.includes('SUPER_ADMIN') "
                       class="list-inline-item m-r-10">
-                        <a href="javascript:" 
-                        (click)="(currentuserRole === 'SUPER_ADMIN') && deletePub(pub)"
+                        <a href="javascript:"
+                        (click)="(currentuserRole?.includes('SUPER_ADMIN')) && deletePub(pub)"
                         class="avatar avatar-xs text-muted">
                           <i class="ti ti-trash f-18"></i>
                         </a>
