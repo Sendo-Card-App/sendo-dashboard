@@ -81,10 +81,10 @@
                   <div class="text-center text-nowrap">
                     <ul class="list-inline p-l-0">
                       <li class="list-inline-item m-r-10"
-                        [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'COMPLIANCE_OFFICER' && currentuserRole !== 'CARD_MANAGER') ? 'Cette action est réservée uniquement aux admins' : 'Voir détails'"
-                        [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER' || currentuserRole === 'CARD_MANAGER'">
+                        [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('COMPLIANCE_OFFICER') && !currentuserRole?.includes('CARD_MANAGER')) ? 'Cette action est réservée uniquement aux admins' : 'Voir détails'"
+                        [matTooltipDisabled]="currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('COMPLIANCE_OFFICER') || currentuserRole?.includes('CARD_MANAGER')">
                         <button
-                          (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'COMPLIANCE_OFFICER' || currentuserRole === 'CARD_MANAGER') && viewDetails(party)"
+                          (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('COMPLIANCE_OFFICER') || currentuserRole?.includes('CARD_MANAGER')) && viewDetails(party)"
                           mat-icon-button color="primary">
                           <i class="ti ti-eye f-18"></i>
                         </button>

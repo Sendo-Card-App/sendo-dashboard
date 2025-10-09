@@ -45,10 +45,10 @@
     <app-card cardTitle="Liste des utilisateurs" padding="0" cardClass="sm-block">
       <ng-template #headerOptionsTemplate>
         <div class="table-options"
-          [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : ''"
-          [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN'">
+          [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) ? '' : 'Cette action est réservée uniquement aux admins'"
+          [matTooltipDisabled]="currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')">
           <button mat-flat-button color="primary" [routerLink]="['/users/adduser']"
-            [disabled]="currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN'">
+            [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')">
             <div class="flex align-item-center">
               <i class="ti ti-plus f-18 m-r-5"></i>
               Ajouter un utilisateur
@@ -113,11 +113,11 @@
                       {{ user.status === 'ACTIVE' ? 'check_circle' : 'cancel' }}
                     </mat-icon>
                     <div
-                      [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' || currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : ''"
-                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN'">
+                      [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN') || currentuserRole?.includes('MANAGEMENT_CONTROLLER') || currentuserRole?.includes('TECHNICAL_DIRECTOR')) ? '' : 'Cette action est réservée uniquement aux admins'"
+                      [matTooltipDisabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN') && !currentuserRole?.includes('MANAGEMENT_CONTROLLER') && !currentuserRole?.includes('TECHNICAL_DIRECTOR')">
                       <mat-chip
-                        (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN') && toggleUserStatus(user.email, user.status)"
-                        [disabled]="currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN'">
+                        (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN') || currentuserRole?.includes('MANAGEMENT_CONTROLLER') || currentuserRole?.includes('TECHNICAL_DIRECTOR')) && toggleUserStatus(user.email, user.status)"
+                        [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN') && !currentuserRole?.includes('MANAGEMENT_CONTROLLER') && !currentuserRole?.includes('TECHNICAL_DIRECTOR')">
                         {{ user.status }}
                       </mat-chip>
                     </div>
@@ -143,10 +143,10 @@
                         </a>
                       </li>
                       <li class="list-inline-item m-r-10"
-                        [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : ''"
-                        [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' && currentuserRole === 'SYSTEM_ADMIN'">
-                        <a [routerLink]="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN') ? ['/users/edit', user.id] : null"
-                          [disabled]="currentuserRole !== 'SUPER_ADMIN' || currentuserRole !== 'SYSTEM_ADMIN'"
+                        [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) ? '' : 'Cette action est réservée uniquement aux admins'"
+                        [matTooltipDisabled]="currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')">
+                        <a [routerLink]="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) ? ['/users/edit', user.id] : null"
+                          [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')"
                           class="avatar avatar-xs text-muted">
                           <i class="ti ti-edit-circle f-18"></i>
                         </a>

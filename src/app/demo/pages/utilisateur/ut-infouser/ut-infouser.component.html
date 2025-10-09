@@ -65,7 +65,7 @@
 
     <!-- Carte Rôles -->
     <app-card cardTitle="RÔLES" [showHeader]="true"
-      *ngIf="currentuserRole === 'SUPER_ADMIN'">
+      *ngIf="currentuserRole?.includes('SUPER_ADMIN')">
       <ng-template #headerOptionsTemplate>
         <button mat-flat-button color="primary" (click)="openAddRoleDialog(user)">
           <i class="ti ti-plus"></i>
@@ -199,7 +199,7 @@
       </ul>
     </app-card>
 
-    <app-card cardTitle="Actions sur le portefeuille" *ngIf="user?.wallet && currentuserRole === 'SUPER_ADMIN'">
+    <app-card cardTitle="Actions sur le portefeuille" *ngIf="user?.wallet && currentuserRole?.includes('SUPER_ADMIN')  ">
       <mat-card-content>
         <!-- Champ montant -->
         <mat-form-field appearance="outline" class="w-100">

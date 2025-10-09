@@ -30,10 +30,9 @@ export class MenuCollapseCompactComponent implements OnInit {
   private authenticationService = inject(AuthenticationService);
 
   // public props
-  current_url: string = ''; // Add current URL property
+  current_url: string = '';
   isEnabled: boolean = false;
 
-  // all Version Get Item(Component Name Take)
   readonly item = input<NavigationItem>();
   readonly parentRole = input<string[]>();
 
@@ -45,7 +44,7 @@ export class MenuCollapseCompactComponent implements OnInit {
     this.current_url = this.location.path();
     //eslint-disable-next-line
     //@ts-ignore
-    const baseHref = this.location['_baseHref'] || ''; // Use baseHref if necessary
+    const baseHref = this.location['_baseHref'] || '';
     this.current_url = baseHref + this.current_url;
 
     // Timeout to allow DOM to fully render before checking for the links
@@ -65,39 +64,66 @@ export class MenuCollapseCompactComponent implements OnInit {
       });
     }, 0);
 
-    /**
-     * current login user role
-     */
-    const currentUserRole = this.authenticationService.currentUserValue?.user.role;
+    this.checkPermission();
+  }
 
+  private checkPermission(): void {
+    const currentUserRole = this.authenticationService.currentUserValue?.user?.role;
+    const item = this.item();
+    const parentRoles = this.parentRole() || [];
 
-    /**
-     * items parent role
-    */
-   const parentRoleValue = this.parentRole();
-
-  //  console.log('currentUserRole', currentUserRole, parentRoleValue);
-
-
-    if (this.item()!.role && this.item()!.role!.length > 0) {
-      if (currentUserRole) {
-        const parentRole = this.parentRole();
-        const allowedFromParent =
-          this.item()!.isMainParent || (parentRole && parentRole.length > 0 && parentRole.includes(currentUserRole));
-        if (allowedFromParent) {
-          this.isEnabled = this.item()!.role!.includes(currentUserRole);
-        }
-      }
-    } else if (parentRoleValue && parentRoleValue.length > 0) {
-      // If item.role is empty, check parentRole
-      if (currentUserRole) {
-        this.isEnabled = parentRoleValue.includes(currentUserRole);
-      }
+    // Si pas de rôle utilisateur ou pas d'item, désactiver
+    if (!currentUserRole || !item) {
+      this.isEnabled = false;
+      return;
     }
+
+    // Si l'item a des rôles spécifiques
+    if (item.role && item.role.length > 0) {
+      this.isEnabled = this.hasRoleAccess(item.role, currentUserRole);
+    }
+    // Si l'item n'a pas de rôles mais le parent en a
+    else if (parentRoles.length > 0) {
+      this.isEnabled = this.hasRoleAccess(parentRoles, currentUserRole);
+    }
+    // Si aucun rôle n'est défini, autoriser par défaut
+    else {
+      this.isEnabled = true;
+    }
+
+    console.log('MenuCollapseCompact Permission check:', {
+      item: item.title,
+      currentUserRole,
+      itemRoles: item.role,
+      parentRoles,
+      isEnabled: this.isEnabled
+    });
+  }
+
+  private hasRoleAccess(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requiredRoles: any[],
+    userRole: string | string[],
+  ): boolean {
+    // Convertir les rôles en noms de string
+    const roleNames = requiredRoles.map(role =>
+      typeof role === 'string' ? role : role.name
+    );
+
+    // Vérifier si le rôle utilisateur est dans les rôles requis
+    if (Array.isArray(userRole)) {
+      return userRole.some(role => roleNames.includes(role));
+    }
+    return roleNames.includes(userRole);
   }
 
   // Method to handle the collapse of the navigation menu
   navCollapse(e: MouseEvent) {
+    if (!this.isEnabled) {
+      e.preventDefault();
+      return;
+    }
+
     let parent = e.target as HTMLElement;
 
     if (parent?.tagName === 'SPAN') {
@@ -127,5 +153,35 @@ export class MenuCollapseCompactComponent implements OnInit {
       } while (pre_parent.classList.contains('coded-submenu'));
     }
     parent.classList.toggle('coded-trigger');
+  }
+
+  // Nouvelle méthode pour filtrer les enfants selon les permissions
+  getFilteredChildren(): NavigationItem[] {
+    const currentUserRole = this.authenticationService.currentUserValue?.user?.role;
+    const item = this.item();
+    const parentRoles = this.parentRole() || [];
+
+    if (!item?.children) return [];
+
+    return item.children.filter(child => {
+      // Si l'enfant est caché, on le filtre
+      if (child.hidden) return false;
+
+      // Si pas de rôle utilisateur, filtrer
+      if (!currentUserRole) return false;
+
+      // Si l'enfant a des rôles spécifiques
+      if (child.role && child.role.length > 0) {
+        return this.hasRoleAccess(child.role, currentUserRole);
+      }
+
+      // Si l'enfant n'a pas de rôle, on vérifie le rôle du parent
+      if (parentRoles.length > 0) {
+        return this.hasRoleAccess(parentRoles, currentUserRole);
+      }
+
+      // Si ni l'enfant ni le parent n'ont de rôle, on affiche
+      return true;
+    });
   }
 }

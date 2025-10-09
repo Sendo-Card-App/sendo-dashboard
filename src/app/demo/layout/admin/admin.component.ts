@@ -96,7 +96,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
      * current login user role
      */
     const currentUser = this.authenticationService.currentUserValue;
-    const userRoles = currentUser?.user.role ? [currentUser.user.role] : [Role.Admin];
+    // Ensure userRoles is always a flat string array
+    const userRoles: string[] = currentUser?.user.role
+      ? Array.isArray(currentUser.user.role)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ? currentUser.user.role.map((role: any) => typeof role === 'string' ? role : String(role))
+        : [String(currentUser.user.role)]
+      : [String(Role.Admin)];
 
     /**
      * Role base menu filtering
@@ -120,9 +126,14 @@ export class AdminComponent implements OnInit, AfterViewInit {
       // If item doesn't have a specific role, inherit roles from parent
       const itemRoles = item.role ? item.role : parentRoles;
 
+      // Ensure itemRoles is always a string array
+      const normalizedRoles: string[] = Array.isArray(itemRoles)
+        ? itemRoles.map(role => typeof role === 'string' ? role : String(role))
+        : [String(itemRoles)];
+
       // If item has children, recursively filter them, passing current item's roles as parentRoles
       if (item.children) {
-        item.children = this.RoleBaseFilterMenu(item.children, userRoles, itemRoles);
+        item.children = this.RoleBaseFilterMenu(item.children, userRoles, normalizedRoles);
       }
 
       return item; // Return the item whether it is visible or disabled

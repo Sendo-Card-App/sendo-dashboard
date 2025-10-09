@@ -176,7 +176,7 @@
         </div>
       </div>
 
-      <div class="action-section" *ngIf="currentRequest.status === 'UNPROCESSED' && (currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'CUSTOMER_ADVISER')">
+      <div class="action-section" *ngIf="currentRequest.status === 'UNPROCESSED' && (currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('CUSTOMER_ADVISER'))">
         <h3>Traiter la demande</h3>
 
         <!-- Par ceci -->

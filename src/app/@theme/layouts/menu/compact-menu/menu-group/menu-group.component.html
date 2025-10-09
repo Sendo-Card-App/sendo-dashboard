@@ -2,7 +2,7 @@
   <li class="nav-item coded-menu-caption">
     <label>{{ item().title | translate }}</label>
   </li>
-  @for (items of item().children; track $index) {
+  @for (items of getFilteredChildren(); track $index) {
     @if (items.type === 'collapse') {
       <app-menu-collapse-compact [item]="items" [parentRole]="item().role" />
     } @else if (items.type === 'item') {

@@ -32,7 +32,7 @@ export class ListConfigComponent implements OnInit, OnDestroy {
   itemsPerPage = 10;
   currentPage = 1;
   private destroy$ = new Subject<void>();
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
 
   currentConfig: Config | null = null;
   configForm: FormGroup;

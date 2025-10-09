@@ -1,12 +1,12 @@
 <div class="transaction-container">
   <!-- Ajoutez ceci dans votre template -->
 <div class="export-container">
-  <div [matTooltip]="(currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN') ? 'Cette action est réservée uniquement aux admins' : ''"
-                      [matTooltipDisabled]="currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN'" >
+  <div [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') && currentuserRole?.includes('SYSTEM_ADMIN')) ? 'Cette action est réservée uniquement aux admins' : ''"
+      [matTooltipDisabled]="currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')" >
 
     <button mat-raised-button color="primary"
-    (click)="(currentuserRole === 'SUPER_ADMIN' || currentuserRole === 'SYSTEM_ADMIN') && openExportDialog(exportDialog)"
-    [disabled]="currentuserRole !== 'SUPER_ADMIN' && currentuserRole !== 'SYSTEM_ADMIN'">
+    (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) && openExportDialog(exportDialog)"
+    [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')">
       <mat-icon>download</mat-icon>
       Exporter les transactions
     </button>

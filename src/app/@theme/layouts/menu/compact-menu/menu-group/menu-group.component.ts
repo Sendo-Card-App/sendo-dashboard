@@ -7,7 +7,7 @@ import { NavigationItem } from 'src/app/@theme/types/navigation';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { MenuCollapseCompactComponent } from '../menu-collapse/menu-collapse.component';
 import { MenuItemCompactComponent } from '../menu-item/menu-item.component';
-import { AuthenticationService } from 'src/app/@theme/services/authentication.service'; // ← Ajoutez cet import
+import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 
 @Component({
   selector: 'app-menu-group-compact',
@@ -18,7 +18,7 @@ import { AuthenticationService } from 'src/app/@theme/services/authentication.se
 export class MenuGroupCompactComponent implements OnInit {
   private zone = inject(NgZone);
   private location = inject(Location);
-  private authenticationService = inject(AuthenticationService); // ← Injectez le service
+  private authenticationService = inject(AuthenticationService);
 
   // public props
   readonly item = input.required<NavigationItem>();
@@ -51,8 +51,8 @@ export class MenuGroupCompactComponent implements OnInit {
 
   // Nouvelle méthode pour filtrer les enfants selon les permissions
   getFilteredChildren(): NavigationItem[] {
-    const currentUserRole = this.authenticationService.currentUserValue?.user.role;
-    const parentRole = this.item().role;
+    const currentUserRole = this.authenticationService.currentUserValue?.user?.role;
+    const parentRoles = this.item().role || [];
 
     if (!this.item().children) return [];
 
@@ -60,23 +60,38 @@ export class MenuGroupCompactComponent implements OnInit {
       // Si l'enfant est caché, on le filtre
       if (child.hidden) return false;
 
+      // Si pas de rôle utilisateur, filtrer
+      if (!currentUserRole) return false;
+
       // Si l'enfant a des rôles spécifiques
       if (child.role && child.role.length > 0) {
-        if (!currentUserRole) return false;
-
-        const allowedFromParent = child.isMainParent ||
-          (parentRole && parentRole.length > 0 && parentRole.includes(currentUserRole));
-
-        return allowedFromParent && child.role.includes(currentUserRole);
+        return this.hasRoleAccess(child.role, currentUserRole);
       }
 
       // Si l'enfant n'a pas de rôle, on vérifie le rôle du parent
-      if (parentRole && parentRole.length > 0) {
-        return currentUserRole ? parentRole.includes(currentUserRole) : false;
+      if (parentRoles.length > 0) {
+        return this.hasRoleAccess(parentRoles, currentUserRole);
       }
 
       // Si ni l'enfant ni le parent n'ont de rôle, on affiche
       return true;
     });
+  }
+
+  private hasRoleAccess(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requiredRoles: any[],
+    userRole: string | string[],
+  ): boolean {
+    // Convertir les rôles en noms de string
+    const roleNames = requiredRoles.map(role =>
+      typeof role === 'string' ? role : role.name
+    );
+
+    // Vérifier si le rôle utilisateur est dans les rôles requis
+    if (Array.isArray(userRole)) {
+      return userRole.some(role => roleNames.includes(role));
+    }
+    return roleNames.includes(userRole);
   }
 }

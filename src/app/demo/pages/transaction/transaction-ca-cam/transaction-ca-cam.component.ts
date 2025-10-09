@@ -30,7 +30,7 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
   currentPage = 0; // Changé à 0 pour correspondre à l'index Material
   itemsPerPage = 10;
   currentSort: { active: string; direction: 'asc' | 'desc' | '' } = { active: '', direction: '' };
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
 
   filterForm: FormGroup;
   maxDate = new Date();

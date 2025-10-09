@@ -324,7 +324,8 @@ export const menus: Navigation[] = [
         type: 'item',
         classes: 'nav-item',
         url: '/chat',
-        icon: '#custom-message-2'
+        icon: '#custom-message-2',
+        role: [Role1.SUPER_ADMIN, Role1.CUSTOMER_ADVISER,]
       },
     ]
   },

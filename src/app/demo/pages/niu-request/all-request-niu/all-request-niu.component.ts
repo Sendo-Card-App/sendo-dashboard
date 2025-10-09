@@ -36,7 +36,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   currentPage = 1;
   private destroy$ = new Subject<void>();
   direction: string = 'ltr';
-  currentuserRole: string | undefined;
+  currentuserRole: string[] | undefined;
 
   currentRequest: RequestItem | null = null;
   selectedAction: 'approve' | 'reject' | null = null;
@@ -185,7 +185,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
     let reason: string | undefined;
     let file: File | undefined;
 
-    
+
 
     if (this.selectedAction === 'approve') {
       status = 'PROCESSED';
