@@ -23,7 +23,7 @@ import { AuthenticationService } from 'src/app/@theme/services/authentication.se
   providers: [DatePipe]
 })
 export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestroy {
-  displayedColumns: string[] = ['transactionId', 'username', 'amount', 'type', 'status', 'method', 'createdAt', 'actions'];
+  displayedColumns: string[] = ['transactionId', 'username', 'totalAmount', 'type', 'status', 'method', 'createdAt', 'actions'];
   dataSource = new MatTableDataSource<Transactions>([]);
   isLoading = false;
   totalItems = 0;
@@ -130,7 +130,7 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
       data.transactionId,
       data.user ? data.user.firstname : '',
       data.user ? data.user.lastname : '',
-      data.amount?.toString(),
+      data.totalAmount?.toString(),
       data.type,
       data.status,
       data.method,
