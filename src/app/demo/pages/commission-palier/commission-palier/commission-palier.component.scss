@@ -1,0 +1,273 @@
+// commission-palier.component.scss
+.container-fluid {
+  padding: 0 15px;
+}
+
+/* En-tête de page */
+.page-header {
+  margin-bottom: 24px;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .header-icon {
+      font-size: 32px;
+      color: #3f51b5;
+      background: linear-gradient(135deg, #3f51b5, #2196f3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .header-subtitle {
+      margin: 4px 0 0 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+}
+
+/* Onglets personnalisés */
+.custom-tabs {
+  .mat-tab-label {
+    min-width: 140px;
+    padding: 12px 20px;
+
+    .tab-icon {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+  }
+
+  .mat-tab-label-active {
+    background: rgba(63, 81, 181, 0.08);
+    border-radius: 8px 8px 0 0;
+  }
+}
+
+.tab-content {
+  padding: 20px 0;
+}
+
+/* En-têtes de section */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .section-icon {
+      font-size: 24px;
+      color: #3f51b5;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+  }
+
+  .create-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+  }
+}
+
+/* Cartes personnalisées */
+.custom-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+/* Tableaux personnalisés */
+.table-responsive {
+  position: relative;
+  min-height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-table {
+  width: 100%;
+
+  .table-header-row {
+    background: #f8f9fa;
+
+    th {
+      font-weight: 600;
+      color: #333;
+      padding: 16px 12px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+  }
+
+  .table-data-row {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f8f9fa;
+    }
+
+    td {
+      padding: 16px 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+  }
+}
+
+/* Chargement */
+.loading-spinner {
+  padding: 60px 20px;
+
+  .spinner-icon {
+    font-size: 40px;
+    color: #3f51b5;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-text {
+    margin-top: 16px;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Badges pour types de commission */
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+
+  &.percentage {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+  }
+
+  &.fixed {
+    background: linear-gradient(135deg, #ff9800, #ffb74d);
+  }
+}
+
+/* Cellules */
+.montant-cell {
+  font-size: 14px;
+
+  &.percentage {
+    color: #4caf50;
+  }
+
+  &.fixed {
+    color: #ff9800;
+  }
+}
+
+.description-cell {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #666;
+}
+
+/* Boutons d'action */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Aucune donnée */
+.no-data {
+  padding: 40px 20px;
+
+  .no-data-icon {
+    font-size: 48px;
+    color: #bdbdbd;
+    margin-bottom: 16px;
+  }
+
+  .no-data-text {
+    margin: 0 0 16px 0;
+    color: #666;
+    font-size: 16px;
+  }
+}
+
+/* Snackbars */
+.success-snackbar {
+  background: linear-gradient(135deg, #4caf50, #66bb6a) !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background: linear-gradient(135deg, #f44336, #ef5350) !important;
+  color: white !important;
+}
+
+/* Utilitaires */
+.m-r-4 { margin-right: 4px; }
+.m-r-8 { margin-right: 8px; }
+.m-t-8 { margin-top: 8px; }
+.f-w-600 { font-weight: 600; }
+.text-center { text-align: center; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .custom-tabs .mat-tab-label {
+    min-width: 120px;
+    padding: 12px 16px;
+  }
+
+  .description-cell {
+    max-width: 150px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+} 

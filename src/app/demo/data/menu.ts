@@ -28,6 +28,16 @@ export const menus: Navigation[] = [
         icon: '#custom-message-2',
         role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN],
       },
+
+      {
+        id: 'commission-palier',
+        title: 'Commission & Palier',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/commission-palier',
+        icon: '#custom-message-2',
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN],
+      },
     ]
   },
 
@@ -54,6 +64,16 @@ export const menus: Navigation[] = [
             title: 'Liste des utilisateurs',
             type: 'item',
             url: '/users/alluser',
+            // target: true,
+            breadcrumbs: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+            Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
+          },
+          {
+            id: 'allmerchant',
+            title: 'Liste des Agents',
+            type: 'item',
+            url: '/users/allmerchant',
             // target: true,
             breadcrumbs: true,
             role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
