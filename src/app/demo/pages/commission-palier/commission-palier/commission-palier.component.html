@@ -1,0 +1,247 @@
+<!-- commission-palier.component.html -->
+<div class="container-fluid">
+  <div class="row m-t-25">
+    <div class="col-12">
+      <!-- En-tête -->
+      <!-- <div class="page-header">
+        <div class="header-content">
+          <i class="ti ti-percentage header-icon"></i>
+          <div>
+            <h1>Gestion des Commissions et Paliers</h1>
+            <p class="header-subtitle">Configurez les commissions et les paliers de tarification</p>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Onglets -->
+      <mat-tab-group [(selectedIndex)]="activeTab" animationDuration="0ms" class="custom-tabs">
+        <!-- Onglet Commissions -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <i class="ti ti-percentage tab-icon"></i>
+            Commissions
+          </ng-template>
+
+          <div class="tab-content">
+            <!-- En-tête Commissions -->
+            <div class="section-header">
+              <div class="section-title">
+                <i class="ti ti-percentage section-icon"></i>
+                <h2>Liste des Commissions</h2>
+              </div>
+              <button mat-flat-button color="primary" (click)="openCreateCommissionDialog()" class="create-button">
+                <i class="ti ti-plus m-r-8"></i>
+                Nouvelle Commission
+              </button>
+            </div>
+
+            <!-- Tableau des Commissions -->
+            <app-card cardClass="custom-card" padding="0">
+              <div class="table-responsive">
+                <div *ngIf="isLoading" class="loading-spinner text-center p-3">
+                  <i class="ti ti-loader-2 spinner-icon"></i>
+                  <p class="loading-text">Chargement des commissions...</p>
+                </div>
+
+                <table mat-table [dataSource]="commissionsDataSource" class="custom-table" *ngIf="!isLoading">
+                  <!-- Type Column -->
+                  <ng-container matColumnDef="type">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      <i class="ti ti-category m-r-8"></i>
+                      Type
+                    </th>
+                    <td mat-cell *matCellDef="let commission" class="text-center">
+                      <span class="type-badge" [class.percentage]="commission.typeCommission === 'POURCENTAGE'"
+                            [class.fixed]="commission.typeCommission === 'FIXE'">
+                        <i class="ti ti-{{ commission.typeCommission === 'POURCENTAGE' ? 'percentage' : 'currency-franc' }} m-r-4"></i>
+                        {{ commission.typeCommission === 'POURCENTAGE' ? 'Pourcentage' : 'Fixe' }}
+                      </span>
+                    </td>
+                  </ng-container>
+
+                  <!-- Montant Column -->
+                  <ng-container matColumnDef="montant">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      <i class="ti ti-currency-franc m-r-8"></i>
+                      Montant
+                    </th>
+                    <td mat-cell *matCellDef="let commission" class="text-center f-w-600 montant-cell">
+                      {{ formatMontant(commission) }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Description Column -->
+                  <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef>
+                      <i class="ti ti-note m-r-8"></i>
+                      Description
+                    </th>
+                    <td mat-cell *matCellDef="let commission" class="description-cell">
+                      {{ commission.description }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      <i class="ti ti-settings m-r-8"></i>
+                      Actions
+                    </th>
+                    <td mat-cell *matCellDef="let commission" class="text-center">
+                      <div class="action-buttons">
+                        <button mat-icon-button color="primary"
+                                (click)="openEditCommissionDialog(commission)"
+                                matTooltip="Modifier" class="action-button">
+                          <i class="ti ti-edit-circle f-18"></i>
+                        </button>
+                        <button mat-icon-button color="warn"
+                                (click)="deleteCommission(commission)"
+                                matTooltip="Supprimer" class="action-button">
+                          <i class="ti ti-trash f-18"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="commissionsDisplayedColumns" class="table-header-row"></tr>
+                  <tr mat-row *matRowDef="let row; columns: commissionsDisplayedColumns;" class="table-data-row"></tr>
+
+                  <!-- No data row -->
+                  <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">
+                      <div class="text-center p-5 text-muted no-data">
+                        <i class="ti ti-percentage no-data-icon"></i>
+                        <p class="no-data-text">Aucune commission trouvée</p>
+                        <button mat-stroked-button (click)="openCreateCommissionDialog()" class="m-t-8">
+                          <i class="ti ti-plus m-r-8"></i>
+                          Créer la première commission
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </app-card>
+          </div>
+        </mat-tab>
+
+        <!-- Onglet Paliers -->
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <i class="ti ti-layers tab-icon"></i>
+            Paliers
+          </ng-template>
+
+          <div class="tab-content">
+            <!-- En-tête Paliers -->
+            <div class="section-header">
+              <div class="section-title">
+                <i class="ti ti-layers section-icon"></i>
+                <h2>Liste des Paliers</h2>
+              </div>
+              <button mat-flat-button color="primary" (click)="openCreatePalierDialog()" class="create-button">
+                <i class="ti ti-plus m-r-8"></i>
+                Nouveau Palier
+              </button>
+            </div>
+
+            <!-- Tableau des Paliers -->
+            <app-card cardClass="custom-card" padding="0">
+              <div class="table-responsive">
+                <div *ngIf="isLoading" class="loading-spinner text-center p-3">
+                  <i class="ti ti-loader-2 spinner-icon"></i>
+                  <p class="loading-text">Chargement des paliers...</p>
+                </div>
+
+                <table mat-table [dataSource]="paliersDataSource" class="custom-table" *ngIf="!isLoading">
+                  <!-- Montant Min Column -->
+                  <ng-container matColumnDef="montantMin">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      <i class="ti ti-arrow-down-left m-r-8"></i>
+                      Montant Min
+                    </th>
+                    <td mat-cell *matCellDef="let palier" class="text-center f-w-600">
+                      {{ palier.montantMin }} XAF
+                    </td>
+                  </ng-container>
+
+                  <!-- Montant Max Column -->
+                  <ng-container matColumnDef="montantMax">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      <i class="ti ti-arrow-up-right m-r-8"></i>
+                      Montant Max
+                    </th>
+                    <td mat-cell *matCellDef="let palier" class="text-center f-w-600">
+                      {{ palier.montantMax }} XAF
+                    </td>
+                  </ng-container>
+
+                  <!-- Commission Column -->
+                  <ng-container matColumnDef="commission">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      <i class="ti ti-percentage m-r-8"></i>
+                      Commission
+                    </th>
+                    <td mat-cell *matCellDef="let palier" class="text-center">
+                      {{ getCommissionName(palier.commissionId) }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Description Column -->
+                  <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef>
+                      <i class="ti ti-note m-r-8"></i>
+                      Description
+                    </th>
+                    <td mat-cell *matCellDef="let palier" class="description-cell">
+                      {{ palier.description }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef class="text-center">
+                      <i class="ti ti-settings m-r-8"></i>
+                      Actions
+                    </th>
+                    <td mat-cell *matCellDef="let palier" class="text-center">
+                      <div class="action-buttons">
+                        <button mat-icon-button color="primary"
+                                (click)="openEditPalierDialog(palier)"
+                                matTooltip="Modifier" class="action-button">
+                          <i class="ti ti-edit-circle f-18"></i>
+                        </button>
+                        <button mat-icon-button color="warn"
+                                (click)="deletePalier(palier)"
+                                matTooltip="Supprimer" class="action-button">
+                          <i class="ti ti-trash f-18"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="paliersDisplayedColumns" class="table-header-row"></tr>
+                  <tr mat-row *matRowDef="let row; columns: paliersDisplayedColumns;" class="table-data-row"></tr>
+
+                  <!-- No data row -->
+                  <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="5">
+                      <div class="text-center p-5 text-muted no-data">
+                        <i class="ti ti-layers no-data-icon"></i>
+                        <p class="no-data-text">Aucun palier trouvé</p>
+                        <button mat-stroked-button (click)="openCreatePalierDialog()" class="m-t-8">
+                          <i class="ti ti-plus m-r-8"></i>
+                          Créer le premier palier
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </app-card>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>

@@ -136,7 +136,7 @@ public clearSession(): void {
 
 forgotPassword(email: string): Observable<{ message: string }> {
   return this.httpClient.post<{ message: string }>(
-    `${this.url}/forgot-password`,
+    `${this.url}/auth/admin/forgot-password`,
     { email },
     this.getConfig()
   );
@@ -144,7 +144,7 @@ forgotPassword(email: string): Observable<{ message: string }> {
 
 resetPassword(newPassword: string, token: string): Observable<{ message: string }> {
   return this.httpClient.post<{ message: string }>(
-    `${this.url}/reset-password`,
+    `${this.url}/auth/admin/reset-password`,
     {
       newPassword,
       token

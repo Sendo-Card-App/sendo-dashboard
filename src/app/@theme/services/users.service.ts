@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MeResponse } from '../models';
+import { MerchantListResponse, MerchantResponse } from '../models/merchant';
 
 export interface UserCreateRequest {
   firstname: string;
@@ -177,6 +178,33 @@ export class UserService {
     const url = `${this.apiUrl1}/wallet/withdrawal`;
     return this.http.post(url, { matriculeWallet, amount }, this.getConfigAuthorized());
   }
+
+   /**
+   * 🔍 Récupère la liste des marchands avec pagination
+   * @param page Numéro de la page
+   * @param limit Nombre d’éléments par page
+   */
+  getMerchants(page?: number, limit?: number): Observable<MerchantListResponse> {
+  let params = new HttpParams();
+
+  if (page) params = params.set('page', page.toString());
+  if (limit) params = params.set('limit', limit.toString());
+
+  return this.http.get<MerchantListResponse>(
+    `${this.apiUrl}/merchants`,
+    { params, ...this.getConfigAuthorized() }
+  );
+}
+
+getMerchantById(id: number): Observable<MerchantResponse> {
+  return this.http.get<MerchantResponse>(
+    `${this.apiUrl}/merchant/${id}`,
+    this.getConfigAuthorized()
+  );
+}
+
+
+
 
 
   private getConfigAuthorized() {

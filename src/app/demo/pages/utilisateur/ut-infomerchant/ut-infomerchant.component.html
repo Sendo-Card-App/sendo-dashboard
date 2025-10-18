@@ -1,0 +1,229 @@
+<!-- ut-infomerchant.component.html -->
+<div class="container-fluid">
+  <!-- En-tête avec navigation -->
+  <div class="row m-t-25">
+    <div class="col-12">
+      <div class="page-header">
+        <button mat-stroked-button (click)="goBack()" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+          Retour à la liste
+        </button>
+        <!-- <div class="header-actions">
+          <button mat-stroked-button (click)="editMerchant()"
+                  [disabled]="!canEdit()"
+                  [matTooltip]="canEdit() ? 'Modifier le marchand' : 'Action non autorisée'">
+            <mat-icon>edit</mat-icon>
+            Modifier
+          </button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Chargement -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Chargement des détails du marchand...</p>
+  </div>
+
+  <!-- Contenu principal -->
+  <div *ngIf="!isLoading && merchant" class="row m-t-25">
+    <!-- Colonne de gauche - Profil marchand -->
+    <div class="col-lg-4 col-xxl-3">
+      <!-- Carte Profil -->
+      <app-card [showHeader]="false">
+        <div class="account-info">
+          <!-- Badge de statut -->
+          <div class="user-status">
+            <span class="bg-primary-500 text-white f-12" *ngIf="merchant.user?.isVerifiedKYC">Vérifié</span>
+            <span class="bg-warning-500 text-white f-12" *ngIf="!merchant.user?.isVerifiedKYC">Non vérifié</span>
+          </div>
+
+          <div class="text-center m-t-15">
+            <!-- Avatar -->
+            <div class="avatar-circle-large" [style.background]="createStableAvatar()?.color">
+              {{ createStableAvatar()?.letter }}
+            </div>
+
+            <!-- Nom et type de compte -->
+            <div class="f-16 f-w-600 m-t-10">{{ formatUserName() }}</div>
+            <p class="text-muted">{{ merchant.typeAccount }}</p>
+
+            <mat-divider class="m-y-15"></mat-divider>
+
+            <!-- Statistiques -->
+            <div class="row">
+              <div class="col-4">
+                <div class="f-16 f-w-500">{{ merchant.user?.wallet?.balance || 0 }}</div>
+                <div class="text-muted">Solde</div>
+              </div>
+              <div class="col-4 border-side">
+                <div class="f-16 f-w-500">{{ merchant.user?.roles?.length || 0 }}</div>
+                <div class="text-muted">Rôles</div>
+              </div>
+              <div class="col-4">
+                <div class="f-16 f-w-500">{{ merchant.createdAt | date:'dd/MM/yy' }}</div>
+                <div class="text-muted">Inscrit le</div>
+              </div>
+            </div>
+
+            <mat-divider class="m-y-15"></mat-divider>
+
+            <!-- Informations de contact -->
+            <div class="flex-inline align-items-center justify-content-start w-100 m-b-15">
+              <mat-icon class="m-r-10">mail</mat-icon>
+              <div>{{ merchant.user?.email }}</div>
+            </div>
+
+            <div class="flex-inline align-items-center justify-content-start w-100 m-b-15" *ngIf="merchant.user?.phone">
+              <mat-icon class="m-r-10">phone</mat-icon>
+              <div>{{ merchant.user?.phone }}</div>
+            </div>
+
+            <div class="flex-inline align-items-center justify-content-start w-100 m-b-15"
+              *ngIf="merchant.user?.wallet?.matricule">
+              <mat-icon class="m-r-10">badge</mat-icon>
+              <div class="flex-grow-1">{{ merchant.user.wallet.matricule }}</div>
+              <button mat-icon-button (click)="copyMatricule()" matTooltip="Copier le matricule">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </app-card>
+
+    </div>
+
+    <!-- Colonne de droite - Détails -->
+    <div class="col-lg-8 col-xxl-9">
+      <!-- Carte Transactions -->
+      <mat-card class="status-card">
+        <div class="status-header">
+          <h3>Voir toutes les transactions</h3>
+          <button mat-stroked-button (click)="viewTransactions(merchant.user?.id)">
+            <mat-icon>visibility</mat-icon>
+            Autres transactions
+          </button>
+        </div>
+      </mat-card>
+
+      <!-- Carte A propos -->
+      <app-card cardTitle="A propos">
+        <p class="m-b-0" *ngIf="merchant.user?.profession; else noInfo">
+          {{ merchant.user.profession }} basé à {{ merchant.user.city || 'ville non spécifiée' }}.
+        </p>
+        <ng-template #noInfo>
+          <p class="text-muted">Aucune information disponible</p>
+        </ng-template>
+      </app-card>
+
+      <!-- Carte Détails personnels -->
+      <app-card cardTitle="Détails personnels">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item px-0">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Email</p>
+                <div class="f-w-500">{{ merchant.user?.email }}</div>
+              </div>
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Statut Email</p>
+                <div class="f-w-500">
+                  <span [class.text-success]="merchant.user?.isVerifiedEmail" [class.text-warning]="!merchant.user?.isVerifiedEmail">
+                    {{ merchant.user?.isVerifiedEmail ? 'Vérifié' : 'Non vérifié' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="list-group-item px-0">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Téléphone</p>
+                <div class="f-w-500">{{ merchant.user?.phone || 'Non spécifié' }}</div>
+              </div>
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">KYC</p>
+                <div class="f-w-500">
+                  <span [class.text-success]="merchant.user?.isVerifiedKYC" [class.text-warning]="!merchant.user?.isVerifiedKYC">
+                    {{ merchant.user?.isVerifiedKYC ? 'Complété' : 'En attente' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="list-group-item px-0">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Date de naissance</p>
+                <div class="f-w-500">{{ merchant.user?.dateOfBirth ? (merchant.user.dateOfBirth | date:'mediumDate') : 'Non spécifié' }}</div>
+              </div>
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Lieu de naissance</p>
+                <div class="f-w-500">{{ merchant.user?.placeOfBirth || 'Non spécifié' }}</div>
+              </div>
+            </div>
+          </li>
+
+          <li class="list-group-item pb-0 px-0">
+            <p class="m-b-5 text-muted">Adresse</p>
+            <div class="f-w-500">
+              {{ merchant.user?.address || 'Non spécifiée' }}
+              <span *ngIf="merchant.user?.city">, {{ merchant.user.city }}</span>
+              <span *ngIf="merchant.user?.region">, {{ merchant.user.region }}</span>
+              <span *ngIf="merchant.user?.country">, {{ merchant.user.country }}</span>
+            </div>
+          </li>
+        </ul>
+      </app-card>
+
+      <!-- Carte Wallet -->
+      <app-card cardTitle="Portefeuille" *ngIf="merchant.user?.wallet">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item px-0">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Solde</p>
+                <div class="f-w-500">{{ merchant.user.wallet.balance }} {{ merchant.user.wallet.currency }}</div>
+              </div>
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Matricule</p>
+                <div class="f-w-500 d-flex align-items-center">
+                  {{ merchant.user.wallet.matricule }}
+                  <button mat-icon-button (click)="copyMatricule()" matTooltip="Copier" class="ms-2">
+                    <mat-icon class="f-14">content_copy</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item px-0">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Statut du portefeuille</p>
+                <div class="f-w-500">{{ merchant.user.wallet.status || 'N/A' }}</div>
+              </div>
+              <div class="col-md-6">
+                <p class="m-b-5 text-muted">Date de création</p>
+                <div class="f-w-500">{{ merchant.createdAt | date:'mediumDate' }}</div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </app-card>
+
+    </div>
+  </div>
+
+  <!-- Message d'erreur si marchand non trouvé -->
+  <div *ngIf="!isLoading && !merchant" class="error-container">
+    <mat-icon class="error-icon">error</mat-icon>
+    <h3>Marchand non trouvé</h3>
+    <p>Le marchand demandé n'existe pas ou n'est plus disponible.</p>
+    <button mat-flat-button color="primary" (click)="goBack()">
+      Retour à la liste
+    </button>
+  </div>
+</div>
