@@ -19,9 +19,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import {
   MerchantService,
   CommissionPayload,
-  CommissionResponse,
   PalierPayload,
-  PalierResponse
 } from 'src/app/@theme/services/merchant.service';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
@@ -96,6 +94,7 @@ export class CommissionPalierComponent implements OnInit {
   loadCommissions(): void {
     this.isLoading = true;
     this.merchantService.getAllCommissions().subscribe({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       next: (response: any) => {
         let commissionsData: CommissionTableItem[] = [];
 
@@ -108,6 +107,7 @@ export class CommissionPalierComponent implements OnInit {
             createdAt: item.data?.createdAt || item.createdAt
           }));
         } else if (response.data && Array.isArray(response.data)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           commissionsData = response.data.map((item: any) => ({
             id: item.id,
             typeCommission: item.typeCommission,
@@ -172,7 +172,7 @@ export class CommissionPalierComponent implements OnInit {
 
   createCommission(payload: CommissionPayload): void {
     this.merchantService.createCommission(payload).subscribe({
-      next: (response) => {
+      next: () => {
         this.snackBar.open('Commission créée avec succès', 'Fermer', {
           duration: 3000,
           panelClass: ['success-snackbar']
@@ -191,7 +191,7 @@ export class CommissionPalierComponent implements OnInit {
 
   updateCommission(id: number, payload: CommissionPayload): void {
     this.merchantService.updateCommission(id, payload).subscribe({
-      next: (response) => {
+      next: () => {
         this.snackBar.open('Commission modifiée avec succès', 'Fermer', {
           duration: 3000,
           panelClass: ['success-snackbar']
@@ -208,6 +208,7 @@ export class CommissionPalierComponent implements OnInit {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   deleteCommission(commission: CommissionTableItem): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
@@ -232,6 +233,7 @@ export class CommissionPalierComponent implements OnInit {
   loadPaliers(): void {
     this.isLoading = true;
     this.merchantService.getAllPaliers().subscribe({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       next: (response: any) => {
         let paliersData: PalierTableItem[] = [];
 
@@ -246,6 +248,7 @@ export class CommissionPalierComponent implements OnInit {
             dateMiseAJour: item.dateMiseAJour
           }));
         } else if (response.data && Array.isArray(response.data)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           paliersData = response.data.map((item: any) => ({
             id: item.id,
             montantMin: item.montantMin,
@@ -306,7 +309,7 @@ export class CommissionPalierComponent implements OnInit {
 
   createPalier(payload: PalierPayload): void {
     this.merchantService.createPalier(payload).subscribe({
-      next: (response) => {
+      next: () => {
         this.snackBar.open('Palier créé avec succès', 'Fermer', {
           duration: 3000,
           panelClass: ['success-snackbar']
@@ -325,7 +328,7 @@ export class CommissionPalierComponent implements OnInit {
 
   updatePalier(id: number, payload: PalierPayload): void {
     this.merchantService.updatePalier(id, payload).subscribe({
-      next: (response) => {
+      next: () => {
         this.snackBar.open('Palier modifié avec succès', 'Fermer', {
           duration: 3000,
           panelClass: ['success-snackbar']
@@ -531,6 +534,7 @@ export class CreateCommissionDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<CreateCommissionDialogComponent>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Inject(MAT_DIALOG_DATA) public data: any,
     private fb: FormBuilder
   ) {
@@ -712,6 +716,7 @@ export class CreatePalierDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<CreatePalierDialogComponent>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     if (data.mode === 'edit' && data.palier) {

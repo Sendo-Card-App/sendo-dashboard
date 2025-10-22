@@ -1,0 +1,235 @@
+<div class="container-fluid">
+  <div class="row m-t-25">
+    <div class="col-12">
+
+      <!-- En-tête avec actions globales -->
+      <div class="header-section">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <h2 class="page-title">Mes Dettes</h2>
+            <p class="page-subtitle">Gérez et payez vos dettes facilement</p>
+          </div>
+          <div class="col-md-6">
+            <div class="global-actions">
+              <!-- Payer toutes les dettes via wallet -->
+              <button mat-flat-button color="primary"
+                      (click)="payAllWalletDebts()"
+                      [disabled]="isLoading || dataSource.length === 0"
+                      class="global-pay-button">
+                <i class="ti ti-wallet m-r-8"></i>
+                Tout payer via Wallet
+              </button>
+
+              <!-- Export -->
+              <!-- <button mat-stroked-button
+                      (click)="exportDebts()"
+                      class="export-button">
+                <i class="ti ti-download m-r-8"></i>
+                Exporter
+              </button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cartes de paiement global -->
+      <div class="cards-section" *ngIf="getCardIds().length > 0">
+        <div class="row">
+          <div class="col-md-4" *ngFor="let cardId of getCardIds()">
+            <mat-card class="card-payment">
+              <mat-card-header>
+                <div mat-card-avatar class="card-avatar">
+                  <i class="ti ti-credit-card"></i>
+                </div>
+                <mat-card-title>Carte {{ cardId }}</mat-card-title>
+                <mat-card-subtitle>
+                  {{ getCardDebtsCount(cardId) }} dette(s)
+                </mat-card-subtitle>
+              </mat-card-header>
+
+              <mat-card-content>
+                <div class="card-total">
+                  <span class="total-label">Total à payer:</span>
+                  <span class="total-amount">{{ formatAmount(getCardTotalAmount(cardId)) }}</span>
+                </div>
+              </mat-card-content>
+
+              <mat-card-actions>
+                <button mat-flat-button color="accent"
+                        (click)="payAllCardDebts(cardId)"
+                        [disabled]="isLoading"
+                        class="w-100">
+                  <i class="ti ti-credit-card m-r-8"></i>
+                  Tout payer cette carte
+                </button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtres et recherche -->
+      <div class="filter-section">
+        <div class="row">
+          <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Rechercher une dette...</mat-label>
+              <input matInput
+                     placeholder="Rechercher par intitulé, montant..."
+                     (keyup)="applyFilter($event.target.value)"
+                     [value]="searchText">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-6">
+            <div class="action-buttons">
+              <button mat-stroked-button (click)="resetFilters()" class="reset-button">
+                <i class="ti ti-refresh m-r-8"></i>
+                Réinitialiser
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tableau des dettes -->
+      <app-card cardTitle="Liste détaillée des dettes" cardClass="debts-card" padding="0">
+        <div class="table-responsive">
+          <!-- Chargement -->
+          <div *ngIf="isLoading" class="loading-spinner text-center p-5">
+            <i class="ti ti-loader-2 spinner-icon"></i>
+            <p class="loading-text">Chargement des dettes...</p>
+          </div>
+
+          <!-- Tableau -->
+          <table mat-table [dataSource]="dataSource" class="debts-table" *ngIf="!isLoading">
+
+            <!-- Intitulé Column -->
+            <ng-container matColumnDef="intitule">
+              <th mat-header-cell *matHeaderCellDef>
+                <i class="ti ti-file-text m-r-8"></i>
+                Intitulé
+              </th>
+              <td mat-cell *matCellDef="let debt" class="intitule-cell">
+                <div class="debt-title">
+                  <i class="ti ti-report-money debt-icon"></i>
+                  <div>
+                    <div class="f-w-600">{{ debt.intitule }}</div>
+                    <div class="debt-id">ID: {{ debt.id }}</div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Montant Column -->
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef class="text-right">
+                <i class="ti ti-currency-franc m-r-8"></i>
+                Montant
+              </th>
+              <td mat-cell *matCellDef="let debt" class="text-right">
+                <span class="amount-badge" [style.background]="getAmountColor(debt.amount)">
+                  {{ formatAmount(debt.amount) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Card ID Column -->
+            <ng-container matColumnDef="cardId">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                <i class="ti ti-credit-card m-r-8"></i>
+                Carte
+              </th>
+              <td mat-cell *matCellDef="let debt" class="text-center">
+                <span class="card-badge">
+                  <i class="ti ti-credit-card"></i>
+                  {{ debt.cardId }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Date de création Column -->
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>
+                <i class="ti ti-calendar m-r-8"></i>
+                Date de création
+              </th>
+              <td mat-cell *matCellDef="let debt" class="date-cell">
+                <div class="date-info">
+                  <i class="ti ti-clock"></i>
+                  {{ formatDate(debt.createdAt) }}
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Actions de paiement Column -->
+            <ng-container matColumnDef="paymentActions">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                <i class="ti ti-credit-card m-r-8"></i>
+                Paiement
+              </th>
+              <td mat-cell *matCellDef="let debt" class="text-center">
+                <div class="payment-buttons">
+                  <!-- Payer avec carte -->
+                  <button mat-stroked-button color="primary"
+                          (click)="payDebtWithCard(debt)"
+                          [disabled]="isLoading"
+                          matTooltip="Payer avec la carte"
+                          class="pay-button card-pay">
+                    <i class="ti ti-credit-card m-r-4"></i>
+                    Carte
+                  </button>
+
+                  <!-- Payer avec wallet -->
+                  <button mat-stroked-button color="accent"
+                          (click)="payDebtWithWallet(debt)"
+                          [disabled]="isLoading"
+                          matTooltip="Payer avec le wallet"
+                          class="pay-button wallet-pay">
+                    <i class="ti ti-wallet m-r-4"></i>
+                    Wallet
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                <i class="ti ti-settings m-r-8"></i>
+                Actions
+              </th>
+              <td mat-cell *matCellDef="let debt" class="text-center">
+                <button mat-icon-button color="primary"
+                        (click)="viewDebtDetails(debt)"
+                        matTooltip="Voir les détails">
+                  <i class="ti ti-eye f-18"></i>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header-row"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-data-row"></tr>
+
+            <!-- Aucune donnée -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="6">
+                <div class="text-center p-5 text-muted no-data">
+                  <i class="ti ti-report-money no-data-icon"></i>
+                  <p class="no-data-text">
+                    {{ searchText ? 'Aucune dette trouvée pour "' + searchText + '"' : 'Aucune dette enregistrée' }}
+                  </p>
+                  <p class="no-data-subtext" *ngIf="!searchText">
+                    Vous n'avez aucune dette en attente de paiement.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </app-card>
+
+    </div>
+  </div>
+</div>

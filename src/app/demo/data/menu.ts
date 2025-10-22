@@ -273,6 +273,26 @@ export const menus: Navigation[] = [
 
         ]
       },
+      {
+        id: 'gestion des dettes',
+        title: 'Gestion des dettes',
+        type: 'collapse',
+        icon: '#custom-bill',
+         role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN,  Role1.COMPLIANCE_OFFICER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
+        children: [
+          {
+            id: 'alldebt',
+            title: 'Liste des dettes',
+            type: 'item',
+            url: '/debts/all',
+            // target: true,
+            breadcrumbs: true
+          },
+
+
+        ]
+      },
     ]
   },
   {
