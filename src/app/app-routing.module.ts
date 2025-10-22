@@ -313,6 +313,25 @@ const routes: Routes = [
 
     ]
   },
+   {
+    path: 'debts',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'all',
+        loadComponent: () => import('./demo/pages/debts/debts-all/debts-all.component').then((c) => c.DebtsAllComponent),
+        data: { roles: ['SUPER_ADMIN','SYSTEM_ADMIN','TECHNICAL_DIRECTOR','COMPLIANCE_OFFICER','MANAGEMENT_CONTROLLER'] }
+      },
+
+       {
+        path: ':id',
+        loadComponent: () => import('./demo/pages/debts/debts-info/debts-info.component').then((c) => c.DebtsInfoComponent),
+        data: { roles: ['SUPER_ADMIN','SYSTEM_ADMIN','TECHNICAL_DIRECTOR','COMPLIANCE_OFFICER','MANAGEMENT_CONTROLLER'] }
+      },
+
+    ]
+  },
   {
     path: '',
     component: AdminComponent,

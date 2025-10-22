@@ -429,4 +429,24 @@ export interface PubliciteListResponse {
   data: PaginatedData<Publicite>;
 }
 
+export interface Debt {
+  id: number;
+  amount: number;
+  userId: number;
+  cardId: number;
+  intitule: string;
+  createdAt: string; // string car date renvoyée en ISO depuis l’API
+  updatedAt: string;
+}
+
+export interface DebtResponse {
+  status: number;
+  message: string;
+  data: {
+    page: number;
+    totalPages: number;
+    totalItems: number;
+    items: Debt[];
+  };
+}
 
