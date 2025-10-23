@@ -1,58 +1,71 @@
-<div class="container-fluid">
-  <div class="row m-t-25">
-    <div class="col-12">
-
-      <!-- Filtres et actions -->
-      <div class="filter-section">
-        <div class="row">
-          <!-- Recherche -->
-          <div class="col-md-6">
-            <mat-form-field appearance="outline" class="w-100">
-              <mat-label>Rechercher une dette...</mat-label>
-              <input matInput
-                     placeholder="Rechercher par intitulé, montant, utilisateur..."
-                     (keyup)="applyFilter($event.target.value)"
-                     [value]="searchText">
-              <mat-icon matSuffix>search</mat-icon>
-            </mat-form-field>
-          </div>
-
-          <!-- Actions -->
-          <div class="col-md-6">
-            <div class="action-buttons">
-              <button mat-stroked-button (click)="resetFilters()" class="reset-button">
-                <i class="ti ti-refresh m-r-8"></i>
-                Réinitialiser
-              </button>
-            </div>
-          </div>
-        </div>
+<div class="row p-t-25">
+  <!-- Filtres Section -->
+  <div class="filter-section">
+    <div class="row">
+      <!-- Search Field -->
+      <div class="col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Rechercher une dette…</mat-label>
+          <input matInput
+                 placeholder="Rechercher par intitulé, montant, utilisateur..."
+                 (keyup)="applyFilter($event.target.value)"
+                 [value]="searchText" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
       </div>
 
-      <!-- Carte principale -->
-      <app-card cardTitle="Liste des Dettes" cardClass="debts-card" padding="0">
-        <div class="table-responsive">
+      <!-- Espace pour filtres supplémentaires si besoin -->
+      <div class="col-md-6"></div>
+
+      <!-- Reset Button -->
+      <div class="col-md-2">
+        <button mat-stroked-button (click)="resetFilters()" class="w-100">
+          <i class="ti ti-refresh m-r-8"></i>
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <app-card cardTitle="Liste des Dettes" padding="0" cardClass="sm-block">
+
+      <!-- Header Options -->
+      <!-- <ng-template #headerOptionsTemplate>
+        <div class="table-options">
+          <button mat-flat-button color="primary" (click)="exportDebts()">
+            <div class="flex align-item-center">
+              <i class="ti ti-download m-r-5"></i>
+              Exporter
+            </div>
+          </button>
+        </div>
+      </ng-template> -->
+
+      <div class="p-b-15">
+        <div class="table-container table-responsive">
+
           <!-- Chargement -->
-          <div *ngIf="isLoading" class="loading-spinner text-center p-5">
-            <i class="ti ti-loader-2 spinner-icon"></i>
-            <p class="loading-text">Chargement des dettes...</p>
+          <div *ngIf="isLoading" class="loading-spinner text-center p-3">
+            <mat-spinner diameter="50"></mat-spinner>
           </div>
 
           <!-- Tableau -->
-          <table mat-table [dataSource]="filteredDataSource" class="debts-table" *ngIf="!isLoading">
+          <table mat-table [dataSource]="filteredDataSource" class="mat-elevation-z8" *ngIf="!isLoading">
 
             <!-- Intitulé Column -->
             <ng-container matColumnDef="intitule">
-              <th mat-header-cell *matHeaderCellDef>
-                <i class="ti ti-file-text m-r-8"></i>
-                Intitulé
-              </th>
-              <td mat-cell *matCellDef="let debt" class="intitule-cell">
-                <div class="debt-title">
-                  <i class="ti ti-report-money debt-icon"></i>
-                  <div>
+              <th mat-header-cell *matHeaderCellDef class="p-l-25">INTITULÉ</th>
+              <td mat-cell *matCellDef="let debt" class="p-l-25 text-nowrap">
+                <div class="flex align-item-center">
+                  <div class="flex-shrink-0">
+                    <div class="avatar-circle" [style.background]="createStableAvatar(debt).color">
+                      {{ createStableAvatar(debt).letter }}
+                    </div>
+                  </div>
+                  <div class="flex-grow-1 m-l-15">
                     <div class="f-w-600">{{ debt.intitule }}</div>
-                    <div class="debt-id">ID: {{ debt.id }}</div>
+                    <div class="mat-caption text-muted">ID: {{ debt.id }}</div>
                   </div>
                 </div>
               </td>
@@ -60,83 +73,79 @@
 
             <!-- Montant Column -->
             <ng-container matColumnDef="amount">
-              <th mat-header-cell *matHeaderCellDef class="text-right">
-                <i class="ti ti-currency-franc m-r-8"></i>
-                Montant
-              </th>
-              <td mat-cell *matCellDef="let debt" class="text-right">
-                <span class="amount-badge" [style.background]="getAmountColor(debt.amount)">
-                  {{ formatAmount(debt.amount) }}
-                </span>
+              <th mat-header-cell *matHeaderCellDef >MONTANT</th>
+              <td mat-cell *matCellDef="let debt" class=" text-nowrap">
+                <div class="amount-container">
+                  <div class="f-w-600">{{ formatAmount(debt.amount) }}</div>
+                  <div class="mat-caption" [style.color]="getAmountColor(debt.amount)">
+                    {{ getAmountStatus(debt.amount) }}
+                  </div>
+                </div>
               </td>
             </ng-container>
 
-            <!-- User ID Column -->
-            <ng-container matColumnDef="userId">
-              <th mat-header-cell *matHeaderCellDef class="text-center">
-                <i class="ti ti-user m-r-8"></i>
-                Utilisateur
-              </th>
-              <td mat-cell *matCellDef="let debt" class="text-center">
-                <span class="user-badge">
-                  <i class="ti ti-id"></i>
-                  {{ debt.user.firstname }} {{ debt.user.lastname }}
-                </span>
+            <!-- User Column -->
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef>UTILISATEUR</th>
+              <td mat-cell *matCellDef="let debt" class="text-nowrap">
+                <div class="user-container">
+                  <div class="f-w-600">{{ formatUserName(debt) }}</div>
+                  <div class="mat-caption text-muted">{{ formatUserContact(debt) }}</div>
+                </div>
               </td>
             </ng-container>
 
-            <!-- Card ID Column -->
-            <ng-container matColumnDef="cardId">
-              <th mat-header-cell *matHeaderCellDef class="text-center">
-                <i class="ti ti-credit-card m-r-8"></i>
-                Carte
-              </th>
-              <td mat-cell *matCellDef="let debt" class="text-center">
-                <span class="card-badge">
-                  <i class="ti ti-credit-card"></i>
-                  {{ debt.cardId }}
-                </span>
+            <!-- Card Column -->
+            <ng-container matColumnDef="card">
+              <th mat-header-cell *matHeaderCellDef class="text-center">CARTE</th>
+              <td mat-cell *matCellDef="let debt" class="text-center text-nowrap">
+                <div class="card-container">
+                  <div class="f-w-600">{{ formatCardInfo(debt) }}</div>
+                  <div class="mat-caption text-muted">
+                    <mat-chip class="status-chip" [style.background]="debt.card?.status === 'ACTIVE' ? '#4caf50' : '#ff9800'">
+                      {{ debt.card?.status || 'N/A' }}
+                    </mat-chip>
+                  </div>
+                </div>
               </td>
             </ng-container>
 
             <!-- Date de création Column -->
             <ng-container matColumnDef="createdAt">
-              <th mat-header-cell *matHeaderCellDef>
-                <i class="ti ti-calendar m-r-8"></i>
-                Date de création
-              </th>
-              <td mat-cell *matCellDef="let debt" class="date-cell">
-                <div class="date-info">
-                  <i class="ti ti-clock"></i>
-                  {{ formatDate(debt.createdAt) }}
+              <th mat-header-cell *matHeaderCellDef>DATE</th>
+              <td mat-cell *matCellDef="let debt" class="text-nowrap">
+                <div class="date-container">
+                  <div class="f-w-600">{{ formatDate(debt.createdAt) }}</div>
+                  <div class="mat-caption text-muted">{{ getDaysAgo(debt.createdAt) }}</div>
                 </div>
               </td>
             </ng-container>
 
-            <!-- Actions Column -->
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="text-center">
-                <i class="ti ti-settings m-r-8"></i>
-                Actions
-              </th>
-              <td mat-cell *matCellDef="let debt" class="text-center">
-                <div class="action-buttons">
-                  <button mat-icon-button color="primary"
-                          (click)="viewDebtDetails(debt)"
-                          matTooltip="Voir les détails" class="action-button">
-                    <i class="ti ti-eye f-18"></i>
-                  </button>
+            <!-- Action Column -->
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef class="text-center">ACTIONS</th>
+              <td mat-cell *matCellDef="let debt" class="text-center text-nowrap">
+                <div class="text-center text-nowrap">
+                  <ul class="list-inline p-l-0">
+                    <li class="list-inline-item m-r-10" matTooltip="Voir les détails">
+                      <a href="javascript:"
+                         (click)="viewDebtDetails(debt)"
+                         class="avatar avatar-xs text-muted">
+                        <i class="ti ti-eye f-18"></i>
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header-row"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-data-row"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
             <!-- Aucune donnée -->
             <tr class="mat-row" *matNoDataRow>
               <td class="mat-cell" colspan="6">
-                <div class="text-center p-5 text-muted no-data">
+                <div *ngIf="!isLoading" class="text-center p-3 no-data">
                   <i class="ti ti-report-money no-data-icon"></i>
                   <p class="no-data-text">
                     {{ searchText ? 'Aucune dette trouvée pour "' + searchText + '"' : 'Aucune dette enregistrée' }}
@@ -156,12 +165,10 @@
                         [pageSizeOptions]="[5, 10, 25, 50]"
                         [pageIndex]="currentPage - 1"
                         (page)="onPageChange($event)"
-                        showFirstLastButtons
-                        class="debts-paginator">
+                        showFirstLastButtons>
           </mat-paginator>
         </div>
-      </app-card>
-
-    </div>
+      </div>
+    </app-card>
   </div>
 </div>

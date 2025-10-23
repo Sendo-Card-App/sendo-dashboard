@@ -1,0 +1,108 @@
+.partial-payment-dialog {
+  min-width: 400px;
+  // width: 500px;
+  padding: 1rem;
+
+  .dialog-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    color: #333;
+    font-weight: 600;
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  .dialog-content {
+    padding: 16px 0;
+    // width: 500px;
+    .debt-info {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+
+      .info-item {
+        margin-bottom: 8px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        strong {
+          color: #333;
+          margin-right: 8px;
+        }
+      }
+    }
+
+    .quick-amounts {
+      .quick-amounts-label {
+        font-weight: 500;
+        margin-bottom: 20px;
+        color: #666;
+      }
+
+      .quick-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+
+        .quick-button {
+          flex: 1;
+          min-width: 60px;
+          font-size: 12px;
+        }
+      }
+    }
+
+    .selected-amount {
+      text-align: center;
+      padding: 12px;
+      background: #e3f2fd;
+      border-radius: 6px;
+      color: #1976d2;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  .dialog-actions {
+    padding: 16px 0 0 0;
+    border-top: 1px solid #e0e0e0;
+
+    .cancel-button {
+      color: #666;
+    }
+
+    .confirm-button {
+      min-width: 160px;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .partial-payment-dialog {
+    min-width: auto;
+
+    .quick-buttons {
+      flex-direction: column;
+
+      .quick-button {
+        width: 100%;
+      }
+    }
+
+    .dialog-actions {
+      flex-direction: column;
+      gap: 8px;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BaseResponse, Debt, DebtResponse } from '../models';
+import { BaseResponse, Debt, DebtResponse, PartialPaymentDto } from '../models';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -66,6 +66,27 @@ export class DebtService {
       `${this.baseUrl}/debts/${userId}/pay-from-wallet`,
       {}, this.getConfigAuthorized()
     );
+  }
+
+   /**
+   * Payer partiellement une dette via une carte
+   */
+  partialPayDebtFromCard(idDebt: number, dto: PartialPaymentDto): Observable<BaseResponse<Debt>> {
+    return this.http.post<BaseResponse<Debt>>(`${this.baseUrl}/${idDebt}/debit-partial-from-card`, dto);
+  }
+
+  /**
+   * Payer partiellement une dette via un wallet
+   */
+  partialPayDebtFromWallet(idDebt: number, dto: PartialPaymentDto): Observable<BaseResponse<Debt>> {
+    return this.http.post<BaseResponse<Debt>>(`${this.baseUrl}/${idDebt}/debit-partial-from-wallet`, dto);
+  }
+
+  /**
+   * Supprimer une dette
+   */
+  deleteDebt(idDebt: number): Observable<BaseResponse<null>> {
+    return this.http.delete<BaseResponse<null>>(`${this.baseUrl}/${idDebt}`);
   }
 
 

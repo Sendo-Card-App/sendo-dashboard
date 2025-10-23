@@ -1,0 +1,69 @@
+<div class="partial-payment-dialog">
+  <h2 mat-dialog-title class="dialog-title">
+    <i class="ti ti-credit-card m-r-8" *ngIf="data.paymentMethod === 'card'"></i>
+    <i class="ti ti-wallet m-r-8" *ngIf="data.paymentMethod === 'wallet'"></i>
+    {{ data.title }}
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <div class="debt-info">
+      <div class="info-item">
+        <strong>Dette:</strong> {{ data.debt.intitule }}
+      </div>
+      <div class="info-item">
+        <strong>Montant total:</strong> {{ formatAmount(data.maxAmount) }}
+      </div>
+      <div class="info-item" *ngIf="data.debt.card && data.paymentMethod === 'card'">
+        <strong>Carte:</strong> {{ data.debt.card.cardName }} (****{{ data.debt.card.last4Digits }})
+      </div>
+    </div>
+
+    <div class="quick-amounts m-t-16">
+      <p class="quick-amounts-label">Montants rapides:</p>
+      <div class="quick-buttons">
+        <button mat-stroked-button (click)="setAmount(25)" class="quick-button">25%</button>
+        <button mat-stroked-button (click)="setAmount(50)" class="quick-button">50%</button>
+        <button mat-stroked-button (click)="setAmount(75)" class="quick-button">75%</button>
+        <button mat-stroked-button (click)="setAmount(100)" class="quick-button">100%</button>
+      </div>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-100 m-t-16" style="margin-top: 10px;">
+      <mat-label>Montant à payer</mat-label>
+      <input matInput
+             type="number"
+             [(ngModel)]="amount"
+             [max]="maxAmount"
+             min="1"
+             step="100"
+             placeholder="Entrez le montant">
+      <span matSuffix>XAF</span>
+      <mat-hint>Maximum: {{ formatAmount(maxAmount) }}</mat-hint>
+      <mat-error *ngIf="amount > maxAmount">
+        Le montant ne peut pas dépasser {{ formatAmount(maxAmount) }}
+      </mat-error>
+      <mat-error *ngIf="amount <= 0">
+        Le montant doit être supérieur à 0
+      </mat-error>
+    </mat-form-field>
+
+    <div class="selected-amount m-t-8">
+      <strong>Montant sélectionné:</strong> {{ formatAmount(amount) }}
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-button">
+      <i class="ti ti-x m-r-8"></i>
+      Annuler
+    </button>
+    <button mat-flat-button
+            color="primary"
+            (click)="onConfirm()"
+            [disabled]="amount <= 0 || amount > maxAmount"
+            class="confirm-button">
+      <i class="ti ti-check m-r-8"></i>
+      Confirmer le paiement
+    </button>
+  </mat-dialog-actions>
+</div>
