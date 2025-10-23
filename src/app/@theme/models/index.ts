@@ -437,6 +437,31 @@ export interface Debt {
   intitule: string;
   createdAt: string; // string car date renvoyée en ISO depuis l’API
   updatedAt: string;
+  user: {
+      firstname?: string;
+      lastname?: string;
+      id: number;
+      email: string;
+      phone: string;
+      wallet: {
+        balance: number;
+        createdAt:string;
+        currency: string;
+        id: number;
+        matricule: string;
+        status: string;
+        userId:number;
+      }
+    };
+  card:{
+    cardId: number;
+    cardName: string;
+    createdAt: string;
+    expirationDate: string;
+    last4Digits: string;
+    paymentRejectNumber: number;
+    status: string;
+  }
 }
 
 export interface DebtResponse {
@@ -448,5 +473,10 @@ export interface DebtResponse {
     totalItems: number;
     items: Debt[];
   };
+}
+
+export interface PartialPaymentDto {
+  amount: number;
+  cardId?: number;
 }
 

@@ -12,6 +12,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatChipsModule } from '@angular/material/chips';
 import { finalize } from 'rxjs/operators';
 
 import { SharedModule } from 'src/app/demo/shared/shared.module';
@@ -35,14 +36,15 @@ import { DebtService } from 'src/app/@theme/services/debt.service';
     MatSnackBarModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatChipsModule
   ]
 })
 export class DebtsAllComponent implements OnInit {
-  displayedColumns: string[] = ['intitule', 'amount', 'userId', 'cardId', 'createdAt', 'actions'];
+  displayedColumns = ['intitule', 'amount', 'user', 'card', 'createdAt', 'action'];
   dataSource: Debt[] = [];
   filteredDataSource: Debt[] = [];
-  allDebts: Debt[] = []; // Stocke toutes les dettes récupérées
+  allDebts: Debt[] = [];
 
   isLoading = false;
   totalItems = 0;
@@ -74,14 +76,11 @@ export class DebtsAllComponent implements OnInit {
             this.totalItems = response.data.totalItems;
             this.currentPage = response.data.page;
 
-            // Appliquer le filtre local si un texte de recherche existe
             if (this.searchText) {
               this.applyLocalFilter();
             } else {
               this.filteredDataSource = [...this.allDebts];
             }
-
-            console.log('Dettes chargées:', this.allDebts);
           } else {
             this.showError('Erreur lors du chargement des dettes');
           }
@@ -98,10 +97,8 @@ export class DebtsAllComponent implements OnInit {
     this.currentPage = 1;
 
     if (this.searchText) {
-      // Filtrage local uniquement
       this.applyLocalFilter();
     } else {
-      // Si pas de recherche, recharger depuis l'API pour avoir les données complètes
       this.loadDebts();
     }
   }
@@ -115,7 +112,7 @@ export class DebtsAllComponent implements OnInit {
     this.filteredDataSource = this.allDebts.filter(debt =>
       debt.intitule.toLowerCase().includes(this.searchText) ||
       debt.amount.toString().includes(this.searchText) ||
-      debt.userId.toString().includes(this.searchText) ||
+      (debt.user?.firstname + ' ' + debt.user?.lastname).toLowerCase().includes(this.searchText) ||
       debt.cardId.toString().includes(this.searchText) ||
       this.formatDate(debt.createdAt).toLowerCase().includes(this.searchText)
     );
@@ -126,11 +123,8 @@ export class DebtsAllComponent implements OnInit {
     this.currentPage = e.pageIndex + 1;
 
     if (this.searchText) {
-      // En mode recherche, on reste sur les données filtrées localement
-      // Mais on peut aussi recharger depuis l'API si on veut des nouvelles données
       this.applyLocalFilter();
     } else {
-      // Sans recherche, on charge la nouvelle page depuis l'API
       this.loadDebts();
     }
   }
@@ -153,16 +147,65 @@ export class DebtsAllComponent implements OnInit {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   }
 
   getAmountColor(amount: number): string {
-    if (amount > 100000) return '#f44336'; // Rouge pour les grosses dettes
-    if (amount > 50000) return '#ff9800';  // Orange pour les dettes moyennes
-    return '#4caf50';                      // Vert pour les petites dettes
+    if (amount > 100000) return '#f44336';
+    if (amount > 50000) return '#ff9800';
+    return '#4caf50';
+  }
+
+  getAmountStatus(amount: number): string {
+    if (amount > 100000) return 'Élevé';
+    if (amount > 50000) return 'Moyen';
+    return 'Faible';
+  }
+
+  getStableColor(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const h = hash % 360;
+    return `hsl(${h}, 70%, 60%)`;
+  }
+
+  createStableAvatar(debt: Debt): { letter: string; color: string } {
+    const firstLetter = debt.intitule ? debt.intitule.charAt(0).toUpperCase() : '?';
+    return {
+      letter: firstLetter,
+      color: this.getStableColor(debt.intitule)
+    };
+  }
+
+  formatUserName(debt: Debt): string {
+    return debt.user ? `${debt.user.firstname} ${debt.user.lastname}` : `User ${debt.userId}`;
+  }
+
+  formatUserContact(debt: Debt): string {
+    if (!debt.user) return 'N/A';
+    return debt.user.email || debt.user.phone || 'N/A';
+  }
+
+  formatCardInfo(debt: Debt): string {
+    if (debt.card) {
+      return `${debt.card.cardName} (****${debt.card.last4Digits})`;
+    }
+    return `Carte ${debt.cardId}`;
+  }
+
+  getDaysAgo(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) return 'Hier';
+    if (diffDays < 7) return `Il y a ${diffDays} jours`;
+    if (diffDays < 30) return `Il y a ${Math.floor(diffDays / 7)} semaines`;
+    return `Il y a ${Math.floor(diffDays / 30)} mois`;
   }
 
   private showError(message: string): void {
@@ -171,21 +214,9 @@ export class DebtsAllComponent implements OnInit {
       panelClass: ['error-snackbar']
     });
   }
+
   viewDebtDetails(debt: Debt): void {
     this.router.navigate(['/debts', debt.userId]);
-  }
-
-
-  editDebt(debt: Debt): void {
-    this.snackBar.open(`Modification de la dette: ${debt.intitule}`, 'Fermer', {
-      duration: 3000
-    });
-  }
-
-  deleteDebt(debt: Debt): void {
-    this.snackBar.open(`Suppression de la dette: ${debt.intitule}`, 'Fermer', {
-      duration: 3000
-    });
   }
 
   exportDebts(): void {
