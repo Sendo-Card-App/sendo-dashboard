@@ -43,6 +43,10 @@
           <mat-icon>person</mat-icon>
           <span>ID Utilisateur: {{card.userId}}</span>
         </div>
+          <div class="meta-item">
+            <mat-icon>Balance</mat-icon>
+          <span>Solde carte: {{formatBalance(cardBalance, card.user.wallet.currency)}}</span>
+          </div>
       </div>
     </mat-card>
 

@@ -224,3 +224,95 @@
     font-size: 12px;
   }
 }
+
+/* Styles pour la colonne Transactions */
+.transactions-container {
+  .transaction-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .f-w-600 {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .mat-caption {
+      font-size: 10px;
+    }
+
+    .view-transaction-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      // line-height: 24px;
+
+      i {
+        font-size: 14px;
+      }
+
+      &:hover {
+        background: rgba(63, 81, 181, 0.1);
+      }
+    }
+  }
+
+  .no-transactions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+
+    i {
+      font-size: 20px;
+      color: #bdbdbd;
+    }
+
+    .mat-caption {
+      font-size: 11px;
+    }
+  }
+}
+
+/* Header Options - ajustement pour le solde */
+.card-balance-info {
+  background: #e3f2fd;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #1976d2;
+  font-size: 14px;
+  font-weight: 500;
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+/* Responsive pour la colonne Transactions */
+@media (max-width: 768px) {
+  .transactions-container {
+    .transaction-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+
+      .view-transaction-btn {
+        align-self: flex-end;
+      }
+    }
+  }
+
+  .card-balance-info {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+}

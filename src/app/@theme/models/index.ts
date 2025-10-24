@@ -482,3 +482,54 @@ export interface PartialPaymentDto {
   userId?: number;
 }
 
+export interface CardBalanceResponse {
+  status: number;
+  message: string;
+  data: {
+    balance: number;
+    currency?: string;
+  };
+}
+
+export interface Transaction {
+  id: number;
+  transactionId: string;
+  amount: number;
+  exchangeRates: number;
+  sendoFees: number;
+  currency: string;
+  description: string;
+  tva: number;
+  partnerFees: number;
+  totalAmount: number;
+  type: 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER' | 'PAYMENT';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED';
+  receiverId: number;
+  receiverType: string;
+  virtualCardId: number | null;
+  method: 'MOBILE_MONEY' | 'BANK_TRANSFER' | 'VIRTUAL_CARD';
+  provider: string;
+  transactionReference: string;
+  bankName: string | null;
+  accountNumber: string | null;
+  retryCount: number;
+  lastChecked: string | null;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  card: any | null;
+  wallet: {
+    id: number;
+    balance: number;
+    currency: string;
+    matricule: string;
+  };
+  receiver: {
+    id: number;
+    firstname: string;
+    lastname: string;
+    phone: string;
+    email: string;
+  };
+}
