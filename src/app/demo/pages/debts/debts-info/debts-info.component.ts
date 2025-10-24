@@ -20,6 +20,7 @@ import { Debt, BaseResponse, PartialPaymentDto } from 'src/app/@theme/models';
 import { DebtService } from 'src/app/@theme/services/debt.service';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { PartialPaymentDialogComponent } from 'src/app/@theme/components/partial-payment-dialog/partial-payment-dialog.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-debts-info',
@@ -56,19 +57,24 @@ export class DebtsInfoComponent implements OnInit {
   constructor(
     private debtService: DebtService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private route: ActivatedRoute
   ) {
-    this.userId = this.getCurrentUserId();
   }
 
   ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (!idParam) {
+      this.snackBar.open('Aucun identifiant fourni', 'Fermer', { duration: 3000 });
+      return;
+    }
+
+    this.userId = Number(idParam);
+
     this.loadUserDebts();
   }
 
-  private getCurrentUserId(): number {
-    // Implémentez la récupération de l'ID utilisateur connecté
-    return 1; // Temporaire - à remplacer
-  }
+
 
   loadUserDebts(): void {
     this.isLoading = true;
@@ -76,12 +82,12 @@ export class DebtsInfoComponent implements OnInit {
     this.debtService.getUserDebts(this.userId)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
-        next: (response: BaseResponse<Debt[]>) => {
+        next: (response) => {
           if (response.status === 200) {
             this.allDebts = response.data;
             this.filteredDataSource = [...this.allDebts];
 
-            console.log("Dettes utilisateur chargées:", this.allDebts);
+            console.log("Dettes utilisateur chargées:", response);
           } else {
             this.showError('Erreur lors du chargement des dettes');
           }
@@ -127,8 +133,8 @@ export class DebtsInfoComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: { amount: number } | null) => {
       if (result) {
         const dto: PartialPaymentDto = {
-          amount: result.amount,
-          cardId: debt.cardId
+          partialAmount: result.amount,
+          idCard: debt.card.id
         };
         this.performPartialCardPayment(debt.id, dto);
       }
@@ -169,7 +175,8 @@ export class DebtsInfoComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result: { amount: number } | null) => {
       if (result) {
         const dto: PartialPaymentDto = {
-          amount: result.amount
+          partialAmount: result.amount,
+          userId: this.userId
         };
         this.performPartialWalletPayment(debt.id, dto);
       }
@@ -269,7 +276,7 @@ export class DebtsInfoComponent implements OnInit {
       .subscribe({
         next: (response: BaseResponse<Debt>) => {
           if (response.status === 200) {
-            this.snackBar.open(`Paiement partiel de ${this.formatAmount(dto.amount)} effectué avec succès!`, 'Fermer', {
+            this.snackBar.open(`Paiement partiel de ${this.formatAmount(dto.partialAmount)} effectué avec succès!`, 'Fermer', {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
@@ -310,18 +317,20 @@ export class DebtsInfoComponent implements OnInit {
 
   private performPartialWalletPayment(debtId: number, dto: PartialPaymentDto): void {
     this.isLoading = true;
+    // console.log('Démarrage du paiement partiel wallet avec DTO:', dto);
     this.debtService.partialPayDebtFromWallet(debtId, dto)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (response: BaseResponse<Debt>) => {
           if (response.status === 200) {
-            this.snackBar.open(`Paiement partiel de ${this.formatAmount(dto.amount)} effectué avec succès!`, 'Fermer', {
+            this.snackBar.open(`Paiement partiel de ${this.formatAmount(dto.partialAmount)} effectué avec succès!`, 'Fermer', {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
             this.loadUserDebts();
           } else {
             this.showError(response.message || 'Erreur lors du paiement partiel');
+            console.error('Erreur paiement partiel wallet réponse:', response);
           }
         },
         error: (error) => {
