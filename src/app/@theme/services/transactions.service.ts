@@ -112,9 +112,9 @@ export class TransactionsService {
     userId: number,
     page: number = 1,
     limit: number = 10,
-    type?: 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER',
-    status?: 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED',
-    method?: 'MOBILE_MONEY' | 'BANK_TRANSFER',
+    type?: 'DEPOSIT' | 'WITHDRAWAL' | 'TRANSFER' | 'PAYMENT' ,
+    status?: 'PENDING' | 'COMPLETED' | 'FAILED' | 'BLOCKED' | '',
+    method?: 'MOBILE_MONEY' | 'BANK_TRANSFER' | 'VIRTUAL_CARD',
     startDate?: string,
     endDate?: string
   ): Observable<TransactionsUserResponse> {

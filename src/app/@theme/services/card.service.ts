@@ -1,4 +1,4 @@
-import { BaseResponse } from './../models/index';
+import { BaseResponse, CardBalanceResponse } from './../models/index';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
@@ -56,6 +56,14 @@ export class CardService {
 
   getCardById(cardId: number): Observable<BaseResponse<VirtualCard>> {
     return this.http.get<BaseResponse<VirtualCard>>(`${this.apiUrl}/cards/${cardId}`, this.getConfigAuthorized());
+  }
+
+  getCardBalance(idCard: number, type?: string): Observable<CardBalanceResponse> {
+    const params = new HttpParams()
+      .set('idCard', idCard.toString())
+      .set('type', type || '');
+
+    return this.http.get<CardBalanceResponse>(`${this.apiUrl}/cards/balance`, { params, ...this.getConfigAuthorized() });
   }
 
   getCardTransactions(cardId: number): Observable<CardTransactionResponse> {

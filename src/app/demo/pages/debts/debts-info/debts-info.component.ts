@@ -13,14 +13,17 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
 import { SharedModule } from 'src/app/demo/shared/shared.module';
-import { Debt, BaseResponse, PartialPaymentDto } from 'src/app/@theme/models';
+import { Debt, BaseResponse, PartialPaymentDto, Transaction } from 'src/app/@theme/models';
 import { DebtService } from 'src/app/@theme/services/debt.service';
+import { TransactionsService } from 'src/app/@theme/services/transactions.service';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { PartialPaymentDialogComponent } from 'src/app/@theme/components/partial-payment-dialog/partial-payment-dialog.component';
 import { ActivatedRoute } from '@angular/router';
+import { CardService } from 'src/app/@theme/services/card.service';
 
 @Component({
   selector: 'app-debts-info',
@@ -45,22 +48,26 @@ import { ActivatedRoute } from '@angular/router';
   ]
 })
 export class DebtsInfoComponent implements OnInit {
-  displayedColumns = ['intitule', 'amount', 'card', 'balance', 'createdAt', 'paymentActions'];
+  displayedColumns = ['intitule', 'amount', 'card', 'balance', 'transactions', 'createdAt', 'paymentActions'];
   dataSource: Debt[] = [];
   filteredDataSource: Debt[] = [];
   allDebts: Debt[] = [];
+  debtTransactions: Map<number, Transaction[]> = new Map(); // Stocke les transactions par dette ID
 
   isLoading = false;
   searchText = '';
   userId: number;
+  cardBalance: number | null = null;
 
   constructor(
     private debtService: DebtService,
+    private transactionService: TransactionsService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private route: ActivatedRoute
-  ) {
-  }
+    private route: ActivatedRoute,
+    private card: CardService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -70,11 +77,8 @@ export class DebtsInfoComponent implements OnInit {
     }
 
     this.userId = Number(idParam);
-
     this.loadUserDebts();
   }
-
-
 
   loadUserDebts(): void {
     this.isLoading = true;
@@ -87,6 +91,24 @@ export class DebtsInfoComponent implements OnInit {
             this.allDebts = response.data;
             this.filteredDataSource = [...this.allDebts];
 
+            // Charger le solde de la carte
+            if (this.allDebts.length > 0 && this.allDebts[0].card) {
+              this.card.getCardBalance(this.allDebts[0].card.id, '').subscribe({
+                next: (response) => {
+                  console.log('Solde récupéré :', response.data.balance);
+                  this.cardBalance = response.data.balance;
+                },
+                error: (err) => {
+                  console.error('Erreur lors de la récupération du solde :', err);
+                  const message = err?.error?.data?.errors?.join(', ') || 'Erreur serveur';
+                  this.showError(message);
+                }
+              });
+            }
+
+            // Charger les transactions pour chaque dette
+            this.loadTransactionsForAllDebts();
+
             console.log("Dettes utilisateur chargées:", response);
           } else {
             this.showError('Erreur lors du chargement des dettes');
@@ -97,6 +119,89 @@ export class DebtsInfoComponent implements OnInit {
           this.showError('Erreur lors du chargement des dettes');
         }
       });
+  }
+
+  // Charger les transactions pour toutes les dettes
+  private loadTransactionsForAllDebts(): void {
+    this.allDebts.forEach(debt => {
+      this.loadTransactionsForDebt(debt);
+    });
+  }
+
+  // Charger les transactions liées à une dette spécifique
+  private loadTransactionsForDebt(debt: Debt): void {
+    const debtDate = new Date(debt.createdAt);
+
+    // Calculer la plage de dates (24h avant et après la création de la dette)
+    const startDate = new Date(debtDate);
+    startDate.setDate(startDate.getDate() - 1);
+
+    const endDate = new Date(debtDate);
+    endDate.setDate(endDate.getDate() + 1);
+
+    console.log(`Chargement des transactions pour la dette ${this.userId} entre ${startDate.toISOString()} et ${endDate.toISOString()}`);
+
+    this.transactionService.getUserTransactions(
+      this.userId,
+      1,
+      10,
+      'PAYMENT', // Type de transaction
+      '', // Statut
+      'VIRTUAL_CARD', // Méthode
+      startDate.toISOString().split('T')[0], // Format YYYY-MM-DD
+      endDate.toISOString().split('T')[0]
+   // ...existing code...
+    ).subscribe({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      next: (response: any) => {
+        if (response?.status === 200) {
+          // Supporter plusieurs formes possibles de la réponse:
+          // - response.data.transactions.items (pagination)
+          // - response.data.transactions (tableau)
+          // - response.data (tableau)
+          const items: Transaction[] = Array.isArray(response?.data?.transactions?.items)
+            ? response.data.transactions.items as Transaction[]
+            : Array.isArray(response?.data?.transactions)
+              ? response.data.transactions as Transaction[]
+              : Array.isArray(response?.data)
+                ? response.data as Transaction[]
+                : [];
+
+          // console.log(`Transactions API response for debt ${debt.id}:`, response);
+          // console.log(`Parsed items for debt ${debt.id}:`, items);
+
+          const matchingTransactions =  items.map((transaction: Transaction) => ({
+            ...transaction,
+            isMatching: Math.abs((transaction.amount || 0) - debt.amount) < 1, // vrai ou faux
+          }));
+
+          this.debtTransactions.set(debt.id, matchingTransactions);
+          // console.log(`Transactions trouvées pour dette ${debt.id}:`, matchingTransactions);
+        } else {
+          this.debtTransactions.set(debt.id, []);
+        }
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      error: (error: any) => {
+        console.error(`Erreur chargement transactions pour dette ${debt.id}:`, error);
+        this.debtTransactions.set(debt.id, []);
+      }
+    });
+  }
+
+  // Voir les détails d'une transaction
+  viewTransactionDetails(transactionId: string): void {
+    this.router.navigate(['/transactions', transactionId]);
+  }
+
+  // Obtenir les transactions pour une dette spécifique
+  getTransactionsForDebt(debtId: number): Transaction[] {
+    return this.debtTransactions.get(debtId) || [];
+  }
+
+  // Vérifier si une dette a des transactions associées
+  hasTransactions(debtId: number): boolean {
+    return this.getTransactionsForDebt(debtId).length > 0;
   }
 
   // Paiement total via carte
@@ -121,7 +226,6 @@ export class DebtsInfoComponent implements OnInit {
   // Paiement partiel via carte
   partialPayDebtWithCard(debt: Debt): void {
     const dialogRef = this.dialog.open(PartialPaymentDialogComponent, {
-
       data: {
         title: 'Paiement partiel par carte',
         debt: debt,
@@ -163,7 +267,6 @@ export class DebtsInfoComponent implements OnInit {
   // Paiement partiel via wallet
   partialPayDebtWithWallet(debt: Debt): void {
     const dialogRef = this.dialog.open(PartialPaymentDialogComponent, {
-      // width: '450px',
       data: {
         title: 'Paiement partiel par wallet',
         debt: debt,
@@ -245,7 +348,7 @@ export class DebtsInfoComponent implements OnInit {
     });
   }
 
-  // Implémentations des paiements
+  // Implémentations des paiements (garder les méthodes existantes)
   private performCardPayment(debtId: number, cardId: number): void {
     this.isLoading = true;
     this.debtService.payDebtFromCard(debtId, cardId)
@@ -317,7 +420,6 @@ export class DebtsInfoComponent implements OnInit {
 
   private performPartialWalletPayment(debtId: number, dto: PartialPaymentDto): void {
     this.isLoading = true;
-    // console.log('Démarrage du paiement partiel wallet avec DTO:', dto);
     this.debtService.partialPayDebtFromWallet(debtId, dto)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
@@ -330,7 +432,6 @@ export class DebtsInfoComponent implements OnInit {
             this.loadUserDebts();
           } else {
             this.showError(response.message || 'Erreur lors du paiement partiel');
-            console.error('Erreur paiement partiel wallet réponse:', response);
           }
         },
         error: (error) => {
@@ -409,7 +510,7 @@ export class DebtsInfoComponent implements OnInit {
       });
   }
 
-  // Méthodes utilitaires
+  // Méthodes utilitaires (garder les méthodes existantes)
   applyFilter(value: string): void {
     this.searchText = value.trim().toLowerCase();
 

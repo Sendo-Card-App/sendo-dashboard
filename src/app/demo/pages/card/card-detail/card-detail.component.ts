@@ -21,6 +21,7 @@ export class CardDetailComponent implements OnInit {
   card: VirtualCard | null = null;
   cardId!: number;
   currentuserRole: string[] | undefined;
+  cardBalance: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +45,17 @@ export class CardDetailComponent implements OnInit {
       next: (response) => {
         this.card = response.data;
         this.isLoading = false;
+
+         this.cardService.getCardBalance(response.data.id, '').subscribe({
+              next: (response) => {
+                this.cardBalance = response.data.balance;
+              },
+              error: (err) => {
+                console.error('Erreur lors de la récupération du solde :', err);
+                  const message = err?.error?.data?.errors?.join(', ') || 'Erreur serveur';
+                  this.showError(message);
+                }
+              });
         console.log('Card details loaded:', response, response.data);
       },
       error: (err) => {
