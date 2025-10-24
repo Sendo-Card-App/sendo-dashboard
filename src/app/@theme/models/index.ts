@@ -461,6 +461,7 @@ export interface Debt {
     last4Digits: string;
     paymentRejectNumber: number;
     status: string;
+    id: number;
   }
 }
 
@@ -476,7 +477,8 @@ export interface DebtResponse {
 }
 
 export interface PartialPaymentDto {
-  amount: number;
-  cardId?: number;
+  partialAmount: number;
+  idCard?: number;
+  userId?: number;
 }
 

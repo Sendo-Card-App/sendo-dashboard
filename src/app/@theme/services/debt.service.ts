@@ -72,21 +72,21 @@ export class DebtService {
    * Payer partiellement une dette via une carte
    */
   partialPayDebtFromCard(idDebt: number, dto: PartialPaymentDto): Observable<BaseResponse<Debt>> {
-    return this.http.post<BaseResponse<Debt>>(`${this.baseUrl}/${idDebt}/debit-partial-from-card`, dto);
+    return this.http.post<BaseResponse<Debt>>(`${this.baseUrl}/debts/${idDebt}/debit-partial-from-card`, dto);
   }
 
   /**
    * Payer partiellement une dette via un wallet
    */
   partialPayDebtFromWallet(idDebt: number, dto: PartialPaymentDto): Observable<BaseResponse<Debt>> {
-    return this.http.post<BaseResponse<Debt>>(`${this.baseUrl}/${idDebt}/debit-partial-from-wallet`, dto);
+    return this.http.post<BaseResponse<Debt>>(`${this.baseUrl}/debts/${idDebt}/debit-partial-from-wallet`, dto);
   }
 
   /**
    * Supprimer une dette
    */
   deleteDebt(idDebt: number): Observable<BaseResponse<null>> {
-    return this.http.delete<BaseResponse<null>>(`${this.baseUrl}/${idDebt}`);
+    return this.http.delete<BaseResponse<null>>(`${this.baseUrl}/debts/${idDebt}`);
   }
 
 
