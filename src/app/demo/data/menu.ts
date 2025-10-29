@@ -139,6 +139,15 @@ export const menus: Navigation[] = [
             breadcrumbs: true,
             role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER],
           },
+           {
+            id: 'allkyc',
+            title: 'KYC Agents',
+            type: 'item',
+            url: '/kyc/kyc-merchant',
+            // target: true,
+            breadcrumbs: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER],
+          },
           {
             id: 'allkyc',
             title: 'Liste des KYC',

@@ -143,32 +143,36 @@ export class TransactionsService {
    * @param limit nombre d’éléments par page (défaut : 10)
    */
   getTransactions(
-    page: number = 1,
-    limit: number = 10,
-    type?: TransactionType,
-    status?: TransactionStatus,
-    method?: 'MOBILE_MONEY' | 'BANK_TRANSFER',
-    startDate?: string,   // format YYYY-MM-DD
-    endDate?: string      // format YYYY-MM-DD
-  ): Observable<TransactionsResponse> {
-    let params = new HttpParams()
-      .set('page',   page.toString())
-      .set('limit',  limit.toString());
+  page: number = 1,
+  limit: number = 10,
+  type?: TransactionType,
+  status?: TransactionStatus,
+  method?: 'MOBILE_MONEY' | 'BANK_TRANSFER' | 'VIRTUAL_CARD' | 'WALLET',
+  startDate?: string,   
+  endDate?: string      
+): Observable<TransactionsResponse> {
+  let params = new HttpParams()
+    .set('page', page.toString())
+    .set('limit', limit.toString());
 
-    if (type)      { params = params.set('type',      type); }
-    if (status)    { params = params.set('status',    status); }
-    if (method)    { params = params.set('method',    method); }
-    if (startDate) { params = params.set('startDate', startDate); }
-    if (endDate)   { params = params.set('endDate',   endDate); }
+  if (type)      { params = params.set('type', type); }
+  if (status)    { params = params.set('status', status); }
+  if (method)    { params = params.set('method', method); }
+  if (startDate) { params = params.set('startDate', startDate); }
+  if (endDate)   { params = params.set('endDate', endDate); }
 
-    return this.http.get<TransactionsResponse>(
-      `${this.apiUrl}/transactions`,
-      {
-        ...this.getConfigAuthorized(),
-        params
-      }
-    );
-  }
+  console.log('Params envoyés:', {
+    page, limit, type, status, method, startDate, endDate
+  });
+
+  return this.http.get<TransactionsResponse>(
+    `${this.apiUrl}/transactions`,
+    {
+      ...this.getConfigAuthorized(),
+      params
+    }
+  );
+}
 
   getTransactionCaCam(
     page: number = 1,

@@ -72,3 +72,4 @@ export interface MerchantResponse {
   data: MerchantItem;
 }
 
+export type MerchantStatus = 'ACTIVE' | 'REFUSED';

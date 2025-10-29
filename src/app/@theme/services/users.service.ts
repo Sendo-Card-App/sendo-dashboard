@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { MeResponse } from '../models';
-import { MerchantListResponse, MerchantResponse } from '../models/merchant';
+import { MerchantListResponse, MerchantResponse, MerchantStatus } from '../models/merchant';
 
 export interface UserCreateRequest {
   firstname: string;
@@ -96,29 +96,29 @@ export class UserService {
 
 
   getUsers(
-  page: number = 1,
-  limit: number = 10,
-  country: string | null = null,
-  search: string | null = null
-): Observable<UsersResponse> {
-  let params = new HttpParams()
-    .set('page', page.toString())
-    .set('limit', limit.toString());
+    page: number = 1,
+    limit: number = 10,
+    country: string | null = null,
+    search: string | null = null
+  ): Observable<UsersResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
 
-  // Correction : HttpParams est immuable, il faut réassigner
-  if (country) {
-    params = params.set('country', country);
-  }
-  if (search) {
-    params = params.set('search', search);
-  }
+    // Correction : HttpParams est immuable, il faut réassigner
+    if (country) {
+      params = params.set('country', country);
+    }
+    if (search) {
+      params = params.set('search', search);
+    }
 
-  const config = this.getConfigAuthorized();
-  return this.http.get<UsersResponse>(`${this.apiUrl}`, {
-    params,
-    headers: config.headers
-  });
-}
+    const config = this.getConfigAuthorized();
+    return this.http.get<UsersResponse>(`${this.apiUrl}`, {
+      params,
+      headers: config.headers
+    });
+  }
 
 
   getUserById(userId: string | number): Observable<ApiResponse<MeResponse>> {
@@ -179,29 +179,41 @@ export class UserService {
     return this.http.post(url, { matriculeWallet, amount }, this.getConfigAuthorized());
   }
 
-   /**
-   * 🔍 Récupère la liste des marchands avec pagination
-   * @param page Numéro de la page
-   * @param limit Nombre d’éléments par page
-   */
+  /**
+  * 🔍 Récupère la liste des marchands avec pagination
+  * @param page Numéro de la page
+  * @param limit Nombre d’éléments par page
+  */
   getMerchants(page?: number, limit?: number): Observable<MerchantListResponse> {
-  let params = new HttpParams();
+    let params = new HttpParams();
 
-  if (page) params = params.set('page', page.toString());
-  if (limit) params = params.set('limit', limit.toString());
+    if (page) params = params.set('page', page.toString());
+    if (limit) params = params.set('limit', limit.toString());
 
-  return this.http.get<MerchantListResponse>(
-    `${this.apiUrl}/merchants`,
-    { params, ...this.getConfigAuthorized() }
-  );
-}
+    return this.http.get<MerchantListResponse>(
+      `${this.apiUrl}/merchants`,
+      { params, ...this.getConfigAuthorized() }
+    );
+  }
 
-getMerchantById(id: number): Observable<MerchantResponse> {
-  return this.http.get<MerchantResponse>(
-    `${this.apiUrl}/merchant/${id}`,
-    this.getConfigAuthorized()
-  );
-}
+  getMerchantById(id: number): Observable<MerchantResponse> {
+    return this.http.get<MerchantResponse>(
+      `${this.apiUrl}/merchant/${id}`,
+      this.getConfigAuthorized()
+    );
+  }
+
+  changeMerchantStatus(id: string, status: MerchantStatus): Observable<void> {
+    const params = new HttpParams()
+      .set('id', id)
+      .set('status', status);
+
+    return this.http.put<void>(
+      `${this.apiUrl1}/admin/users/merchant/change-status`,
+      {},
+      { params }
+    );
+  }
 
 
 

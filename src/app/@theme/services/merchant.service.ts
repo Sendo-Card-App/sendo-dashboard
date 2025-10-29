@@ -86,7 +86,7 @@ export class MerchantService {
     );
   }
 
-    // ✅ CREATE : Créer un nouveau palier
+  // ✅ CREATE : Créer un nouveau palier
   createPalier(payload: PalierPayload): Observable<PalierResponse> {
     return this.http.post<PalierResponse>(
       `${this.apiUrl}/merchant/palier`,
@@ -127,6 +127,8 @@ export class MerchantService {
       this.getConfigAuthorized()
     );
   }
+
+  
 
 
 

@@ -130,6 +130,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/kyc/kyc-list/kyc-list.component').then((c) => c.KycListComponent),
         data: { roles: ['SUPER_ADMIN', 'COMPLIANCE_OFFICER', 'CUSTOMER_ADVISER'] }
       },
+       {
+        path: 'kyc-merchant',
+        loadComponent: () => import('./demo/pages/kyc/kyc-merchant/kyc-merchant.component').then((c) => c.KycMerchantComponent),
+        data: { roles: ['SUPER_ADMIN', 'COMPLIANCE_OFFICER', 'CUSTOMER_ADVISER'] }
+      },
       {
         path: 'kyc-all',
         loadComponent: () => import('./demo/pages/kyc/kyc-all/kyc-all.component').then((c) => c.KycAllComponent),

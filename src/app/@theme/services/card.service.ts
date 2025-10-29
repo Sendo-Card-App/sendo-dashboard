@@ -13,8 +13,13 @@ export class CardService {
 
   // card.service.ts
 
-  getOnboardingRequests(status?: string): Observable<SessionPartyUserResponse> {
-    let params = new HttpParams();
+  getOnboardingRequests(
+     page: number = 1,
+    limit: number = 10,
+    status?: string): Observable<SessionPartyUserResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
 
     if (status) {
       params = params.set('status', status);
