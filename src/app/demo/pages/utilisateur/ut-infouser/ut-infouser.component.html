@@ -162,11 +162,21 @@
         </li>
 
         <li class="list-group-item pb-0 px-0">
-          <p class="m-b-5 text-muted">Adresse</p>
-          <div class="f-w-500">
-            {{ user?.address || 'Non spécifiée' }}
-            <span *ngIf="user?.city">, {{ user.city }}</span>
-            <span *ngIf="user?.region">, {{ user.region }}</span>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Adresse</p>
+              <div class="f-w-500">
+                {{ user?.address || 'Non spécifiée' }}
+                <span *ngIf="user?.city">, {{ user.city }}</span>
+                <span *ngIf="user?.region">, {{ user.region }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <p class="m-b-5 text-muted">Date de naissance</p>
+              <div class="f-w-500">
+                <span *ngIf="user?.region">{{ user.dateOfBirth | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
           </div>
         </li>
       </ul>

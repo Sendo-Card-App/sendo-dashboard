@@ -23,7 +23,7 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
 export class TransactionListComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
     'transactionId',
-    'amount',
+    'totalAmount',
     'type',
     'status',
     'method',
