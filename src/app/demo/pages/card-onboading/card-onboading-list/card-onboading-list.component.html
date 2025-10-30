@@ -25,10 +25,11 @@
           <div class="table-responsive">
             <div *ngIf="isLoading" class="loading-spinner text-center p-3">
               <mat-spinner diameter="50"></mat-spinner>
+              <p class="mt-2">Chargement en cours...</p>
             </div>
 
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-              <!-- User Column -->
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!isLoading">
+              <!-- Vos colonnes existantes -->
               <ng-container matColumnDef="user">
                 <th mat-header-cell *matHeaderCellDef class="p-l-25">UTILISATEUR</th>
                 <td mat-cell *matCellDef="let party" class="p-l-25 text-nowrap">
@@ -47,7 +48,6 @@
                 </td>
               </ng-container>
 
-              <!-- Type Column -->
               <ng-container matColumnDef="type">
                 <th mat-header-cell *matHeaderCellDef>TYPE</th>
                 <td mat-cell *matCellDef="let party" class="text-nowrap">
@@ -55,7 +55,6 @@
                 </td>
               </ng-container>
 
-              <!-- Status Column -->
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>STATUT</th>
                 <td mat-cell *matCellDef="let party" class="text-nowrap">
@@ -65,15 +64,12 @@
                 </td>
               </ng-container>
 
-              <!-- Created At Column -->
               <ng-container matColumnDef="createdAt">
                 <th mat-header-cell *matHeaderCellDef>DATE</th>
                 <td mat-cell *matCellDef="let party" class="text-nowrap">
                   {{ party.sessionParty.createdAt | date:'medium' }}
                 </td>
               </ng-container>
-
-              <!-- Action Column -->
 
               <ng-container matColumnDef="action">
                 <th mat-header-cell *matHeaderCellDef class="text-center">ACTIONS</th>
@@ -109,15 +105,19 @@
 
               <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell" colspan="5">
-                  <div *ngIf="!isLoading" class="text-center p-3">
-                    Aucune demande trouvée {{ searchText ? 'correspondant à "' + searchText + '"' : '' }}
+                  <div class="text-center p-3">
+                    <i class="ti ti-search-off" style="font-size: 48px; color: #bdbdbd;"></i>
+                    <p class="mt-2">Aucune demande trouvée {{ searchText ? 'correspondant à "' + searchText + '"' : ''
+                      }}</p>
                   </div>
                 </td>
               </tr>
             </table>
 
-            <mat-paginator [pageSizeOptions]="[5,10,25,100]" [length]="totalItems" [pageSize]="itemsPerPage"
-              [pageIndex]="currentPage-1" (page)="onPageChange($event)">
+            <!-- Dans votre template, assurez-vous que le paginator a les bonnes propriétés -->
+            <mat-paginator [length]="totalItems" [pageSize]="itemsPerPage" [pageIndex]="currentPage"
+              [pageSizeOptions]="[5, 10, 25, 100]" (page)="onPageChange($event)" showFirstLastButtons
+              aria-label="Sélectionner la page des demandes d'onboarding">
             </mat-paginator>
           </div>
         </div>

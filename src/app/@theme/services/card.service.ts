@@ -2,7 +2,7 @@ import { BaseResponse, CardBalanceResponse } from './../models/index';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { SessionPartyUserResponse, KycDocument, CardStatus, CardResponse, VirtualCard, CardTransactionResponse } from '../models/card';
+import { KycDocument, CardStatus, CardResponse, VirtualCard, CardTransactionResponse, SessionPartyPagination } from '../models/card';
 import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -13,23 +13,25 @@ export class CardService {
 
   // card.service.ts
 
-  getOnboardingRequests(
-     page: number = 1,
-    limit: number = 10,
-    status?: string): Observable<SessionPartyUserResponse> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+ // Dans card.service.ts
+getOnboardingRequests(
+  page: number = 0, // ← Changement: page commence à 0 pour Angular Material
+  limit: number = 10,
+  status?: string
+): Observable<SessionPartyPagination> { // ← Correction du type de retour
+  let params = new HttpParams()
+    .set('page', (page + 1).toString()) // ← Adaptation pour l'API qui commence à 1
+    .set('limit', limit.toString());
 
-    if (status) {
-      params = params.set('status', status);
-    }
-
-    return this.http.get<SessionPartyUserResponse>(
-      `${this.apiUrl}/cards/onboarding/requests/admin`,
-      { params, ...this.getConfigAuthorized() }
-    );
+  if (status) {
+    params = params.set('status', status);
   }
+
+  return this.http.get<SessionPartyPagination>(
+    `${this.apiUrl}/cards/onboarding/requests/admin`,
+    { params, ...this.getConfigAuthorized() }
+  );
+}
 
   sendDocumentToNeero(documentType: 'ID_PROOF' | 'ADDRESS_PROOF' | 'NIU_PROOF' | 'SELFIE', userId: number) {
     const body = { documentType, userId };

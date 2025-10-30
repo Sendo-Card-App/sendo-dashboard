@@ -161,9 +161,9 @@ export class TransactionsService {
   if (startDate) { params = params.set('startDate', startDate); }
   if (endDate)   { params = params.set('endDate', endDate); }
 
-  console.log('Params envoyés:', {
-    page, limit, type, status, method, startDate, endDate
-  });
+  // console.log('Params envoyés:', {
+  //   page, limit, type, status, method, startDate, endDate
+  // });
 
   return this.http.get<TransactionsResponse>(
     `${this.apiUrl}/transactions`,

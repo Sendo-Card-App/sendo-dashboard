@@ -54,13 +54,13 @@ export class MenuItemVerticalComponent implements OnInit {
       this.isEnabled = true;
     }
 
-    console.log('Permission check:', {
-      item: item.title,
-      currentUserRole,
-      itemRoles: item.role,
-      parentRoles,
-      isEnabled: this.isEnabled
-    });
+    // console.log('Permission check:', {
+    //   item: item.title,
+    //   currentUserRole,
+    //   itemRoles: item.role,
+    //   parentRoles,
+    //   isEnabled: this.isEnabled
+    // });
   }
 
   private hasRoleAccess(
