@@ -7,6 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { AdminService } from '../../../../@theme/services/admin.service';
 import { CommonModule, formatDate } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
+import { values } from 'lodash';
 
 @Component({
   selector: 'app-commission-list',
@@ -23,7 +24,7 @@ export class CommissionListComponent implements OnInit, AfterViewInit, OnDestroy
   feesByType: any[] = [];
 
   // Table configuration
-  displayedColumns: string[] = ['transactionId', 'amount', 'sendoFees', 'type', 'status', 'createdAt'];
+  displayedColumns: string[] = ['transactionId', 'amount', 'sendoFees', 'totalAmount', 'type', 'status', 'createdAt'];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -37,7 +38,8 @@ export class CommissionListComponent implements OnInit, AfterViewInit, OnDestroy
     { value: 'WITHDRAWAL', label: 'Retrait' },
     { value: 'PAYMENT', label: 'Paiement' },
     { value: 'TONTINE_PAYMENT', label: 'Paiement Tontine' },
-    { value: 'VIEW_CARD_DETAILS', label: 'Vue des détails de carte' }
+    { value: 'VIEW_CARD_DETAILS', label: 'Vue des détails de carte' },
+    { value: 'TRANSFER', label: 'CA-CAM' }
   ];
 
   statusOptions = [
@@ -140,6 +142,17 @@ export class CommissionListComponent implements OnInit, AfterViewInit, OnDestroy
         return 'status-pending';
       default:
         return '';
+    }
+  }
+
+  getCurrency(currency: 'XAF' | 'CAD'): string {
+    switch (currency) {
+      case 'CAD':
+        return '$';
+      case 'XAF':
+        return 'FCFA';
+      default:
+        return 'FCFA';
     }
   }
 
