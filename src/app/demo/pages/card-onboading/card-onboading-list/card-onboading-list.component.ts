@@ -37,7 +37,7 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterView
   displayedColumns: string[] = ['user', 'type', 'status', 'createdAt', 'action'];
   dataSource = new MatTableDataSource<SessionParty>();
   totalItems = 0;
-  itemsPerPage = 5;
+  itemsPerPage = 10;
   currentPage = 0;
   currentuserRole: string[] | undefined;
   sendocLoad = false;
