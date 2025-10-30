@@ -201,7 +201,7 @@ export class UtMerchantComponent implements AfterViewInit, OnInit {
   }
 
   // Actions sur les marchands
-  toggleMerchantStatus(merchantId: number, currentStatus: string): void {
+  toggleMerchantStatus(merchantId: string, currentStatus: string): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
@@ -219,25 +219,25 @@ export class UtMerchantComponent implements AfterViewInit, OnInit {
     });
   }
 
-  private performStatusChange(merchantId: number, currentStatus: string): void {
-    const newStatus = currentStatus === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+  private performStatusChange(merchantId: string, currentStatus: string): void {
+    const newStatus = currentStatus === 'ACTIVE' ? 'REFUSED' : 'ACTIVE';
 
     // Appeler le service pour changer le statut
-    // this.adminService.changeMerchantStatus(merchantId, newStatus).subscribe({
-    //   next: () => {
-    //     this.snackBar.open(`Statut changé à ${newStatus}`, 'Fermer', { duration: 3000 });
-    //     this.loadMerchants();
-    //   },
-    //   error: (error) => {
-    //     this.snackBar.open('Échec du changement de statut', 'Fermer', { duration: 3000 });
-    //     console.error('Error:', error);
-    //   }
-    // });
+    this.adminService.changeMerchantStatus(merchantId, newStatus).subscribe({
+      next: () => {
+        this.snackBar.open(`Statut changé à ${newStatus}`, 'Fermer', { duration: 3000 });
+        this.loadMerchants();
+      },
+      error: (error) => {
+        this.snackBar.open('Échec du changement de statut', 'Fermer', { duration: 3000 });
+        console.error('Error:', error);
+      }
+    });
 
     // Pour l'instant, on simule le changement
-    this.snackBar.open(`Fonctionnalité à implémenter: Changer statut à ${newStatus}`, 'Fermer', {
-      duration: 3000
-    });
+    // this.snackBar.open(`Fonctionnalité à implémenter: Changer statut à ${newStatus}`, 'Fermer', {
+    //   duration: 3000
+    // });
   }
 
   deleteMerchant(merchantId: number): void {

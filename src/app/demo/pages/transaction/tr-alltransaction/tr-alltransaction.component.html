@@ -1,70 +1,71 @@
 <div class="transaction-container">
-  <!-- Ajoutez ceci dans votre template -->
-<div class="export-container">
-  <div [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')) ? 'Cette action est réservée uniquement aux admins' : ''"
-                      [matTooltipDisabled]="currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')" >
+  <!-- Section Export -->
+  <div class="export-container">
+    <div [matTooltip]="(currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')) ? 'Cette action est réservée uniquement aux admins' : ''"
+         [matTooltipDisabled]="currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')">
+      <button mat-raised-button color="primary"
+              (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) && openExportDialog(exportDialog)"
+              [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')">
+        <mat-icon>download</mat-icon>
+        Exporter les transactions
+      </button>
+    </div>
 
-    <button mat-raised-button color="primary"
-    (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) && openExportDialog(exportDialog)"
-    [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')">
-      <mat-icon>download</mat-icon>
-      Exporter les transactions
-    </button>
+    <ng-template #exportDialog>
+      <div class="export-dialog">
+        <h2>Exporter les transactions</h2>
+
+        <div class="date-range-picker">
+          <mat-form-field appearance="outline">
+            <mat-label>Date de début</mat-label>
+            <input matInput [matDatepicker]="startPicker" [(ngModel)]="exportStartDate" [max]="exportEndDate || maxDate">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Date de fin</mat-label>
+            <input matInput [matDatepicker]="endPicker" [(ngModel)]="exportEndDate" [min]="exportStartDate" [max]="maxDate">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="export-progress" *ngIf="isExporting">
+          <p>Préparation de l'export en cours...</p>
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </div>
+
+        <div class="export-actions">
+          <button mat-stroked-button (click)="exportDialogRef?.close()" [disabled]="isExporting">Annuler</button>
+          <button mat-raised-button
+                  color="primary"
+                  (click)="exportToCSV()"
+                  [disabled]="!exportStartDate || !exportEndDate || isExporting">
+            <span *ngIf="!isExporting">Exporter</span>
+            <mat-spinner diameter="20" *ngIf="isExporting"></mat-spinner>
+          </button>
+        </div>
+      </div>
+    </ng-template>
   </div>
 
-  <ng-template #exportDialog>
-    <div class="export-dialog">
-      <h2>Exporter les transactions</h2>
-
-      <div class="date-range-picker">
-        <mat-form-field appearance="outline">
-          <mat-label>Date de début</mat-label>
-          <input matInput [matDatepicker]="startPicker" [(ngModel)]="exportStartDate" [max]="exportEndDate || maxDate">
-          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-          <mat-datepicker #startPicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Date de fin</mat-label>
-          <input matInput [matDatepicker]="endPicker" [(ngModel)]="exportEndDate" [min]="exportStartDate" [max]="maxDate">
-          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-          <mat-datepicker #endPicker></mat-datepicker>
-        </mat-form-field>
-      </div>
-
-      <div class="export-progress" *ngIf="isExporting">
-        <p>Préparation de l'export en cours...</p>
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-      </div>
-
-      <div class="export-actions">
-        <button mat-stroked-button (click)="exportDialog.close()" [disabled]="isExporting">Annuler</button>
-        <button mat-raised-button
-                color="primary"
-                (click)="exportToCSV(); exportDialog.close()"
-                [disabled]="!exportStartDate || !exportEndDate || isExporting">
-          <span *ngIf="!isExporting">Exporter</span>
-          <mat-spinner diameter="20" *ngIf="isExporting"></mat-spinner>
-        </button>
-      </div>
-    </div>
-  </ng-template>
-</div>
+  <!-- Section Filtres -->
   <div class="filter-section">
     <form [formGroup]="filterForm">
       <div class="row">
         <!-- Search Field -->
-        <div class="col-md-3">
+        <div class="col-md-4">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Search</mat-label>
-            <input matInput placeholder="Recherche" [formControl]="filterForm.get('search')" />
+            <mat-label>Rechercher</mat-label>
+            <input matInput placeholder="ID, utilisateur, montant..." [formControl]="filterForm.get('search')" />
           </mat-form-field>
         </div>
 
         <!-- Status Filter -->
         <div class="col-md-2">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Status</mat-label>
+            <mat-label>Statut</mat-label>
             <mat-select formControlName="status">
               <mat-option *ngFor="let option of statusOptions" [value]="option.value">
                 {{ option.label }}
@@ -88,7 +89,7 @@
         <!-- Method Filter -->
         <div class="col-md-2">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Method</mat-label>
+            <mat-label>Méthode</mat-label>
             <mat-select formControlName="method">
               <mat-option *ngFor="let option of methodOptions" [value]="option.value">
                 {{ option.label }}
@@ -98,35 +99,21 @@
         </div>
 
         <!-- Reset Button -->
-        <div class="col-md-1">
+        <div class="col-md-2">
           <button mat-stroked-button (click)="resetFilters()" class="w-100">
-            Reset
+            <mat-icon>refresh</mat-icon>
+            Réinitialiser
           </button>
         </div>
       </div>
 
-      <!-- Additional Filters Row -->
+      <!-- Date Range Picker -->
       <div class="row">
-        <div class="col-md-2">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Min Amount</mat-label>
-            <input matInput type="number" formControlName="minAmount" min="0">
-          </mat-form-field>
-        </div>
-
-        <div class="col-md-2">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Max Amount</mat-label>
-            <input matInput type="number" formControlName="maxAmount" min="0">
-          </mat-form-field>
-        </div>
-
-        <!-- Date Range Picker -->
         <div class="col-md-3">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Start Date</mat-label>
+            <mat-label>Date de début</mat-label>
             <input matInput [matDatepicker]="startDatePicker" formControlName="startDate"
-              (dateChange)="onDateChange('startDate', $event)">
+                  (dateChange)="onDateChange('startDate', $event)">
             <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #startDatePicker></mat-datepicker>
           </mat-form-field>
@@ -134,39 +121,43 @@
 
         <div class="col-md-3">
           <mat-form-field appearance="outline" class="w-100">
-            <mat-label>End Date</mat-label>
+            <mat-label>Date de fin</mat-label>
             <input matInput [matDatepicker]="endDatePicker" formControlName="endDate"
-              (dateChange)="onDateChange('endDate', $event)">
+                  (dateChange)="onDateChange('endDate', $event)">
             <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
             <mat-datepicker #endDatePicker></mat-datepicker>
           </mat-form-field>
         </div>
+
+        <!-- Espace vide pour maintenir l'alignement -->
+        <div class="col-md-6"></div>
       </div>
     </form>
   </div>
 
+  <!-- Section Tableau -->
   <div class="table-section">
     <div class="table-responsive">
       <table mat-table [dataSource]="dataSource" matSort>
         <!-- Username Column -->
         <ng-container matColumnDef="username">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Utilisateur</th>
           <td mat-cell *matCellDef="let transaction">
-            {{ transaction.user?.firstname || '' }} {{ transaction.user?.lastname || '' }}
+            {{ transaction.user?.firstname || 'SYSTEME ' }} {{ transaction.user?.lastname || 'SENDO' }}
           </td>
         </ng-container>
 
         <!-- Transaction ID Column -->
         <ng-container matColumnDef="transactionId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Transaction ID</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID Transaction</th>
           <td mat-cell *matCellDef="let transaction">{{ transaction.transactionId }}</td>
         </ng-container>
 
         <!-- Amount Column -->
-        <ng-container matColumnDef="totalAmount">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>
           <td mat-cell *matCellDef="let transaction">
-            {{ transaction.totalAmount | currency:transaction.currency:'symbol':'1.2-2' }}
+            {{ transaction.amount | currency:transaction.currency:'symbol':'1.2-2' }}
           </td>
         </ng-container>
 
@@ -180,7 +171,7 @@
 
         <!-- Status Column -->
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
           <td mat-cell *matCellDef="let transaction">
             <span class="status-badge" [ngClass]="getStatusClass(transaction.status)">
               {{ transaction.status | titlecase }}
@@ -190,7 +181,7 @@
 
         <!-- Method Column -->
         <ng-container matColumnDef="method">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Method</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Méthode</th>
           <td mat-cell *matCellDef="let transaction">
             {{ formatType(transaction.method) }}
           </td>
@@ -214,7 +205,7 @@
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="viewDetails(transaction.transactionId)">
                 <mat-icon>visibility</mat-icon>
-                View Details
+                Voir détails
               </button>
             </mat-menu>
           </td>
@@ -229,7 +220,7 @@
             <div class="no-data-message">
               <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
               <span *ngIf="!isLoading && dataSource.data.length === 0">
-                No transactions found
+                Aucune transaction trouvée
               </span>
             </div>
           </td>
@@ -238,7 +229,7 @@
     </div>
 
     <mat-paginator [length]="totalItems" [pageSize]="itemsPerPage" [pageSizeOptions]="[10, 25, 50, 100]"
-      (page)="onPageChange($event)" showFirstLastButtons aria-label="Select page of transactions">
+                  (page)="onPageChange($event)" showFirstLastButtons aria-label="Select page of transactions">
     </mat-paginator>
   </div>
 </div>

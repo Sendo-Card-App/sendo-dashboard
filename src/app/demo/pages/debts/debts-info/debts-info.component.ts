@@ -360,7 +360,7 @@ export class DebtsInfoComponent implements OnInit {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
-            this.loadUserDebts();
+            this.router.navigate(['/debts/all']);
           } else {
             this.showError(response.message || 'Erreur lors du paiement');
           }
@@ -406,7 +406,7 @@ export class DebtsInfoComponent implements OnInit {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
-            this.loadUserDebts();
+            this.router.navigate(['/debts/all']);
           } else {
             this.showError(response.message || 'Erreur lors du paiement');
           }

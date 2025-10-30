@@ -12,11 +12,11 @@ import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-kyc-list',
-  templateUrl: './kyc-list.component.html',
-  styleUrls: ['./kyc-list.component.scss'],
+    templateUrl: './kyc-merchant.component.html',
+  styleUrl: './kyc-merchant.component.scss',
   imports: [SharedModule, CommonModule],
 })
-export class KycListComponent implements OnInit, OnDestroy {
+export class KycMerchantComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['user', 'type', 'status', 'createdAt', 'action'];
   dataSource: MatTableDataSource<KycDocument> = new MatTableDataSource<KycDocument>([]);
   isLoading = false;
@@ -57,7 +57,7 @@ export class KycListComponent implements OnInit, OnDestroy {
 
   loadDocuments(): void {
     this.isLoading = true;
-    this.kycService.getPendingDocuments(this.currentPage, this.itemsPerPage, "CUSTOMER")
+    this.kycService.getPendingDocuments(this.currentPage, this.itemsPerPage, "MERCHANT")
       .subscribe({
         next: (response) => {
           console.log('Documents:', response);

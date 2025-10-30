@@ -23,11 +23,11 @@ import { AuthenticationService } from 'src/app/@theme/services/authentication.se
   providers: [DatePipe]
 })
 export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestroy {
-  displayedColumns: string[] = ['transactionId', 'username', 'totalAmount', 'type', 'status', 'method', 'createdAt', 'actions'];
+  displayedColumns: string[] = ['transactionId', 'username', 'amount', 'type', 'status', 'method', 'createdAt', 'actions'];
   dataSource = new MatTableDataSource<Transactions>([]);
   isLoading = false;
   totalItems = 0;
-  currentPage = 0; // Changé à 0 pour correspondre à l'index Material
+  currentPage = 0;
   itemsPerPage = 10;
   currentSort: { active: string; direction: 'asc' | 'desc' | '' } = { active: '', direction: '' };
   currentuserRole: string[] | undefined;
@@ -62,7 +62,14 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
     { value: 'VIRTUAL_CARD', label: 'Virtual Card' },
     { value: 'WALLET', label: 'Wallet' }
   ];
-   private intervalId!: ReturnType<typeof setInterval>;
+
+  private intervalId!: ReturnType<typeof setInterval>;
+
+  // Propriétés pour l'export
+  exportStartDate: Date | null = null;
+  exportEndDate: Date | null = null;
+  isExporting = false;
+  exportDialogRef?: MatDialogRef<void>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -81,8 +88,6 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
       status: [''],
       type: [''],
       method: [''],
-      minAmount: [''],
-      maxAmount: [''],
       startDate: [''],
       endDate: ['']
     });
@@ -112,47 +117,53 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   applyFilter(filterValue: string): void {
-  this.dataSource.filter = filterValue.trim().toLowerCase();
-}
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
   ngAfterViewInit(): void {
-    // this.dataSource.paginator = this.paginator;
-    // this.dataSource.sort = this.sort;
-
     this.sort.sortChange.subscribe(sort => {
       this.currentSort.active = sort.active;
-      this.currentSort.direction = sort.direction || 'asc'; // Valeur par défaut si vide
+      this.currentSort.direction = sort.direction || 'asc';
       this.loadTransactions();
     });
 
     this.dataSource.filterPredicate = (data: Transactions, filter: string) => {
-    const searchStr = [
-      data.transactionId,
-      data.user ? data.user.firstname : '',
-      data.user ? data.user.lastname : '',
-      data.totalAmount?.toString(),
-      data.type,
-      data.status,
-      data.method,
-      data.description
-    ].join(' ').toLowerCase();
-    return searchStr.includes(filter);
-  };
+      const searchStr = [
+        data.transactionId,
+        data.user ? data.user.firstname : '',
+        data.user ? data.user.lastname : '',
+        data.amount?.toString(),
+        data.type,
+        data.status,
+        data.method,
+        data.description
+      ].join(' ').toLowerCase();
+      return searchStr.includes(filter);
+    };
 
-  this.sort.sortChange.subscribe(sort => {
-    this.currentSort.active = sort.active;
-    this.currentSort.direction = sort.direction || 'asc';
-    this.loadTransactions();
-  });
+    this.sort.sortChange.subscribe(sort => {
+      this.currentSort.active = sort.active;
+      this.currentSort.direction = sort.direction || 'asc';
+      this.loadTransactions();
+    });
   }
 
   loadTransactions(): void {
     this.isLoading = true;
-    // console.log('Transactions rechargées à', new Date().toLocaleTimeString());
 
     const formValues = this.filterForm.value;
-    const startDate = formValues.startDate ? this.datePipe.transform(formValues.startDate, 'yyyy-MM-dd') : '';
-    const endDate = formValues.endDate ? this.datePipe.transform(formValues.endDate, 'yyyy-MM-dd') : '';
+    
+    // Formater les dates en YYYY-MM-DD
+    const startDate = formValues.startDate ? this.formatDateForAPI(formValues.startDate) : undefined;
+    const endDate = formValues.endDate ? this.formatDateForAPI(formValues.endDate) : undefined;
+
+    console.log('Chargement transactions avec filtres:', {
+      startDate,
+      endDate,
+      type: formValues.type,
+      status: formValues.status,
+      method: formValues.method
+    });
 
     // Note: +1 car l'API attend probablement page=1 pour la première page
     const apiPage = this.currentPage + 1;
@@ -162,13 +173,13 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
       this.itemsPerPage,
       formValues.type as TransactionType,
       formValues.status as TransactionStatus,
-      formValues.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
-      startDate || undefined,
-      endDate || undefined
+      formValues.method as 'MOBILE_MONEY' | 'BANK_TRANSFER' | 'VIRTUAL_CARD' | 'WALLET',
+      startDate,
+      endDate
     ).subscribe({
       next: (response) => {
         this.dataSource.data = response.data.items;
-        this.totalItems = response.data.totalItems; // Assurez-vous que c'est le bon champ
+        this.totalItems = response.data.totalItems;
         this.isLoading = false;
 
         // Synchronisez le paginator après le chargement
@@ -180,8 +191,31 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
       error: (error) => {
         console.error('Error loading transactions:', error);
         this.isLoading = false;
+        this.snackBar.open('Erreur lors du chargement des transactions', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
     });
+  }
+
+  // Méthode pour formater les dates en YYYY-MM-DD
+  private formatDateForAPI(date: Date | string): string {
+    if (!date) return '';
+    
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    
+    // S'assurer que c'est une date valide
+    if (isNaN(dateObj.getTime())) {
+      console.error('Date invalide:', date);
+      return '';
+    }
+    
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
   }
 
   setupFilterListeners(): void {
@@ -215,13 +249,20 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onDateChange(type: 'startDate' | 'endDate', event: MatDatepickerInputEvent<Date>): void {
-    this.filterForm.get(type)?.setValue(event.value);
+    console.log('Date changée:', type, event.value);
+    
+    if (event.value) {
+      this.filterForm.get(type)?.setValue(event.value);
+    } else {
+      this.filterForm.get(type)?.setValue(null);
+    }
+    
     this.currentPage = 0;
     this.loadTransactions();
   }
 
   formatType(type: string): string {
-    return type ? type.toLowerCase().replace('_', ' ') : '';
+    return type ? type.toLowerCase().replace(/_/g, ' ') : '';
   }
 
   getStatusClass(status: string): string {
@@ -238,179 +279,174 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
     this.router.navigate(['/transactions', transactionId]);
   }
 
- // Ajoutez ces propriétés à votre classe
-exportStartDate: Date | null = null;
-exportEndDate: Date | null = null;
-isExporting = false;
+  // Méthodes pour l'export
+  exportToCSV(): void {
+    if (!this.exportStartDate || !this.exportEndDate) {
+      this.snackBar.open('Veuillez sélectionner une plage de dates valide', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
 
-exportToCSV(): void {
-  if (!this.exportStartDate || !this.exportEndDate) {
-    this.snackBar.open('Veuillez sélectionner une plage de dates valide', 'Fermer', {
-      duration: 3000,
-      panelClass: ['error-snackbar']
-    });
-    return;
-  }
+    if (this.exportStartDate > this.exportEndDate) {
+      this.snackBar.open('La date de début doit être antérieure à la date de fin', 'Fermer', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
 
-  if (this.exportStartDate > this.exportEndDate) {
-    this.snackBar.open('La date de début doit être antérieure à la date de fin', 'Fermer', {
-      duration: 3000,
-      panelClass: ['error-snackbar']
-    });
-    return;
-  }
+    this.isExporting = true;
 
-  this.isExporting = true;
+    const startDate = this.formatDateForAPI(this.exportStartDate);
+    const endDate = this.formatDateForAPI(this.exportEndDate);
 
-  const startDate = this.datePipe.transform(this.exportStartDate, 'yyyy-MM-dd')!;
-  const endDate = this.datePipe.transform(this.exportEndDate, 'yyyy-MM-dd')!;
+    console.log('Export avec dates:', { startDate, endDate });
 
-  // D'abord obtenir le nombre total de transactions
-  this.transactionsService.getTransactions(
-    1,
-    1, // On ne récupère qu'un seul élément pour connaître le total
-    this.filterForm.value.type as TransactionType,
-    this.filterForm.value.status as TransactionStatus,
-    this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
-    startDate,
-    endDate
-  ).subscribe({
-    next: (initialResponse) => {
-      const totalItems = initialResponse.data.totalItems;
+    // D'abord obtenir le nombre total de transactions
+    this.transactionsService.getTransactions(
+      1,
+      1,
+      this.filterForm.value.type as TransactionType,
+      this.filterForm.value.status as TransactionStatus,
+      this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER' | 'VIRTUAL_CARD' | 'WALLET',
+      startDate,
+      endDate
+    ).subscribe({
+      next: (initialResponse) => {
+        const totalItems = initialResponse.data.totalItems;
 
-      if (totalItems > 10000) {
-        const confirmExport = confirm(`Vous êtes sur le point d'exporter ${totalItems} transactions. Cela peut prendre du temps. Souhaitez-vous continuer ?`);
-        if (!confirmExport) {
-          this.isExporting = false;
-          return;
+        if (totalItems > 10000) {
+          const confirmExport = confirm(`Vous êtes sur le point d'exporter ${totalItems} transactions. Cela peut prendre du temps. Souhaitez-vous continuer ?`);
+          if (!confirmExport) {
+            this.isExporting = false;
+            return;
+          }
         }
-      }
 
-      // Maintenant récupérer toutes les données
-      this.getAllTransactionsForExport(
-        startDate,
-        endDate,
-        totalItems
-      );
-      this.exportDialogRef?.close();
-    },
-    error: (error) => {
-      console.error('Error getting transaction count:', error);
-      this.isExporting = false;
-      this.snackBar.open('Erreur lors de la récupération des données', 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-    }
-  });
-}
-
-private getAllTransactionsForExport(
-  startDate: string,
-  endDate: string,
-  totalItems: number,
-  currentPage: number = 1,
-  accumulatedData: Transactions[] = []
-): void {
-  const pageSize = 500; // Nombre d'éléments par requête
-  const totalPages = Math.ceil(totalItems / pageSize);
-
-  this.transactionsService.getTransactions(
-    currentPage,
-    pageSize,
-    this.filterForm.value.type as TransactionType,
-    this.filterForm.value.status as TransactionStatus,
-    this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
-    startDate,
-    endDate
-  ).subscribe({
-    next: (response) => {
-      const newData = [...accumulatedData, ...response.data.items];
-
-      if (currentPage >= totalPages) {
-        // Toutes les données sont récupérées, générer le CSV
-        this.generateCSV(newData, startDate, endDate);
+        // Maintenant récupérer toutes les données
+        this.getAllTransactionsForExport(
+          startDate,
+          endDate,
+          totalItems
+        );
+        this.exportDialogRef?.close();
+      },
+      error: (error) => {
+        console.error('Error getting transaction count:', error);
         this.isExporting = false;
-      } else {
-        // Passer à la page suivante
-        setTimeout(() => {
-          this.getAllTransactionsForExport(
-            startDate,
-            endDate,
-            totalItems,
-            currentPage + 1,
-            newData
-          );
-        }, 200); // Petit délai pour éviter de surcharger le serveur
+        this.snackBar.open('Erreur lors de la récupération des données', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
-    },
-    error: (error) => {
-      console.error('Error during export:', error);
-      this.isExporting = false;
-      this.snackBar.open('Erreur lors de la récupération des données', 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-    }
-  });
-}
+    });
+  }
 
-private generateCSV(transactions: Transactions[], startDate: string, endDate: string): void {
-  // Entêtes CSV
-  const headers = [
-    'ID Transaction',
-    'Utilisateur',
-    'Montant',
-    'Devise',
-    'Type',
-    'Statut',
-    'Méthode',
-    'Date',
-    'Description'
-  ];
+  private getAllTransactionsForExport(
+    startDate: string,
+    endDate: string,
+    totalItems: number,
+    currentPage: number = 1,
+    accumulatedData: Transactions[] = []
+  ): void {
+    const pageSize = 500;
+    const totalPages = Math.ceil(totalItems / pageSize);
 
-  // Préparation des données
-  const rows = transactions.map(t => [
-    t.transactionId,
-    t.user ? `${t.user.firstname} ${t.user.lastname}` : 'N/A',
-    t.amount.toFixed(2),
-    t.currency,
-    t.type,
-    t.status,
-    t.method || 'N/A',
-    this.datePipe.transform(t.createdAt, 'yyyy-MM-dd HH:mm:ss') || '',
-    t.description || ''
-  ]);
+    this.transactionsService.getTransactions(
+      currentPage,
+      pageSize,
+      this.filterForm.value.type as TransactionType,
+      this.filterForm.value.status as TransactionStatus,
+      this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER' | 'VIRTUAL_CARD' | 'WALLET',
+      startDate,
+      endDate
+    ).subscribe({
+      next: (response) => {
+        const newData = [...accumulatedData, ...response.data.items];
 
-  // Création du contenu CSV
-  const csvContent = [
-    headers.join(','),
-    ...rows.map(row =>
-      row.map(field =>
-        `"${field.toString().replace(/"/g, '""')}"`
-      ).join(',')
-    )
-  ].join('\n');
+        if (currentPage >= totalPages) {
+          // Toutes les données sont récupérées, générer le CSV
+          this.generateCSV(newData, startDate, endDate);
+          this.isExporting = false;
+        } else {
+          // Passer à la page suivante
+          setTimeout(() => {
+            this.getAllTransactionsForExport(
+              startDate,
+              endDate,
+              totalItems,
+              currentPage + 1,
+              newData
+            );
+          }, 200);
+        }
+      },
+      error: (error) => {
+        console.error('Error during export:', error);
+        this.isExporting = false;
+        this.snackBar.open('Erreur lors de la récupération des données', 'Fermer', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
 
-  // Téléchargement du fichier
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', `transactions_${startDate}_${endDate}_${new Date().getTime()}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
+  private generateCSV(transactions: Transactions[], startDate: string, endDate: string): void {
+    const headers = [
+      'ID Transaction',
+      'Utilisateur',
+      'Montant',
+      'Devise',
+      'Type',
+      'Statut',
+      'Méthode',
+      'Date',
+      'Description'
+    ];
 
-exportDialogRef?: MatDialogRef<void>;
+    const rows = transactions.map(t => [
+      t.transactionId,
+      t.user ? `${t.user.firstname} ${t.user.lastname}` : 'N/A',
+      t.amount.toFixed(2),
+      t.currency,
+      t.type,
+      t.status,
+      t.method || 'N/A',
+      this.datePipe.transform(t.createdAt, 'yyyy-MM-dd HH:mm:ss') || '',
+      t.description || ''
+    ]);
 
-openExportDialog(templateRef: TemplateRef<void>): void {
-  this.exportDialogRef = this.dialog.open(templateRef, {
-    // width: '600px',
-    disableClose: true
-  });
-}
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row =>
+        row.map(field =>
+          `"${field.toString().replace(/"/g, '""')}"`
+        ).join(',')
+      )
+    ].join('\n');
 
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `transactions_${startDate}_${endDate}_${new Date().getTime()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
+    this.snackBar.open('Export terminé avec succès!', 'Fermer', {
+      duration: 3000,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  openExportDialog(templateRef: TemplateRef<void>): void {
+    this.exportDialogRef = this.dialog.open(templateRef, {
+      width: '500px',
+      disableClose: true
+    });
+  }
 }

@@ -75,13 +75,13 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy {
   // Ne pas envoyer de paramètre status si currentStatus est vide
   const status = this.currentStatus === '' ? undefined : this.currentStatus;
 
-  this.cardService.getOnboardingRequests(status).subscribe({
+  this.cardService.getOnboardingRequests(this.currentPage, this.itemsPerPage, status).subscribe({
     next: (response: SessionPartyUserResponse) => {
       this.dataSource.data = response.data;
       this.totalItems = response.data.length;
       this.isLoading = false;
 
-      console.log('Onboarding requests loaded:', response.data, 'Total items:', this.totalItems);
+      // console.log('Onboarding requests loaded:', response.data, 'Total items:', this.totalItems);
     },
     error: (err) => {
       console.error('Error loading onboarding requests', err);

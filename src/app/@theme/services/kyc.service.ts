@@ -61,12 +61,14 @@ export class KycService {
   getPendingDocuments(
     page: number = 1,
     limit: number = 10,
-    typeAccount='CUSTOMER'
+    typeAccount : 'CUSTOMER' | 'MERCHANT'
   ): Observable<KycPendingResponse> {
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('page', page.toString())
-      .set('limit', limit.toString())
-      .set('typeAccount', typeAccount);
+      .set('limit', limit.toString());
+    if (typeAccount) {
+      params = params.set('typeAccount', typeAccount);
+    }
 
     return this.http.get<KycPendingResponse>(
       `${this.apiUrl}/admin/kyc/pending`,
@@ -132,13 +134,11 @@ export class KycService {
   getAllKyc(
     page: number = 1,
     limit: number = 10,
-    status?: string,
-    typeAccount='CUSTOMER'
+    status?: string
   ): Observable<KycListResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
-      .set('limit', limit.toString())
-      .set('typeAccount', typeAccount);
+      .set('limit', limit.toString());
 
     if (status) {
       params = params.set('status', status);
