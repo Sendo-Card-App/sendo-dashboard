@@ -64,6 +64,8 @@ export class KycListComponent implements OnInit, OnDestroy {
           if (response?.data?.items) {
             this.dataSource.data = response.data.items;
             this.totalItems = response.data.totalItems;
+
+           
           }
           this.isLoading = false;
         },

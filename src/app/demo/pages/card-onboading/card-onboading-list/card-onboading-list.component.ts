@@ -1,10 +1,9 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDrawer } from '@angular/material/sidenav';
 import { CardService } from 'src/app/@theme/services/card.service';
-import { ContactPoint, KycDocument, SessionParty, SessionPartyUserResponse, SessionType } from 'src/app/@theme/models/card';
-// import { MatDialog } from '@angular/material/dialog';
+import { ContactPoint, KycDocument, SessionParty, SessionPartyPagination, SessionType } from 'src/app/@theme/models/card';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -17,31 +16,32 @@ import { AuthenticationService } from 'src/app/@theme/services/authentication.se
   styleUrls: ['./card-onboading-list.component.scss'],
   imports: [CommonModule, SharedModule],
 })
-export class CardOnboardingListComponent implements OnInit, OnDestroy {
+export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('drawer') drawer!: MatDrawer;
 
   isLoading = false;
   searchText = '';
-  currentStatus = ''; // Valeur par défaut
- statusOptions = [
-  { value: '', label: 'Tous' },
-  { value: 'WAITING_FOR_INFORMATION', label: 'En attente d\'info' },
-  { value: 'UNDER_VERIFICATION', label: 'En vérification' },
-  { value: 'INIT', label: 'Initial' },
-  { value: 'VERIFIED', label: 'Vérifié' },
-  { value: 'REFUSED', label: 'Refusé' },
-  { value: 'REFUSED_TIMEOUT', label: 'Refusé (timeout)' }
-];
+  currentStatus = '';
+  
+  statusOptions = [
+    { value: '', label: 'Tous' },
+    { value: 'WAITING_FOR_INFORMATION', label: 'En attente d\'info' },
+    { value: 'UNDER_VERIFICATION', label: 'En vérification' },
+    { value: 'INIT', label: 'Initial' },
+    { value: 'VERIFIED', label: 'Vérifié' },
+    { value: 'REFUSED', label: 'Refusé' },
+    { value: 'REFUSED_TIMEOUT', label: 'Refusé (timeout)' }
+  ];
 
   displayedColumns: string[] = ['user', 'type', 'status', 'createdAt', 'action'];
   dataSource = new MatTableDataSource<SessionParty>();
   totalItems = 0;
   itemsPerPage = 10;
-  currentPage = 1;
+  currentPage = 0;
   currentuserRole: string[] | undefined;
-  sendocLoad: boolean = false;
-  summitload: boolean = false;
+  sendocLoad = false;
+  summitload = false;
 
   selectedParty: SessionType | null = null;
   selectedKycDocuments: BaseResponse<KycDocument> | null = null;
@@ -50,8 +50,7 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy {
 
   constructor(
     private cardService: CardService,
-    // private dialog: MatDialog
-    private snackBar: MatSnackBar, // Assurez-vous d'importer MatSnackBar
+    private snackBar: MatSnackBar,
     private authentificationService: AuthenticationService
   ) { }
 
@@ -60,7 +59,12 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy {
     this.loadOnboardingRequests();
     this.intervalId = setInterval(() => {
       this.loadOnboardingRequests();
-    }, 30000); // Auto-refresh every 30 seconds
+    }, 30000);
+  }
+
+  ngAfterViewInit(): void {
+    // S'assurer que le paginator est bien initialisé
+    this.dataSource.paginator = this.paginator;
   }
 
   ngOnDestroy(): void {
@@ -69,50 +73,86 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy {
     }
   }
 
- loadOnboardingRequests(): void {
-  this.isLoading = true;
+  loadOnboardingRequests(): void {
+    this.isLoading = true;
 
-  // Ne pas envoyer de paramètre status si currentStatus est vide
-  const status = this.currentStatus === '' ? undefined : this.currentStatus;
+    const apiPage = this.currentPage;
+    const status = this.currentStatus === '' ? undefined : this.currentStatus;
 
-  this.cardService.getOnboardingRequests(this.currentPage, this.itemsPerPage, status).subscribe({
-    next: (response: SessionPartyUserResponse) => {
-      this.dataSource.data = response.data;
-      this.totalItems = response.data.length;
-      this.isLoading = false;
+    console.log('Chargement des données:', {
+      page: apiPage,
+      pageSize: this.itemsPerPage,
+      status: status,
+      currentPage: this.currentPage
+    });
 
-      // console.log('Onboarding requests loaded:', response.data, 'Total items:', this.totalItems);
-    },
-    error: (err) => {
-      console.error('Error loading onboarding requests', err);
-      this.isLoading = false;
-    }
-  });
-}
+    // CORRECTION : Utilisation du bon type d'observable
+    this.cardService.getOnboardingRequests(apiPage, this.itemsPerPage, status).subscribe(
+      (response: SessionPartyPagination) => {
+        console.log('Réponse complète:', response);
+        
+        // CORRECTION : Structure de données plus robuste
+        const items = response?.data?.items || [];
+        const total = response?.data?.totalItems || 0;
 
+        // Mise à jour synchrone des données
+        this.dataSource.data = items;
+        this.totalItems = total;
+
+        console.log('Données chargées:', {
+          itemsCount: items.length,
+          totalItems: this.totalItems,
+          currentPage: this.currentPage,
+          itemsPerPage: this.itemsPerPage
+        });
+
+        this.isLoading = false;
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (error: any) => {
+        console.error('Error loading onboarding requests', error);
+        this.isLoading = false;
+        this.snackBar.open('Erreur lors du chargement des données', 'Fermer', { duration: 3000 });
+      }
+    );
+  }
 
   applyFilter(filterValue: string): void {
     this.searchText = filterValue.trim().toLowerCase();
     this.dataSource.filter = this.searchText;
+    
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+    // Réinitialiser la pagination côté serveur
+    this.currentPage = 0;
+    this.loadOnboardingRequests();
   }
 
   onStatusChange(status: string): void {
     this.currentStatus = status;
+    this.currentPage = 0;
     this.loadOnboardingRequests();
   }
 
   onPageChange(event: PageEvent): void {
-    this.currentPage = event.pageIndex + 1;
+    console.log('Changement de page:', event);
+    
+    // CORRECTION : Mise à jour avant le rechargement
+    this.currentPage = event.pageIndex;
     this.itemsPerPage = event.pageSize;
+    
     this.loadOnboardingRequests();
+    
+    // Scroll pour UX
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   }
 
 
 
-  viewDetails(party: SessionType): void {
+    viewDetails(party: SessionType): void {
     this.selectedParty = party;
     this.headerBlur = true;
     this.drawer.toggle();

@@ -54,13 +54,13 @@ export class MenuItemCompactComponent implements OnInit {
       this.isEnabled = true;
     }
 
-    console.log('MenuItemCompact Permission check:', {
-      item: item.title,
-      currentUserRole,
-      itemRoles: item.role,
-      parentRoles,
-      isEnabled: this.isEnabled
-    });
+    // console.log('MenuItemCompact Permission check:', {
+    //   item: item.title,
+    //   currentUserRole,
+    //   itemRoles: item.role,
+    //   parentRoles,
+    //   isEnabled: this.isEnabled
+    // });
   }
 
   private hasRoleAccess(

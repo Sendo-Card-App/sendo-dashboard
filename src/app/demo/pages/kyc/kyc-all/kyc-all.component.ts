@@ -90,6 +90,8 @@ export class KycAllComponent implements OnInit {
         this.dataSource.data = response.data.items;
         this.totalItems = response.data.totalItems;
         this.isLoading = false;
+
+         console.log('Total items:', response.data);
       },
       error: (err) => {
         this.isLoading = false;

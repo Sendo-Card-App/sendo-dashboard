@@ -157,13 +157,13 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
     const startDate = formValues.startDate ? this.formatDateForAPI(formValues.startDate) : undefined;
     const endDate = formValues.endDate ? this.formatDateForAPI(formValues.endDate) : undefined;
 
-    console.log('Chargement transactions avec filtres:', {
-      startDate,
-      endDate,
-      type: formValues.type,
-      status: formValues.status,
-      method: formValues.method
-    });
+    // console.log('Chargement transactions avec filtres:', {
+    //   startDate,
+    //   endDate,
+    //   type: formValues.type,
+    //   status: formValues.status,
+    //   method: formValues.method
+    // });
 
     // Note: +1 car l'API attend probablement page=1 pour la première page
     const apiPage = this.currentPage + 1;
@@ -382,6 +382,7 @@ export class TrAllTransactionComponent implements OnInit, AfterViewInit, OnDestr
             );
           }, 200);
         }
+        console.log(`Progression de l'export: Page ${currentPage} sur ${totalPages} ${response.data} éléments récupérés.`);
       },
       error: (error) => {
         console.error('Error during export:', error);

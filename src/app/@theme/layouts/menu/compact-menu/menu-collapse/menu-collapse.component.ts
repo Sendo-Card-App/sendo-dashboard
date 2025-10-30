@@ -91,13 +91,13 @@ export class MenuCollapseCompactComponent implements OnInit {
       this.isEnabled = true;
     }
 
-    console.log('MenuCollapseCompact Permission check:', {
-      item: item.title,
-      currentUserRole,
-      itemRoles: item.role,
-      parentRoles,
-      isEnabled: this.isEnabled
-    });
+    // console.log('MenuCollapseCompact Permission check:', {
+    //   item: item.title,
+    //   currentUserRole,
+    //   itemRoles: item.role,
+    //   parentRoles,
+    //   isEnabled: this.isEnabled
+    // });
   }
 
   private hasRoleAccess(

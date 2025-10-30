@@ -67,6 +67,16 @@ export interface ContactPoint {
   country?: string; // Pour les numéros de téléphone
 }
 
+export interface SessionPartyPagination {
+ status: number;
+   message: string;
+   data: {
+     page: number;
+     totalPages: number;
+     totalItems: number;
+     items: SessionParty[];
+   };
+}
 
 export interface SessionPartyUserResponse {
   status: number;
