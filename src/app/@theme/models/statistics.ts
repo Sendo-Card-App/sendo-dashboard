@@ -89,6 +89,7 @@ export interface StatisticsData {
   roleStats: RoleStat[];
   requestFundsStats: RequestFundsStats;
   tontineStats: TontineStats;
+  merchantWithdrawStats: MerchantWithdrawStats;
 }
 
 /** Réponse de l’API */
@@ -242,3 +243,16 @@ export interface TontineStats {
   recentTontines: RecentTontine[];
 }
 
+export interface MerchantWithdrawStats{
+  totalWithdrawals: number;
+  totalAmountWithdrawn: number;
+  averageAmount: number;
+  recentWithdrawals: RecentWithdrawal[];
+}
+
+export interface RecentWithdrawal {
+  id: number;
+  merchant: string;
+  amount: number;
+  createdAt: string;
+}

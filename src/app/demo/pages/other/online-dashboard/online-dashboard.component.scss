@@ -25,3 +25,66 @@
     font-weight: 600;
   }
 }
+
+
+.merchant-withdraw-stats {
+  .recent-withdrawals {
+    max-height: 300px;
+    overflow-y: auto;
+    
+    .list-group-item {
+      padding: 1rem;
+      border-left: 0;
+      border-right: 0;
+      
+      &:last-child {
+        border-bottom: 0;
+      }
+      
+      .avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+      
+      .text-truncate {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+  
+  // Style pour le scrollbar personnalisé
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .merchant-withdraw-stats {
+    .recent-withdrawals {
+      .list-group-item {
+        .flex-grow-1 {
+          min-width: 0;
+        }
+      }
+    }
+  }
+}

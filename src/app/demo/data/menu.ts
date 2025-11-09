@@ -302,6 +302,26 @@ export const menus: Navigation[] = [
 
         ]
       },
+      {
+        id: 'Demande de retrait',
+        title: 'Demande de retrait',
+        type: 'collapse',
+        icon: '#custom-bill',
+         role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN,  Role1.COMPLIANCE_OFFICER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
+        children: [
+          {
+            id: 'alldebt',
+            title: 'Liste des demandes de retrait',
+            type: 'item',
+            url: '/withdrawal/allrequests',
+            // target: true,
+            breadcrumbs: true
+          },
+
+
+        ]
+      },
     ]
   },
   {

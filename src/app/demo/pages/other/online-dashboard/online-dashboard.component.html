@@ -21,6 +21,9 @@
     </app-card>
   </div>
   }
+
+  
+
   <div class="col-lg-7 col-md-12">
     <app-statistics-chart [height]="250" />
   </div>
@@ -107,18 +110,18 @@
     </app-card>
   </div>
   <app-card [showHeader]="false">
-      <div class="flex align-item-center justify-content-between">
-        <div class="f-16 f-w-600">Statistiques des cartes</div>
-        <a class="text-primary-500" routerLink="/card/all">Rapport complet</a>
-      </div>
-      <!-- <div class="f-24 f-w-600">$7,860</div>
+    <div class="flex align-item-center justify-content-between">
+      <div class="f-16 f-w-600">Statistiques des cartes</div>
+      <a class="text-primary-500" routerLink="/card/all">Rapport complet</a>
+    </div>
+    <!-- <div class="f-24 f-w-600">$7,860</div>
       <p class="flex align-item-center text-success-500 m-b-0">
         <i class="ti ti-arrow-narrow-up m-r-5"></i>
         2.1%
       </p>
       <p class="text-muted">Sales from 1-12 Dec, 2023</p> -->
-      <app-card-stats />
-    </app-card>
+    <app-card-stats />
+  </app-card>
 
   <div class="col-lg-4 col-md-6">
     <app-card [showHeader]="false">
@@ -135,7 +138,59 @@
     </app-card>
   </div>
 
+  <!-- Ajouter cette section après les 4 cartes de statistiques principales -->
+  <div class="col-lg-4 col-md-6">
+    <app-card cardTitle="Retraits Merchants" [padding]="0" cardClass="merchant-withdraw-stats">
+      <div class="p-3 border-bottom">
+        <div class="row text-center">
+          <div class="col-6">
+            <p class="m-b-5 text-muted">Total Retraits</p>
+            <h4 class="f-w-600">{{ merchantWithdrawStats?.totalWithdrawals || 0 }}</h4>
+          </div>
+          <div class="col-6">
+            <p class="m-b-5 text-muted">Montant Total</p>
+            <h4 class="f-w-600">{{ formatCurrency(merchantWithdrawStats?.totalAmountWithdrawn || 0) }}</h4>
+          </div>
+        </div>
+        <div class="row text-center m-t-10">
+          <div class="col-12">
+            <p class="m-b-5 text-muted">Moyenne/Retrait</p>
+            <h5 class="f-w-600">{{ formatCurrency(merchantWithdrawStats?.averageAmount || 0) }}</h5>
+          </div>
+        </div>
+      </div>
 
+      <div class="recent-withdrawals">
+        <div class="p-3 border-bottom">
+          <h6 class="f-w-600 m-b-0">Retraits Récents</h6>
+        </div>
+
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let withdrawal of merchantWithdrawStats?.recentWithdrawals || []" class="list-group-item">
+            <div class="flex align-item-center">
+              <div class="flex-shrink-0">
+                <div class="avatar avatar-s bg-primary-50 text-primary-500">
+                  {{ withdrawal.merchant?.charAt(0) || 'M' }}
+                </div>
+              </div>
+              <div class="flex-grow-1 m-x-15">
+                <h6 class="m-b-0 text-truncate">{{ withdrawal.merchant || 'Merchant' }}</h6>
+                <p class="m-b-0 text-muted">{{ formatDate(withdrawal.createdAt) }}</p>
+              </div>
+              <div class="flex-shrink-0">
+                <span class="f-w-600 text-success">{{ formatCurrency(withdrawal.amount) }}</span>
+              </div>
+            </div>
+          </li>
+
+          <li *ngIf="!merchantWithdrawStats?.recentWithdrawals?.length" class="list-group-item text-center py-4">
+            <i class="ti ti-cash-off text-muted f-24 m-b-10 d-block"></i>
+            <p class="text-muted m-b-0">Aucun retrait récent</p>
+          </li>
+        </ul>
+      </div>
+    </app-card>
+  </div>
 
   <!-- <div class="col-lg-4 col-md-6">
     <app-card [showHeader]="false">
