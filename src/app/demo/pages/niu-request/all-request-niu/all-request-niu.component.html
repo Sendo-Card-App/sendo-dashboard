@@ -161,6 +161,15 @@
           <span class="detail-label">Date de création:</span>
           <span>{{ currentRequest.createdAt | date:'medium' }}</span>
         </div>
+         <div class="detail-row">
+          <span class="detail-label">Piece d'identité:</span>
+          <span>
+            <a *ngIf="currentRequest.url" [href]="currentRequest.url" target="_blank" rel="noopener">
+              Voir le document
+            </a>
+            <span *ngIf="!currentRequest.url">Non disponible</span>
+          </span>
+        </div>
       </div>
 
       <div class="detail-section">

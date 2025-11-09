@@ -70,10 +70,13 @@ export class OnlineDashboardComponent implements OnInit {
 
   courseStates: string[] = ['Name', 'Teacher', 'Rating', 'Earning', 'Sale', 'Action'];
   courseSource = courseStates_data;
-   dashboard_summary: DashboardSummaryItem[] = [];
-    walletStats: WalletStats;
+  dashboard_summary: DashboardSummaryItem[] = [];
+  walletStats: WalletStats;
   topWallets: WalletTop[] = [];
   currencySymbol = 'XAF';
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  merchantWithdrawStats: any;
 
   constructor(
     private statisticsService: AdminService, // Injectez le service dans le constructeur
@@ -83,18 +86,16 @@ export class OnlineDashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-     this.loadStatistics();
-     this.loadWalletData();
+    this.loadStatistics();
+    this.loadWalletData();
   }
 
- // Dans votre composant.ts
-loadStatistics(): void {
+  // Dans votre composant.ts
+  loadStatistics(): void {
     this.statisticsService.getStatistics().subscribe({
       next: (response: StatisticsResponse) => {
         this.updateDashboardSummary(response.data);
-        // Vous pouvez aussi mettre à jour d'autres parties du dashboard ici
-
-        // console.log('Statistics loaded:', response.data);
+        this.merchantWithdrawStats = response.data.merchantWithdrawStats;
       },
       error: (err) => {
         if (err === "Token invalide") {
@@ -105,7 +106,19 @@ loadStatistics(): void {
     });
   }
 
-    private loadWalletData() {
+  formatDate(dateString: string): string {
+    if (!dateString) return 'N/A';
+
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+
+  private loadWalletData() {
     this.statisticsService.getStatistics().subscribe({
       next: (response) => {
         this.walletStats = response.data.walletStats;
@@ -118,7 +131,7 @@ loadStatistics(): void {
     });
   }
 
-  private formatCurrency(amount: number): string {
+   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: this.currencySymbol,

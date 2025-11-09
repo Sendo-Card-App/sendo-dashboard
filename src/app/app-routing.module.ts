@@ -158,6 +158,19 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'withdrawal',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'allrequests',
+        loadComponent: () => import('./demo/pages/withdrawal/withdrawal-request/withdrawal-request.component').then((c) => c.WithdrawalRequestComponent),
+        data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }
+      },
+
+    ]
+  },
+  {
     path: 'publicites',
     component: AdminComponent,
     canActivateChild: [RoleGuard],

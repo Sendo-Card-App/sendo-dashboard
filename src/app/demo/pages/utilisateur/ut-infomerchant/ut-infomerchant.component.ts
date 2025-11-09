@@ -4,24 +4,16 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatTableModule } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
 
 // Interfaces et services
-import { MerchantItem, MerchantResponse } from 'src/app/@theme/models/merchant';
+import { CreditWalletRequest, MerchantItem, MerchantResponse } from 'src/app/@theme/models/merchant';
 // import { AdminService } from 'src/app/@theme/services/admin.service';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
 import { ConfirmDialogComponent } from 'src/app/@theme/components/confirm-dialog/confirm-dialog.component';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { UserService } from 'src/app/@theme/services/users.service';
+import { MerchantService } from 'src/app/@theme/services/merchant.service';
 
 @Component({
   selector: 'app-ut-infomerchant',
@@ -30,15 +22,6 @@ import { UserService } from 'src/app/@theme/services/users.service';
     CommonModule,
     SharedModule,
     RouterModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
-    MatDividerModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatInputModule,
-    FormsModule
   ],
   styleUrls: ['./ut-infomerchant.component.scss']
 })
@@ -48,6 +31,10 @@ export class UtInfomerchantComponent implements OnInit {
   isLoading = false;
   currentuserRole: string[] | undefined;
   amount: number = 0;
+
+  showCreditSection = false;
+  creditAmount: number = 0;
+  isCrediting = false;
 
   // Table des rôles
   displayedColumns: string[] = ['name', 'actions'];
@@ -60,8 +47,9 @@ export class UtInfomerchantComponent implements OnInit {
     private adminService: UserService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private authentificationService: AuthenticationService
-  ) {}
+    private authentificationService: AuthenticationService,
+    private merchantService: MerchantService
+  ) { }
 
   ngOnInit(): void {
     this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
@@ -84,6 +72,7 @@ export class UtInfomerchantComponent implements OnInit {
         next: (response: MerchantResponse) => {
           this.merchant = response.data;
           this.updateRolesTable();
+          console.log('Détails du marchand:', this.merchant);
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         error: (error: any) => {
@@ -256,13 +245,13 @@ export class UtInfomerchantComponent implements OnInit {
   // Vérification des permissions
   canEdit(): boolean {
     return (this.currentuserRole?.includes('SUPER_ADMIN') ?? false) ||
-           (this.currentuserRole?.includes('SYSTEM_ADMIN') ?? false) ||
-           (this.currentuserRole?.includes('MANAGEMENT_CONTROLLER') ?? false);
+      (this.currentuserRole?.includes('SYSTEM_ADMIN') ?? false) ||
+      (this.currentuserRole?.includes('MANAGEMENT_CONTROLLER') ?? false);
   }
 
   canManageWallet(): boolean {
     return (this.currentuserRole?.includes('SUPER_ADMIN') ?? false) ||
-           (this.currentuserRole?.includes('SYSTEM_ADMIN') ?? false);
+      (this.currentuserRole?.includes('SYSTEM_ADMIN') ?? false);
   }
 
   canManageRoles(): boolean {
@@ -279,4 +268,79 @@ export class UtInfomerchantComponent implements OnInit {
       this.router.navigate(['/merchants/edit', this.merchantId]);
     }
   }
+
+
+  creditWallet(): void {
+  if (!this.creditAmount || this.creditAmount <= 0) {
+    this.snackBar.open('Veuillez entrer un montant valide', 'Fermer', { duration: 3000 });
+    return;
+  }
+
+  if (!this.merchant?.code) {
+    this.snackBar.open('Code marchand non disponible', 'Fermer', { duration: 3000 });
+    return;
+  }
+
+  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    width: '400px',
+    data: {
+      title: 'Créditer le wallet',
+      message: `Êtes-vous sûr de vouloir créditer ${this.creditAmount} ${this.merchant.user.wallet.currency} sur le compte de ${this.formatUserName()} ?`,
+      confirmText: 'Confirmer le crédit',
+      cancelText: 'Annuler'
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(confirm => {
+    if (confirm) {
+      this.performCreditWallet();
+    }
+  });
+}
+
+private performCreditWallet(): void {
+  this.isCrediting = true;
+
+  const request: CreditWalletRequest = {
+    merchantCode: this.merchant.code,
+    amount: this.creditAmount
+  };
+
+  this.merchantService.creditWallet(request).subscribe({
+    next: () => {
+      this.isCrediting = false;
+      this.showCreditSection = false;
+      this.creditAmount = 0;
+
+      this.snackBar.open('Wallet crédité avec succès!', 'Fermer', {
+        duration: 5000,
+        panelClass: ['success-snackbar']
+      });
+
+      // Recharger les données du marchand
+      this.loadMerchantDetails();
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    error: (error: any) => {
+      this.isCrediting = false;
+      console.error('Erreur crédit wallet:', error);
+      this.snackBar.open('Erreur lors du crédit du wallet: ' + (error.message || 'Erreur inconnue'), 'Fermer', {
+        duration: 5000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
+
+// Ajouter cette méthode pour annuler le crédit
+cancelCredit(): void {
+  this.showCreditSection = false;
+  this.creditAmount = 0;
+}
+
+// Ajouter cette méthode pour vérifier les permissions
+canCreditWallet(): boolean {
+  return (this.currentuserRole?.includes('SUPER_ADMIN') ?? false) ||
+         (this.currentuserRole?.includes('SYSTEM_ADMIN') ?? false);
+}
 }

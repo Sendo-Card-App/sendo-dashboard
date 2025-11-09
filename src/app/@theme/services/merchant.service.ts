@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { CreditWalletRequest, MerchantWithdrawalResponse } from '../models/merchant';
 
 /** ✅ Interfaces de base **/
 export interface BaseResponse {
@@ -128,7 +129,59 @@ export class MerchantService {
     );
   }
 
-  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initWithdrawalRequest(idRequestWithdraw: number): Observable<any> {
+    if (isNaN(idRequestWithdraw)) {
+      throw new Error('idRequestWithdraw doit être un nombre valide');
+    }
+
+    const url = `${this.apiUrl}/merchant/init/withdrawal-request/${idRequestWithdraw}`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.http.post<any>(url, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Erreur lors de l’initiation du retrait:', error);
+        return throwError(() => new Error(error.message || 'Erreur serveur'));
+      })
+    );
+  }
+
+  getWithdrawalRequests(
+    page: number = 1,
+    limit: number = 10,
+    status?: string
+  ): Observable<MerchantWithdrawalResponse> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const params: any = { page, limit };
+
+    // On n’ajoute le filtre que s’il est défini
+    if (status && status.trim() !== '') {
+      params.status = status;
+    }
+
+    return this.http
+      .get<MerchantWithdrawalResponse>(`${this.apiUrl}/merchant/withdrawal-request/all`, {
+        params, ...this.getConfigAuthorized()
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.error('Erreur lors du chargement des retraits:', error);
+          return throwError(() => new Error(error.message || 'Erreur serveur'));
+        })
+      );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  creditWallet(request: CreditWalletRequest): Observable<any> {
+  return this.http
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .post<any>(`${this.apiUrl}/merchant/credit-wallet`, request, this.getConfigAuthorized())
+    .pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Erreur lors du crédit du wallet marchand:', error);
+        return throwError(() => new Error(error.message || 'Erreur serveur'));
+      })
+    );
+}
 
 
 
