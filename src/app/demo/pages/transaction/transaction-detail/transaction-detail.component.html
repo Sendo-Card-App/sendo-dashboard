@@ -132,7 +132,7 @@
           </div>
 
           <!-- Afficher le formulaire SEULEMENT si isEditing est activé ET qu’on a le droit de modifier -->
-          <div *ngIf="isEditing && (transaction?.method === 'BANK_TRANSFER')" class="status-form"
+          <div *ngIf="isEditing && (transaction?.method === 'BANK_TRANSFER' && transaction?.type === 'DEPOSIT')" class="status-form"
             [formGroup]="statusForm">
             <div class="form-grid">
               <!-- Colonne gauche -->
@@ -185,7 +185,7 @@
               </button>
             </div>
           </div>
-          <div *ngIf="isEditing && ( transaction?.type === 'TRANSFER')" class="status-form" [formGroup]="statusForm">
+          <div *ngIf="isEditing && (transaction?.method === 'BANK_TRANSFER' && transaction?.type === 'TRANSFER')" class="status-form" [formGroup]="statusForm">
             <div class="form-grid">
               <!-- Colonne gauche -->
               <div class="form-column">
