@@ -4,11 +4,11 @@
 
 import packageInfo from '../../package.json';
 
-// export const apiUrl = 'https://api.sf-e.ca/api';
-export const apiUrl = 'https://dev.api.sf-e.ca/api';
+export const apiUrl = 'https://api.sf-e.ca/api';
+// export const apiUrl = 'https://dev.api.sf-e.ca/api';
 const authUrl = '/auth';
-// const socketUrl = 'https://api.sf-e.ca/';
-const socketUrl = 'https://dev.api.sf-e.ca/';
+const socketUrl = 'https://api.sf-e.ca/';
+// const socketUrl = 'https://dev.api.sf-e.ca/';
 
 export const environment = {
   appVersion: packageInfo.version,
