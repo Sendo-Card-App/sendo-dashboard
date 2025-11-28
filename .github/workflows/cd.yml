@@ -1,0 +1,42 @@
+name: CD Dashboard Sendo
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  deploy:
+    name: Déploiement VPS
+    needs: build-and-test
+    runs-on: ubuntu-24.04
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Télécharger l'artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+
+      - name: Configuration SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/gh-key
+          chmod 600 ~/.ssh/gh-key
+          ssh-keyscan ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Déploiement
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # Clé sans passphrase
+          port: 22
+          script: |
+            cd ${{ secrets.DASHBOARD_DESTINATION }}
+            rm -rf ./build
+            cp -r "$GITHUB_WORKSPACE/build" ./
+            sudo chown -R www-data:www-data ./build
+            sudo systemctl restart nginx
+
