@@ -59,7 +59,7 @@ export class UtInfomerchantComponent implements OnInit {
       this.loadMerchantDetails();
     } else {
       this.snackBar.open('ID marchand invalide', 'Fermer', { duration: 3000 });
-      this.router.navigate(['/merchants']);
+      this.router.navigate(['/users/allmerchant']);
     }
   }
 

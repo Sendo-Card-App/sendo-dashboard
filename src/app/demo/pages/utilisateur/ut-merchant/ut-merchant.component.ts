@@ -161,8 +161,8 @@ export class UtMerchantComponent implements AfterViewInit, OnInit {
   }
 
   formatWalletBalance(merchant: MerchantItem): string {
-    if (!merchant.user.wallet) return 'N/A';
-    return `${merchant.user.wallet.balance} ${merchant.user.wallet.currency}`;
+    if (!merchant) return 'N/A';
+    return `${merchant.balance} XAF`;
   }
 
   getStableColor(str: string): string {

@@ -15,6 +15,7 @@ export interface UserCreateRequest {
   placeOfBirth?: string;
   roleId: number;
   country: string;
+  typeMerchantAccount?: 'CUSTOMER' | 'Particulier' | 'Entreprise';
 }
 
 interface ApiResponse<T = unknown> {
@@ -56,7 +57,8 @@ export class UserService {
       dateOfBirth: userData.dateOfBirth ? String(userData.dateOfBirth) : null, // Assure que c'est un string
       placeOfBirth: userData.placeOfBirth || null,
       roleId: Number(userData.roleId),
-      country: userData.country?.trim() || null
+      country: userData.country?.trim() || null,
+      typeMerchantAccount: userData.typeMerchantAccount || 'CUSTOMER' 
     };
 
     return this.http.post<ApiResponse>(

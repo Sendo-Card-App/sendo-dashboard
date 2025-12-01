@@ -120,7 +120,6 @@
                 <mat-select formControlName="typeMerchantAccount" required>
                   <mat-option value="Particulier">Compte Particulier</mat-option>
                   <mat-option value="Entreprise">Compte Entreprise</mat-option>
-                  <mat-option value="Corporate">Compte Corporate</mat-option>
                 </mat-select>
                 <mat-error *ngIf="invitationForm.get('typeMerchantAccount')?.hasError('required')">
                   Sélectionnez un type de compte

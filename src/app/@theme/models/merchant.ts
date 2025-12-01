@@ -47,6 +47,7 @@ export interface MerchantItem {
   id: number;
   userId: number;
   typeAccount: string;
+  balance: number;
   status: string;
   createdAt: string;
   updatedAt: string;

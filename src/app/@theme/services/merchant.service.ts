@@ -172,7 +172,7 @@ export class MerchantService {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   creditWallet(request: CreditWalletRequest): Observable<any> {
-  return this.http
+    return this.http
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .post<any>(`${this.apiUrl}/merchant/credit-wallet`, request, this.getConfigAuthorized())
     .pipe(
@@ -181,7 +181,7 @@ export class MerchantService {
         return throwError(() => new Error(error.message || 'Erreur serveur'));
       })
     );
-}
+  }
 
 
 

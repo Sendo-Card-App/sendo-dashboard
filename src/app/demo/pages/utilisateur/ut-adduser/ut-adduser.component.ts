@@ -7,6 +7,7 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CountryService } from 'src/app/@theme/services/country.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ut-adduser',
@@ -30,7 +31,8 @@ export class UtAdduserComponent implements OnInit {
     private adminService: AdminService,
     private userService: UserService,
     private snackbar: MatSnackBar,
-    private countryService: CountryService
+    private countryService: CountryService,
+    private router: Router
   ) {
     this.invitationForm = this.fb.group({
       firstname: ['', [Validators.required, Validators.maxLength(50)]],
@@ -42,7 +44,7 @@ export class UtAdduserComponent implements OnInit {
       placeOfBirth: ['', Validators.required],
       roleId: [null, Validators.required],
       country: ['', Validators.required],
-      typeMerchantAccount: [''] // Nouveau champ pour le type de compte merchant
+      typeMerchantAccount: ['CUSTOMER'], // valeur par défaut CUSTOMER
     });
   }
 
@@ -66,9 +68,12 @@ export class UtAdduserComponent implements OnInit {
     const selectedRole = this.roles.find(role => role.id === roleId);
     this.showMerchantAccountType = selectedRole?.name === 'MERCHANT';
 
-    // Réinitialiser le champ typeMerchantAccount si le rôle n'est pas MERCHANT
     if (!this.showMerchantAccountType) {
-      this.invitationForm.patchValue({ typeMerchantAccount: '' });
+      // si ce n’est pas MERCHANT, on force CUSTOMER
+      this.invitationForm.patchValue({ typeMerchantAccount: 'CUSTOMER' });
+    } else {
+      // si c’est MERCHANT, on laisse vide pour obliger le user à choisir Particulier / Entreprise
+      this.invitationForm.patchValue({ typeMerchantAccount: null });
     }
   }
 
@@ -96,13 +101,13 @@ export class UtAdduserComponent implements OnInit {
 
     const formData = this.invitationForm.value;
 
-    // Format dateOfBirth as DD/MM/YYYY string
+    // Format dateOfBirth as YYYY-MM-DD string
     const date = new Date(formData.dateOfBirth);
     const formattedDateOfBirth = [
-      String(date.getDate()).padStart(2, '0'),
+      date.getFullYear(),
       String(date.getMonth() + 1).padStart(2, '0'),
-      date.getFullYear()
-    ].join('/');
+      String(date.getDate()).padStart(2, '0'),
+    ].join('-');
 
     console.log('Creating user with data:', formData);
 
@@ -117,13 +122,9 @@ export class UtAdduserComponent implements OnInit {
       dateOfBirth: formattedDateOfBirth,
       placeOfBirth: formData.placeOfBirth,
       roleId: formData.roleId,
-      country: formData.country
+      country: formData.country,
+      typeMerchantAccount: formData.typeMerchantAccount || 'CUSTOMER',
     };
-
-    // Ajouter typeMerchantAccount seulement si le rôle est MERCHANT
-    if (this.showMerchantAccountType && formData.typeMerchantAccount) {
-      userData.typeMerchantAccount = formData.typeMerchantAccount;
-    }
 
     this.userService.createUser(userData).subscribe({
       next: (response) => {
@@ -135,15 +136,25 @@ export class UtAdduserComponent implements OnInit {
           this.snackbar.open('Utilisateur créé avec succès', 'Fermer', {
             duration: 3000
           });
+
+          setTimeout(() => {
+            if (userData.typeMerchantAccount && userData.typeMerchantAccount == 'CUSTOMER') {
+              this.router.navigate(['/users/alluser']);
+            } else {
+              this.router.navigate(['/users/allmerchant']);
+            }
+          }, 3000);
         } else {
           this.errorMessage = response.message || 'Erreur lors de la création';
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.snackbar.open(`Erreur lors de la création de l'utilisateur ${formData.firstname} ${formData.lastname}`, 'Fermer', {
-          duration: 3000
-        });
+        this.snackbar.open(
+          `Erreur lors de la création de l'utilisateur ${formData.firstname} ${formData.lastname}`, 
+          'Fermer', 
+          { duration: 3000 }
+        );
         this.errorMessage = this.getErrorMessage(err);
       },
       complete: () => {
