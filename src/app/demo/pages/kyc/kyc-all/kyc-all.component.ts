@@ -64,8 +64,8 @@ export class KycAllComponent implements OnInit {
   this.dataSource.filterPredicate = (data: unknown, filter: string) => {
     const kycData = data as KycDocument;
     const searchStr = [
-      kycData.user?.firstname,
-      kycData.user?.lastname,
+      kycData.user?.user.firstname,
+      kycData.user?.user.lastname,
       kycData.type,
       kycData.status
     ].join(' ').toLowerCase();

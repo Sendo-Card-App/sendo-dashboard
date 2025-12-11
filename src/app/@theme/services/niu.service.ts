@@ -88,8 +88,8 @@ export class NiuService {
     formData.append('reason', reason);
   }
   if (file) {
-  formData.append('request', file, file.name); // ✅ Correspond à Swagger
-}
+    formData.append('request', file, file.name); // ✅ Correspond à Swagger
+  }
 
   // Ne pas spécifier 'multipart/form-data', le navigateur le fera automatiquement
   return this.http.put<RequestsListResponse>(

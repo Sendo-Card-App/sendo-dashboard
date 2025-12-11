@@ -28,7 +28,7 @@ import { Subject } from 'rxjs';
 })
 export class UtAlluserComponent implements AfterViewInit, OnInit {
   displayedColumns = ['name', 'email', 'phone', 'status', 'createdAt', 'action'];
-  dataSource = new MatTableDataSource<MeResponse>();
+  dataSource = new MatTableDataSource<MeResponse['user']>();
   isLoading = false;
   totalItems = 0;
   currentPage = 1;
@@ -126,7 +126,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
   }
 
   // Appliquer le filtre de rôle localement (temporaire)
-  private applyRoleFilterLocal(users: MeResponse[], roleFilter: string): MeResponse[] {
+  private applyRoleFilterLocal(users: MeResponse['user'][], roleFilter: string): MeResponse['user'][] {
     return users.filter(user => {
       if (roleFilter === 'ADMIN') {
         return user.roles && user.roles.length > 1;
@@ -160,7 +160,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
   }
 
   // Les autres méthodes restent inchangées...
-  formatUserName(user: MeResponse): string {
+  formatUserName(user: MeResponse['user']): string {
     return `${user.firstname} ${user.lastname}`.trim();
   }
 
@@ -177,7 +177,7 @@ export class UtAlluserComponent implements AfterViewInit, OnInit {
     return `hsl(${h}, 70%, 60%)`;
   }
 
-  createStableAvatar(user: MeResponse): { letter: string; color: string } {
+  createStableAvatar(user: MeResponse['user']): { letter: string; color: string } {
     const firstLetter = user.firstname ? user.firstname.charAt(0).toUpperCase() : '?';
     return {
       letter: firstLetter,

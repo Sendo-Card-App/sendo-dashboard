@@ -19,7 +19,7 @@ export class RoleGuard implements CanActivate, CanActivateChild {
   }
 
   private checkRoleAccess(route: ActivatedRouteSnapshot): boolean {
-    const user = this.auth.getStoredUser() as MeResponse; // Cast vers MeResponse
+    const user = this.auth.getStoredUser() as MeResponse['user']; // Cast vers MeResponse
 
     // 1. Vérification de la connexion
     if (!user) {

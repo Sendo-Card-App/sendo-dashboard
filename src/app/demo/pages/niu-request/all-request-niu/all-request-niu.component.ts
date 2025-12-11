@@ -41,6 +41,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
   currentRequest: RequestItem | null = null;
   selectedAction: 'approve' | 'reject' | null = null;
   isUpdatingStatus = false;
+  isChangeInProgress = false;
   private intervalId!: ReturnType<typeof setInterval>;
 
   constructor(
@@ -167,6 +168,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
 
   onActionChange(): void {
     this.selectedFile = null;
+    this.isChangeInProgress = true;
     this.rejectionForm.reset();
   }
 
@@ -181,6 +183,7 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
     if (!this.currentRequest || this.isUpdatingStatus) return;
 
     this.isUpdatingStatus = true;
+    this.isChangeInProgress = false;
     let status: RequestStatus;
     let reason: string | undefined;
     let file: File | undefined;
@@ -189,14 +192,14 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
 
     if (this.selectedAction === 'approve') {
       status = 'PROCESSED';
-      if (!this.selectedFile) {
+      /*if (!this.selectedFile) {
         this.snackBar.open('Veuillez sélectionner un fichier', 'Fermer', { duration: 3000 });
         this.isUpdatingStatus = false;
         return;
       }
 
       file = this.selectedFile;
-      console.log('Selected file:', file);
+      console.log('Selected file:', file);*/
       console.log('Selected status:', status);
     } else if (this.selectedAction === 'reject') {
       status = 'REJECTED';
@@ -222,18 +225,18 @@ export class AllRequestNiuComponent implements OnInit, OnDestroy {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
+        this.isUpdatingStatus = false;
         this.currentRequest!.status = status;
         this.updateRequestInList(this.currentRequest!);
         this.closeDetails();
-        this.isUpdatingStatus = false;
       },
       error: (err) => {
         this.snackBar.open('Échec de la mise à jour du statut', 'Fermer', {
           duration: 3000,
           panelClass: ['error-snackbar']
         });
-        console.error('Error updating request status:', err.message);
         this.isUpdatingStatus = false;
+        console.error('Error updating request status:', err.message);
       }
     });
   }

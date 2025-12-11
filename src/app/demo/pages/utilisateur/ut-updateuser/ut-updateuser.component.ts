@@ -72,8 +72,8 @@ export class UtUpdateuserComponent implements OnInit {
     this.userService.getUserById(this.userId).subscribe({
       next: (response) => {
         if (response.data) {
-          this.populateForm(response.data);
-          this.userRoles = response.data.roles;
+          this.populateForm(response.data.user);
+          this.userRoles = response.data.user.roles;
         }
         this.isLoading = false;
       },
@@ -84,7 +84,7 @@ export class UtUpdateuserComponent implements OnInit {
     });
   }
 
-  populateForm(userData: MeResponse): void {
+  populateForm(userData: MeResponse['user']): void {
     this.userForm.patchValue({
       firstname: userData.firstname,
       lastname: userData.lastname,

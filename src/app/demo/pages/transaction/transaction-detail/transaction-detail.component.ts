@@ -138,7 +138,7 @@ export class TransactionDetailComponent implements OnInit {
   }
 
 
-  getUserInitials(user: MeResponse): string {
+  getUserInitials(user: MeResponse['user']): string {
     if (!user) return '?';
     return `${user.firstname?.charAt(0) || ''}${user.lastname?.charAt(0) || ''}`.toUpperCase() || '?';
   }

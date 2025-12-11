@@ -20,7 +20,7 @@ export class RoleAddComponent {
   private snackBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
   private data = inject(MAT_DIALOG_DATA);
-  user: MeResponse = this.data.user;
+  user: MeResponse['user'] = this.data.user;
 
   roleForm: FormGroup;
   allRoles: RoleUser[] = [];
@@ -38,8 +38,9 @@ export class RoleAddComponent {
     this.adminService.getAllRoles().subscribe({
       next: (roles) => {
         // Filtrer les rôles que l'utilisateur possède déjà
+        console.log('user : ', this.user)
         const userRoleIds = this.user.roles.map(role => role.id);
-
+        console.log('roles : ', roles)
         this.allRoles = roles
           .filter(role => !userRoleIds.includes(role.id))
           .map(role => ({

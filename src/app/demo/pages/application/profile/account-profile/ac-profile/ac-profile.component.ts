@@ -10,18 +10,18 @@ interface ContactInfo {
   icon: string;
   text: string;
   editable: boolean;
-  fieldName?: keyof MeResponse;
+  fieldName?: keyof MeResponse['user'];
 }
 
 interface PersonalDetail {
   group: string;
   text: string;
   editable: boolean;
-  fieldName?: keyof MeResponse;
+  fieldName?: keyof MeResponse['user'];
   group_2: string;
   text_2: string;
   editable_2: boolean;
-  fieldName_2?: keyof MeResponse;
+  fieldName_2?: keyof MeResponse['user'];
 }
 
 @Component({
@@ -32,7 +32,7 @@ interface PersonalDetail {
   styleUrls: ['../account-profile.scss', './ac-profile.component.scss']
 })
 export class AcProfileComponent {
-  userData: MeResponse | null = null;
+  userData: MeResponse['user'] | null = null;
   userRoles = '';
   contactInfos: ContactInfo[] = [];
   personalDetails: PersonalDetail[] = [];
@@ -50,7 +50,7 @@ export class AcProfileComponent {
     const stored = localStorage.getItem('user-info');
     if (!stored) { return; }
 
-    this.userData = JSON.parse(stored) as MeResponse;
+    this.userData = JSON.parse(stored) as MeResponse['user'];
     this.updateDisplayData();
   }
 
@@ -142,7 +142,7 @@ export class AcProfileComponent {
       .subscribe({
         next: (response) => {
           // Fusionner les nouvelles données avec les données existantes
-          const currentData: MeResponse = JSON.parse(localStorage.getItem('user-info') || '{}');
+          const currentData: MeResponse['user'] = JSON.parse(localStorage.getItem('user-info') || '{}');
           const updatedData = { ...currentData, ...response.data };
 
           localStorage.setItem('user-info', JSON.stringify(updatedData));

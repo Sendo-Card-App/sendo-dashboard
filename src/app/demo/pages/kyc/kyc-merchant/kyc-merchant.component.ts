@@ -167,7 +167,7 @@ rejectAllDocuments(): void {
 
   this.kycService.bulkReview({ documents: docsToReject }).subscribe({
     next: () => {
-      this.loadUserDocuments(this.userInfo.id);
+      this.loadUserDocuments(this.userInfo.user.id);
       this.loadDocuments();
     },
     error: (err) => console.error('Error rejecting all documents:', err)
@@ -178,7 +178,7 @@ rejectAllDocuments(): void {
 approveSingleDocument(documentId: number): void {
   this.kycService.reviewKyc(documentId,{ status: 'APPROVED' }).subscribe({
     next: () => {
-      this.loadUserDocuments(this.userInfo.id);
+      this.loadUserDocuments(this.userInfo.user.id);
       this.loadDocuments(); // Rafraîchir la liste principale
     },
     error: (err) => console.error('Error approving document:', err)
@@ -195,7 +195,7 @@ approveAllDocuments(): void {
 
    this.kycService.bulkReview({ documents: docsToApprove }).subscribe({
      next: () => {
-       this.loadUserDocuments(this.userInfo.id);
+       this.loadUserDocuments(this.userInfo.user.id);
        this.loadDocuments(); // Rafraîchir la liste principale
      },
      error: (err) => console.error('Error approving all documents:', err)
@@ -209,7 +209,7 @@ rejectSingleDocument(documentId: number, reason: string): void {
     rejectionReason: reason
   }).subscribe({
     next: () => {
-      this.loadUserDocuments(this.userInfo.id);
+      this.loadUserDocuments(this.userInfo.user.id);
       this.loadDocuments();
     },
     error: (err) => console.error('Error rejecting document:', err)

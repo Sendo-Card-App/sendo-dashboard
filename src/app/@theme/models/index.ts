@@ -16,29 +16,41 @@ export interface BaseResponse<T = unknown> {
   }
 
   export interface MeResponse<T = unknown> {
-    id: number;
-    firstname: string;
-    lastname: string;
-    email: string;
-    isVerifiedEmail: boolean;
-    phone: string;
-    address: string;
-    profession: string | null;
-    region: string | null;
-    city: string | null;
-    district: string | null;
-    isVerifiedKYC: boolean;
-    createdAt: string;
-    updatedAt: string;
-    roles: RolePayload[]; // Tableau de rôles
-    wallet: {
+    user: {
       id: number;
-      balance: number;
-      currency: string;
-      matricule: string;
-    };
-    virtualCard: T | null;
-    transactions: T[];
+      firstname: string;
+      lastname: string;
+      email: string;
+      isVerifiedEmail: boolean;
+      phone: string;
+      address: string;
+      profession: string | null;
+      region: string | null;
+      city: string | null;
+      district: string | null;
+      isVerifiedKYC: boolean;
+      dateOfBirth: string | null;
+      createdAt: string;
+      updatedAt: string;
+      roles: RolePayload[]; // Tableau de rôles
+      wallet: {
+        id: number;
+        balance: number;
+        currency: string;
+        matricule: string;
+      };
+      virtualCard: T | null;
+      transactions: T[];
+    },
+    referralCode: {
+      code: string;
+      createdAt: string;
+      updatedAt: string;
+      id: number;
+      isUsed: boolean;
+      usedBy: T[];
+      userId: number;
+    }
   }
 
 
@@ -99,7 +111,7 @@ export interface Transactions {
   userId: number;
   receiverId?: number | null;
 
-  user: MeResponse;
+  user: MeResponse['user'];
 
   currency: string;
   virtualCardId?: number;

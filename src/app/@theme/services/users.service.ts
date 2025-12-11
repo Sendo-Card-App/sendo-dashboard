@@ -28,7 +28,7 @@ export interface PaginatedUsers {
   page: number;
   totalPages: number;
   totalItems: number;
-  items: MeResponse[];
+  items: MeResponse['user'][];
 }
 
 export interface UsersResponse {
@@ -68,6 +68,19 @@ export class UserService {
     );
   }
 
+  saveIdentificationNumber(
+    userId: string | number,
+    numberIdentification: string
+  ): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/${userId}/kyc/niu`,
+      {
+        numberIdentification
+      },
+      this.getConfigAuthorized()
+    );
+  }
+
   updatePassword(
     oldPassword: string,
     newPassword: string
@@ -87,9 +100,9 @@ export class UserService {
 
   updateUser(
     userId: string | number,
-    userData: Partial<MeResponse>
-  ): Observable<{ message: string; data: Partial<MeResponse> }> {
-    return this.http.put<{ message: string; data: Partial<MeResponse> }>(
+    userData: Partial<MeResponse['user']>
+  ): Observable<{ message: string; data: Partial<MeResponse['user']> }> {
+    return this.http.put<{ message: string; data: Partial<MeResponse['user']> }>(
       `${this.apiUrl}/${userId}`,
       userData,
       this.getConfigAuthorized()
@@ -151,8 +164,8 @@ export class UserService {
   }
 
   //update user by ID
-  updateUserById(userId: string | number, userData: Partial<MeResponse>): Observable<{ message: string; data: Partial<MeResponse> }> {
-    return this.http.put<{ message: string; data: Partial<MeResponse> }>(
+  updateUserById(userId: string | number, userData: Partial<MeResponse['user']>): Observable<{ message: string; data: Partial<MeResponse['user']> }> {
+    return this.http.put<{ message: string; data: Partial<MeResponse['user']> }>(
       `${this.apiUrl}/${userId}`,
       userData,
       this.getConfigAuthorized()

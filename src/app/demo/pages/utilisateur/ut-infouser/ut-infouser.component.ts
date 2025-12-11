@@ -26,7 +26,7 @@ export class UtInfouserComponent implements OnInit {
   displayedColumns: string[] = ['name', 'actions'];
   currentuserRole: string[] | undefined;
   amount: number | null = null;
-
+  numeroIdentification: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,7 +41,7 @@ export class UtInfouserComponent implements OnInit {
   ngOnInit(): void {
     this.currentuserRole = this.authentificationService.currentUserValue?.user.role;
 
-    // console.log('Rôle utilisateur courant:', this.currentuserRole);
+    //console.log('Rôle utilisateur courant:', this.currentuserRole);
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) {
       this.errorMessage = 'Aucun identifiant fourni';
@@ -55,9 +55,9 @@ export class UtInfouserComponent implements OnInit {
       next: resp => {
         this.user = resp.data;
 
-        // console.log('Utilisateur récupéré:', this.user);
-        if (this.user?.roles) {
-          this.dataSource.data = this.user.roles;
+        console.log('Utilisateur récupéré:', this.user);
+        if (this.user?.user.roles) {
+          this.dataSource.data = this.user.user.roles;
         }
         this.isLoading = false;
       },
@@ -79,7 +79,7 @@ export class UtInfouserComponent implements OnInit {
   }
 
   /** Retourne la première lettre + couleur */
-  createStableAvatar(user?: MeResponse): { letter: string; color: string } | null {
+  createStableAvatar(user?: MeResponse['user']): { letter: string; color: string } | null {
     if (!user) return null;
 
     const letter = (user.firstname?.charAt(0)?.toUpperCase() || '?');
@@ -93,12 +93,12 @@ export class UtInfouserComponent implements OnInit {
 
   /** Copie le matricule du wallet dans le presse-papier */
   copyMatricule(): void {
-    if (!this.user?.wallet?.matricule) { return; }
-    navigator.clipboard.writeText(this.user.wallet.matricule)
+    if (!this.user?.user.wallet?.matricule) { return; }
+    navigator.clipboard.writeText(this.user.user.wallet.matricule)
       .catch(() => {/* silently fail */});
   }
 
-  openAddRoleDialog(user: MeResponse): void {
+  openAddRoleDialog(user: MeResponse['user']): void {
     if (!user) return;
     // console.log('Ouverture du dialogue d\'ajout de rôle pour l\'utilisateur', user);
 
@@ -135,8 +135,8 @@ export class UtInfouserComponent implements OnInit {
     this.router.navigate(['/transactions/user', transactionId]);
   }
 
-   makeDeposit(amount: number) {
-    this.userService.deposit(this.user!.wallet.matricule, amount).subscribe({
+  makeDeposit(amount: number) {
+    this.userService.deposit(this.user!.user.wallet.matricule, amount).subscribe({
       next: () => {
         this.snackBar.open('Recharge réussie', 'Fermer', { duration: 3000 });
         this.ngOnInit();
@@ -148,9 +148,25 @@ export class UtInfouserComponent implements OnInit {
     });
   }
 
-  makeWithdrawal(amount: number) {
-    this.userService.withdraw(this.user!.wallet.matricule, amount).subscribe({
+  saveIdentificationNumber(numberIdentification: string) {
+    if (!this.user) return;
+    this.userService.saveIdentificationNumber(this.user.user.id, numberIdentification).subscribe({
       next: () => {
+        this.numeroIdentification = null;
+        this.snackBar.open("NIU enregistré avec succès", 'Fermer', { duration: 3000 });
+        this.ngOnInit();
+      },
+      error: err => {
+        console.error("Erreur d'enregistrement numéro identification", err);
+        this.snackBar.open("Erreur lors de l'enregistrement du numéro identification", 'Fermer', { duration: 3000 });
+      }
+    });
+  }
+
+  makeWithdrawal(amount: number) {
+    this.userService.withdraw(this.user!.user!.wallet.matricule, amount).subscribe({
+      next: () => {
+        this.amount = null;
         this.snackBar.open('Retrait réussi', 'Fermer', { duration: 3000 });
         this.ngOnInit();
       },

@@ -92,11 +92,11 @@ export class AuthenticationService {
     return this.httpClient.get<BaseResponse>(`${this.urlcurl}/users/me`, this.getConfigAuthorized());
   }
 
-  public getStoredUser(): MeResponse | null {
+  public getStoredUser(): MeResponse['user'] | null {
     const raw = localStorage.getItem('user-info');
     if (!raw) return null;
     try {
-      return JSON.parse(raw) as MeResponse;
+      return JSON.parse(raw) as MeResponse['user'];
     } catch {
       return null;
     }

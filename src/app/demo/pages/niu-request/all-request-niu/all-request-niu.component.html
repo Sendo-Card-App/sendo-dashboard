@@ -198,14 +198,14 @@
         </mat-form-field>
 
         <!-- Section fichier pour approbation -->
-        <div *ngIf="selectedAction === 'approve'" class="file-upload-section">
+        <!-- <div *ngIf="selectedAction === 'approve'" class="file-upload-section">
           <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden>
           <label for="fileInput" class="file-upload-label">
             <mat-icon>attach_file</mat-icon>
             <span>{{ selectedFile?.name || 'Sélectionner un fichier' }}</span>
           </label>
           <small *ngIf="!selectedFile" class="file-hint">Un fichier est requis pour l'approbation</small>
-        </div>
+        </div> -->
 
         <!-- Section raison pour rejet -->
         <div *ngIf="selectedAction === 'reject'" [formGroup]="rejectionForm">
@@ -219,10 +219,9 @@
         </div>
 
         <div class="action-buttons">
-          <button mat-raised-button color="primary" (click)="updateRequestStatus()" [disabled]="isUpdatingStatus ||
-                          (selectedAction === 'approve' && !selectedFile) ||
+          <button mat-raised-button color="primary" (click)="updateRequestStatus()" [disabled]="(selectedAction === 'approve' && !isChangeInProgress) ||
                           (selectedAction === 'reject' && rejectionForm.invalid)">
-            <span *ngIf="!isUpdatingStatus">Valider</span>
+            <span>Valider</span>
             <mat-spinner diameter="20" *ngIf="isUpdatingStatus"></mat-spinner>
           </button>
           <button mat-stroked-button (click)="closeDetails()">Annuler</button>
