@@ -6,7 +6,18 @@ export interface LoginResponse {
 export interface BaseResponse<T = unknown> {
     status: number;
     message: string;
-    data: T;
+    data: {
+      user: MeResponse['user'];
+      referralCode: {
+        code: string;
+        createdAt: string;
+        updatedAt: string;
+        id: number;
+        isUsed: boolean;
+        usedBy: T[];
+        userId: number;
+      } | null;
+    };
 }
 
 
@@ -50,7 +61,7 @@ export interface BaseResponse<T = unknown> {
       isUsed: boolean;
       usedBy: T[];
       userId: number;
-    }
+    } | null;
   }
 
 
