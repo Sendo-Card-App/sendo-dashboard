@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, catchError, finalize, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { mapApiUserToUser, User } from '../types/user';
-import { BaseResponse, MeResponse, Login } from '../models';
+import { BaseResponse, MeResponse, Login, BaseResponse2 } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -89,7 +89,7 @@ export class AuthenticationService {
     return this.httpClient.post<BaseResponse>(`${this.url}/login`, data, this.getConfig());
   }
   getUserIdentifiant(){
-    return this.httpClient.get<BaseResponse>(`${this.urlcurl}/users/me`, this.getConfigAuthorized());
+    return this.httpClient.get<BaseResponse2>(`${this.urlcurl}/users/me`, this.getConfigAuthorized());
   }
 
   public getStoredUser(): MeResponse['user'] | null {

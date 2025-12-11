@@ -5,7 +5,7 @@ import { RouterModule, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
-import { BaseResponse } from 'src/app/@theme/models';
+import { BaseResponse, BaseResponse2 } from 'src/app/@theme/models';
 import { switchMap, tap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
 
         // Récupère les infos utilisateur après le login
         return this.authenticationService.getUserIdentifiant().pipe(
-          tap((userResponse: BaseResponse) => {
+          tap((userResponse: BaseResponse2) => {
             console.log('User info:', userResponse.data);
             localStorage.setItem('user-info', JSON.stringify(userResponse.data.user));
           }),
