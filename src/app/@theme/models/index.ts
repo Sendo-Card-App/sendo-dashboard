@@ -16,7 +16,7 @@ export interface BaseResponse<T = unknown> {
         isUsed: boolean;
         usedBy: T[];
         userId: number;
-      } | T | null;
+      } | T;
     };
 }
 
