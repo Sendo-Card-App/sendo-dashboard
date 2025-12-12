@@ -9,21 +9,10 @@ export interface BaseResponse<T = unknown> {
   data: T
 }
 
-export interface BaseResponse2<T = unknown> {
+export interface BaseResponse2 {
   status: number;
   message: string;
-  data: {
-    user: MeResponse['user'];
-    referralCode: {
-      code: string;
-      createdAt: string;
-      updatedAt: string;
-      id: number;
-      isUsed: boolean;
-      usedBy: T[];
-      userId: number;
-    };
-  };
+  data: MeResponse
 }
 
 
