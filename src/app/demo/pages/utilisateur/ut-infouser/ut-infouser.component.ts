@@ -54,7 +54,6 @@ export class UtInfouserComponent implements OnInit {
     this.userService.getUserById(userId).subscribe({
       next: resp => {
         this.user = resp.data;
-
         console.log('Utilisateur récupéré:', this.user);
         if (this.user?.user.roles) {
           this.dataSource.data = this.user.user.roles;
@@ -68,6 +67,15 @@ export class UtInfouserComponent implements OnInit {
     });
   }
 
+  getStatusText(status: string): string {
+    switch (status) {
+      case 'APPROVED': return 'Approuvé';
+      case 'REJECTED': return 'Rejeté';
+      case 'PENDING': return 'En attente';
+      default: return 'Inconnu';
+    }
+  }
+  
   /** Calcule une couleur stable à partir du nom */
   private getStableColor(str: string): string {
     let hash = 0;

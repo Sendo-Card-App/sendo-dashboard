@@ -54,7 +54,7 @@
             <!-- Statistiques -->
             <div class="row">
               <div class="col-4">
-                <div class="f-16 f-w-500">{{ merchant.user?.wallet?.balance || 0 }}</div>
+                <div class="f-16 f-w-500">{{ merchant.balance || 0 }}</div>
                 <div class="text-muted">Solde</div>
               </div>
               <div class="col-4 border-side">
@@ -243,7 +243,7 @@
             <div class="row">
               <div class="col-md-6">
                 <p class="m-b-5 text-muted">Statut du solde</p>
-                <div class="f-w-500">{{ merchant.user.wallet.status || 'N/A' }}</div>
+                <div class="f-w-500">{{ merchant.status || 'N/A' }}</div>
               </div>
               <div class="col-md-6">
                 <p class="m-b-5 text-muted">Date de création</p>

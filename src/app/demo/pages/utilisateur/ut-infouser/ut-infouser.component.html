@@ -230,7 +230,22 @@
       </mat-card-content>
     </app-card>
 
-    <app-card cardTitle="Actions sur le document" *ngIf="user?.user.kycDocuments && currentuserRole?.includes('SUPER_ADMIN')">
+    <app-card cardTitle="Actions sur le document" *ngIf="user?.user.kycDocuments.length > 0; else noDocuments">
+      <p><strong>Numéro NIU enregistré : </strong>{{ user.user.kycDocuments[0].taxIdNumber ?? 'Non défini' }}</p>
+      <div class="submitted-documents mb-10">
+        <strong>Document soumis :</strong>
+        <ul>
+          @for (doc of user?.user.kycDocuments; track doc.id) {
+            <li>
+              <a [href]="doc.url" target="_blank" class="document-link">
+                <mat-icon>link</mat-icon>
+                Voir le document ({{ getStatusText(doc.status) }})
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+      
       <mat-card-content>
         <!-- Champ NIU -->
         <mat-form-field appearance="outline" class="w-100">
@@ -246,5 +261,10 @@
         </div>
       </mat-card-content>
     </app-card>
+    <ng-template #noDocuments>
+      <app-card cardTitle="Actions sur le document">
+        <p class="text-muted">Aucun document KYC soumis</p>
+      </app-card>
+    </ng-template>
   </div>
 </div>
