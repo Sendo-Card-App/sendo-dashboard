@@ -163,37 +163,37 @@ export class WithdrawalRequestComponent implements OnInit {
   // 🔹 Obtention du statut avec couleur
   getStatusColor(status: string): string {
     switch (status) {
-      case 'COMPLETED': return '#4caf50';
+      case 'VALIDATED': return '#4caf50';
       case 'PENDING': return '#ff9800';
       case 'FAILED': return '#f44336';
-      case 'CANCELLED': return '#9e9e9e';
+      case 'REJECTED': return '#9e9e9e';
       default: return '#9e9e9e';
     }
   }
 
   getStatusIcon(status: string): string {
     switch (status) {
-      case 'COMPLETED': return 'check_circle';
+      case 'VALIDATED': return 'check_circle';
       case 'PENDING': return 'schedule';
       case 'FAILED': return 'cancel';
-      case 'CANCELLED': return 'block';
+      case 'REJECTED': return 'block';
       default: return 'help';
     }
   }
 
   getStatusLabel(status: string): string {
     switch (status) {
-      case 'COMPLETED': return 'Terminé';
+      case 'VALIDATED': return 'Validé';
       case 'PENDING': return 'En attente';
       case 'FAILED': return 'Échoué';
-      case 'CANCELLED': return 'Annulé';
+      case 'REJECTED': return 'Rejeté';
       default: return status;
     }
   }
 
   // 🔹 Vérification si une action peut être effectuée
   canInitiateWithdrawal(status: string): boolean {
-    return status === 'PENDING';
+    return status === 'PENDING' || status === 'FAILED';
   }
 
   // 🔹 Création d'avatar stable

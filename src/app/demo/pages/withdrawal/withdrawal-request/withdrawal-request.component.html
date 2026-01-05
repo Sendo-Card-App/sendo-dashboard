@@ -18,10 +18,10 @@
           <label class="filter-label">Statut</label>
           <select [(ngModel)]="filters.status" (change)="applyFilters()" class="form-select">
             <option value="">Tous les statuts</option>
-            <option value="PENDING">En attente</option>
-            <option value="COMPLETED">Terminé</option>
-            <option value="FAILED">Échoué</option>
-            <option value="CANCELLED">Annulé</option>
+            <option value="PENDING">{{ getStatusLabel("PENDING") }}</option>
+            <option value="VALIDATED">{{ getStatusLabel("VALIDATED") }}</option>
+            <option value="FAILED">{{ getStatusLabel("FAILED") }}</option>
+            <option value="REJECTED">{{ getStatusLabel("REJECTED") }}</option>
           </select>
         </div>
       </div>
@@ -151,9 +151,9 @@
                     <div *ngIf="!canInitiateWithdrawal(withdrawal.status)" class="action-info">
                       <i class="ti ti-info-circle"></i>
                       <span class="info-text">
-                        {{ withdrawal.status === 'COMPLETED' ? 'Déjà traité' :
+                        {{ withdrawal.status === 'VALIDATED' ? 'Déjà traité' :
                            withdrawal.status === 'FAILED' ? 'Échec précédent' :
-                           withdrawal.status === 'CANCELLED' ? 'Demande annulée' : 'Non disponible' }}
+                           withdrawal.status === 'REJECTED' ? 'Demande rejetée' : 'Non disponible' }}
                       </span>
                     </div>
                   </div>

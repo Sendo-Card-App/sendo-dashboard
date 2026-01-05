@@ -167,7 +167,9 @@ getTypeLabel(type: string): string {
     'WITHDRAWAL': 'Retrait',
     'PAYMENT': 'Paiement',
     'TONTINE_PAYMENT': 'Paiement Tontine',
-    'VIEW_CARD_DETAILS': 'Vue détails carte'
+    'VIEW_CARD_DETAILS': 'Vue détails carte',
+    'AGENT_TO_CUSTOMER': 'Dépôt agent',
+    'TRANSFER': 'CA-CAM'
   };
   return typeMap[type] || type;
 }
