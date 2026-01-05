@@ -119,20 +119,23 @@
               <button mat-stroked-button
                 (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) && toggleEdit()"
                 [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')"
-                *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.method === 'MOBILE_MONEY' || transaction?.type === 'TRANSFER'">
+                *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.method === 'MOBILE_MONEY' || transaction?.type === 'TRANSFER' || transaction?.method === 'INTERAC'">
                 {{ isEditing ? 'Annuler' : 'Modifier' }}
               </button>
             </div>
 
             <!-- Afficher le message uniquement si AUCUNE des deux conditions n’est vraie -->
-            <div *ngIf="transaction?.method !== 'BANK_TRANSFER'  && transaction?.type !== 'TRANSFER'"
+            <div *ngIf="transaction?.method !== 'BANK_TRANSFER'  && transaction?.type !== 'TRANSFER' && transaction?.method !== 'INTERAC'"
               class="not-allowed-message">
               Modification du statut non disponible pour ce type de transaction
             </div>
           </div>
 
           <!-- Afficher le formulaire SEULEMENT si isEditing est activé ET qu’on a le droit de modifier -->
-          <div *ngIf="isEditing && ( transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER')" class="status-form" [formGroup]="statusForm">
+          <div 
+            *ngIf="isEditing && ((transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || (transaction?.method === 'INTERAC' && transaction?.type === 'DEPOSIT'))" 
+            class="status-form" [formGroup]="statusForm"
+          >
             <div class="form-grid">
               <!-- Colonne gauche -->
               <div class="form-column">
@@ -148,7 +151,7 @@
                   </mat-error>
                 </mat-form-field>
 
-                <mat-form-field appearance="outline">
+                <mat-form-field appearance="outline" *ngIf="transaction?.method !== 'INTERAC'">
                   <mat-label>Référence transaction</mat-label>
                   <input matInput formControlName="transactionReference" required>
                   <mat-error *ngIf="statusForm.get('transactionReference')?.hasError('required')">
@@ -158,7 +161,7 @@
               </div>
 
               <!-- Colonne droite -->
-              <div class="form-column">
+              <div class="form-column" *ngIf="transaction?.method !== 'INTERAC'">
                 <mat-form-field appearance="outline">
                   <mat-label>Nom de la banque</mat-label>
                   <input matInput formControlName="bankName" required>
