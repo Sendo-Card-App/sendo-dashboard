@@ -28,7 +28,7 @@ export class WithdrawalRequestComponent implements OnInit {
 
   // Filtres
   filters = {
-    status: '' as 'PENDING' | 'COMPLETED' | 'FAILED' | 'CANCELLED' | ''
+    status: '' as 'PENDING' | 'VALIDATED' | 'FAILED' | 'REJECTED' | ''
   };
 
   // Traitement des demandes

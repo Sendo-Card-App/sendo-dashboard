@@ -133,7 +133,7 @@
 
           <!-- Afficher le formulaire SEULEMENT si isEditing est activé ET qu’on a le droit de modifier -->
           <div 
-            *ngIf="isEditing && ((transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || (transaction?.method === 'INTERAC' && transaction?.type === 'DEPOSIT'))" 
+            *ngIf="isEditing && transaction.status !== 'COMPLETED' && ((transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || (transaction?.method === 'INTERAC' && transaction?.type === 'DEPOSIT'))" 
             class="status-form" [formGroup]="statusForm"
           >
             <div class="form-grid">
