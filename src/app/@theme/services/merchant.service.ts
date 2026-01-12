@@ -145,6 +145,21 @@ export class MerchantService {
     );
   }
 
+  rejectWithdrawalRequest(idRequestWithdraw: number) {
+    if (isNaN(idRequestWithdraw)) {
+      throw new Error('idRequestWithdraw doit être un nombre valide');
+    }
+
+    const url = `${this.apiUrl}/merchant/reject/withdrawal-request/${idRequestWithdraw}`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.http.put<any>(url, {}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Erreur lors du rejet du retrait:', error);
+        return throwError(() => new Error(error.message || 'Erreur serveur'));
+      })
+    );
+  }
+
   getWithdrawalRequests(
     page: number = 1,
     limit: number = 10,

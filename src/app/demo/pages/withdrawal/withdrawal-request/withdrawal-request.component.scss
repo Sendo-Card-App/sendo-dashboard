@@ -277,6 +277,47 @@
       }
     }
 
+    .btn-reject {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+
+      &:hover:not(:disabled) {
+        background: red;
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      &.processing {
+        background: #ff9800;
+      }
+
+      .processing-text {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .spinner {
+        animation: spin 1s linear infinite;
+      }
+    }
+
     .action-info {
       display: flex;
       align-items: center;

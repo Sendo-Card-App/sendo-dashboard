@@ -136,7 +136,7 @@
                       [disabled]="!canInitiateWithdrawal(withdrawal.status) || isProcessingRequest"
                       [class.processing]="currentProcessingId === withdrawal.id"
                       matTooltip="Initier le retrait"
-                      [matTooltipDisabled]="canInitiateWithdrawal(withdrawal.status)">
+                      [matTooltipDisabled]="!canInitiateWithdrawal(withdrawal.status)">
                       <span *ngIf="currentProcessingId !== withdrawal.id">
                         <i class="ti ti-send"></i>
                         Initier
@@ -146,12 +146,29 @@
                         Traitement...
                       </span>
                     </button>
+                    <button
+                      *ngIf="withdrawal.status === 'PENDING'"
+                      class="btn-reject"
+                      (click)="rejectWithdrawalRequest(withdrawal.id)"
+                      [disabled]="isProcessingRequest2"
+                      [class.processing]="currentProcessingId2 === withdrawal.id"
+                      matTooltip="Rejeter le retrait"
+                      [matTooltipDisabled]="isProcessingRequest2">
+                      <span *ngIf="currentProcessingId2 !== withdrawal.id">
+                        <i class="ti ti-send"></i>
+                        Rejeter
+                      </span>
+                      <span *ngIf="currentProcessingId2 === withdrawal.id" class="processing-text">
+                        <i class="ti ti-loader spinner"></i>
+                        Traitement...
+                      </span>
+                    </button>
 
                     <!-- Message d'info pour les statuts non éligibles -->
                     <div *ngIf="!canInitiateWithdrawal(withdrawal.status)" class="action-info">
                       <i class="ti ti-info-circle"></i>
                       <span class="info-text">
-                        {{ withdrawal.status === 'VALIDATED' ? 'Déjà traité' :
+                        {{ withdrawal.status === 'VALIDATED' ? 'Déjà traitée' :
                            withdrawal.status === 'FAILED' ? 'Échec précédent' :
                            withdrawal.status === 'REJECTED' ? 'Demande rejetée' : 'Non disponible' }}
                       </span>

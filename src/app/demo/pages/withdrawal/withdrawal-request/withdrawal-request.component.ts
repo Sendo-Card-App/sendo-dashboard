@@ -33,9 +33,13 @@ export class WithdrawalRequestComponent implements OnInit {
 
   // Traitement des demandes
   isProcessingRequest = false;
+  isProcessingRequest2 = false;
   currentProcessingId: number | null = null;
+  currentProcessingId2: number | null = null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  private intervalId!: ReturnType<typeof setInterval>;
 
   constructor(
     private merchantService: MerchantService,
@@ -45,6 +49,11 @@ export class WithdrawalRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadWithdrawalRequests();
+
+    // Auto-refresh every 60 seconds (60 000 ms)
+    this.intervalId = setInterval(() => {
+      this.loadWithdrawalRequests();
+    }, 60000);
   }
 
   // 🔹 Chargement des demandes de retrait
@@ -133,6 +142,36 @@ export class WithdrawalRequestComponent implements OnInit {
 
         console.error('Erreur initiation retrait:', error);
         this.snackBar.open('Erreur lors de l\'initiation du retrait: ' + (error.message || 'Erreur inconnue'), 'Fermer', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
+  }
+
+  rejectWithdrawalRequest(withdrawalId: number): void {
+    this.isProcessingRequest2 = true;
+    this.currentProcessingId2 = withdrawalId;
+
+    this.merchantService.rejectWithdrawalRequest(withdrawalId).subscribe({
+      next: () => {
+        this.isProcessingRequest2 = false;
+        this.currentProcessingId2 = null;
+
+        this.snackBar.open('Retrait rejeté avec succès!', 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+
+        // Recharger la liste
+        this.loadWithdrawalRequests();
+      },
+      error: (error) => {
+        this.isProcessingRequest2 = false;
+        this.currentProcessingId2 = null;
+
+        console.error('Erreur rejet retrait:', error);
+        this.snackBar.open('Erreur lors du rejet du retrait: ' + (error.message || 'Erreur inconnue'), 'Fermer', {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
