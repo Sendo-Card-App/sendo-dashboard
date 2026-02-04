@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit {
         return this.authenticationService.getUserIdentifiant().pipe(
           tap((userResponse: BaseResponse2) => {
             console.log('User info:', userResponse.data);
-            localStorage.setItem('user-info', JSON.stringify(userResponse.data.user));
+            localStorage.setItem('user-info', JSON.stringify(userResponse.data));
           }),
           catchError((error) => {
             console.error('User info error:', error);
@@ -83,7 +83,7 @@ export class LoginComponent implements OnInit {
       next: () => {
         // Redirige après succès (même si getUserIdentifiant a échoué)
         this.router.navigate(['/dashboard']);
-        window.location.reload();
+        //window.location.reload();
       },
       error: (error) => {
         console.error('Login error:', error);

@@ -149,9 +149,7 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
     this.transactionsService.getTransactionCaCam(
       apiPage,
       this.itemsPerPage,
-      'TRANSFER',
       formValues.status as TransactionStatus,
-      'MOBILE_MONEY',
       startDate || undefined,
       endDate || undefined
     ).subscribe({

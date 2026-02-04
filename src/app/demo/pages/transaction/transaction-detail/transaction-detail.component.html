@@ -100,7 +100,13 @@
             </div>
 
             <div class="summary-item">
-              <span class="summary-label">Référence</span>
+              <span 
+                class="summary-label" 
+                *ngIf="(transaction.type === 'WITHDRAWAL' && transaction.method === 'INTERAC') else reference"
+              >Email Interac</span>
+              <ng-template #reference>
+                <span class="summary-label">Référence</span>
+              </ng-template>
               <span class="summary-value">{{ transaction.transactionReference || 'N/A' }}</span>
             </div>
           </div>
@@ -119,13 +125,25 @@
               <button mat-stroked-button
                 (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('SYSTEM_ADMIN')) && toggleEdit()"
                 [disabled]="!currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('SYSTEM_ADMIN')"
-                *ngIf="transaction?.method === 'BANK_TRANSFER' || transaction?.method === 'MOBILE_MONEY' || transaction?.type === 'TRANSFER' || transaction?.method === 'INTERAC'">
+                *ngIf="
+                  transaction?.method === 'BANK_TRANSFER' || 
+                  (transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || 
+                  (transaction?.type === 'WITHDRAWAL' && transaction?.method === 'INTERAC') || 
+                  (transaction?.type === 'WALLET_TO_WALLET' && transaction?.method === 'WALLET')
+                "
+              >
                 {{ isEditing ? 'Annuler' : 'Modifier' }}
               </button>
             </div>
 
-            <!-- Afficher le message uniquement si AUCUNE des deux conditions n’est vraie -->
-            <div *ngIf="transaction?.method !== 'BANK_TRANSFER'  && transaction?.type !== 'TRANSFER' && transaction?.method !== 'INTERAC'"
+            <!-- Afficher le message uniquement si AUCUNE des conditions n’est vraie -->
+            <div 
+              *ngIf="
+                transaction?.method !== 'BANK_TRANSFER' && 
+                transaction?.type !== 'TRANSFER' && 
+                transaction?.type !== 'WALLET_TO_WALLET' &&
+                transaction?.method !== 'INTERAC'
+              "
               class="not-allowed-message">
               Modification du statut non disponible pour ce type de transaction
             </div>
@@ -133,7 +151,16 @@
 
           <!-- Afficher le formulaire SEULEMENT si isEditing est activé ET qu’on a le droit de modifier -->
           <div 
-            *ngIf="isEditing && transaction.status !== 'COMPLETED' && ((transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || (transaction?.method === 'INTERAC' && transaction?.type === 'DEPOSIT'))" 
+            *ngIf="
+              isEditing && 
+              transaction.status !== 'COMPLETED' && 
+              (
+                (transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || 
+                (transaction?.method === 'INTERAC' && transaction?.type === 'DEPOSIT') ||
+                (transaction?.type === 'WITHDRAWAL' && transaction?.method === 'INTERAC') ||
+                (transaction?.type === 'WALLET_TO_WALLET' && transaction?.method === 'WALLET')
+              )
+            " 
             class="status-form" [formGroup]="statusForm"
           >
             <div class="form-grid">
@@ -151,7 +178,10 @@
                   </mat-error>
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" *ngIf="transaction?.method !== 'INTERAC'">
+                <mat-form-field 
+                  appearance="outline" 
+                  *ngIf="transaction?.method !== 'INTERAC' || transaction?.type !== 'WALLET_TO_WALLET'"
+                >
                   <mat-label>Référence transaction</mat-label>
                   <input matInput formControlName="transactionReference" required>
                   <mat-error *ngIf="statusForm.get('transactionReference')?.hasError('required')">
@@ -161,7 +191,10 @@
               </div>
 
               <!-- Colonne droite -->
-              <div class="form-column" *ngIf="transaction?.method !== 'INTERAC'">
+              <div 
+                class="form-column" 
+                *ngIf="transaction?.method !== 'INTERAC'"
+              >
                 <mat-form-field appearance="outline">
                   <mat-label>Nom de la banque</mat-label>
                   <input matInput formControlName="bankName" required>
@@ -263,12 +296,24 @@
 
           <div class="additional-info-grid">
             <div class="info-item">
-              <span class="info-label">Banque</span>
+              <span 
+                class="info-label" 
+                *ngIf="(transaction.type === 'WITHDRAWAL' && transaction.method === 'INTERAC') else banque"
+              >Question Interac</span>
+              <ng-template #banque>
+                <span class="info-label">Banque</span>
+              </ng-template>
               <p class="info-value">{{ transaction.bankName || 'N/A' }}</p>
             </div>
 
             <div class="info-item">
-              <span class="info-label">Compte</span>
+              <span 
+                class="info-label"
+                *ngIf="(transaction.type === 'WITHDRAWAL' && transaction.method === 'INTERAC') else account"
+              >Réponse Interac</span>
+              <ng-template #account>
+                <span class="info-label">Compte</span>
+              </ng-template>
               <p class="info-value">{{ transaction.accountNumber || 'N/A' }}</p>
             </div>
 

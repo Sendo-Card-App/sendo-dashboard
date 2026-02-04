@@ -69,7 +69,7 @@ export class TransactionDetailComponent implements OnInit {
       },
       error: () => {
         this.snackBar.open('Erreur lors du chargement de la transaction', 'Fermer', { duration: 3000 });
-        this.router.navigate(['/transactions']);
+        this.router.navigate(['/transactions/alltransactions']);
         this.isLoading = false;
       }
     });

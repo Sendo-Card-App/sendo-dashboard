@@ -177,9 +177,7 @@ export class TransactionsService {
   getTransactionCaCam(
     page: number = 1,
     limit: number = 10,
-    type?: 'TRANSFER',
     status?: TransactionStatus,
-    method?: 'MOBILE_MONEY',
     startDate?: string,   // format YYYY-MM-DD
     endDate?: string      // format YYYY-MM-DD
   ): Observable<TransactionsResponse> {
@@ -187,14 +185,12 @@ export class TransactionsService {
       .set('page',   page.toString())
       .set('limit',  limit.toString());
 
-    if (type)      { params = params.set('type',      type); }
     if (status)    { params = params.set('status',    status); }
-    if (method)    { params = params.set('method',    method); }
     if (startDate) { params = params.set('startDate', startDate); }
     if (endDate)   { params = params.set('endDate',   endDate); }
 
     return this.http.get<TransactionsResponse>(
-      `${this.apiUrl}/transactions`,
+      `${this.apiUrl}/transactions/cacam`,
       {
         ...this.getConfigAuthorized(),
         params
