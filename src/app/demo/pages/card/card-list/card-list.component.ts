@@ -36,7 +36,8 @@ export class CardListComponent implements OnInit {
     { value: 'FROZEN', label: 'Bloquée' },
     { value: 'SUSPENDED', label: 'Suspendue' },
     { value: 'IN_TERMINATION', label: 'En cours de résiliation' },
-    { value: 'TERMINATED', label: 'Résiliée' }
+    { value: 'TERMINATED', label: 'Résiliée' },
+    { value: 'BLOCKED', label: 'Bloquée par Sendo' },
   ];
 
   // Configuration du tableau
@@ -120,7 +121,8 @@ export class CardListComponent implements OnInit {
       'FROZEN': 'Bloquée',
       'TERMINATED': 'Résiliée',
       'IN_TERMINATION': 'En résiliation',
-      'SUSPENDED': 'Suspendue'
+      'SUSPENDED': 'Suspendue',
+      'BLOCKED': 'Bloquée par Sendo',
     };
     return statusMap[status] || status;
   }
