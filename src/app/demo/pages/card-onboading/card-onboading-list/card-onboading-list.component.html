@@ -152,17 +152,31 @@
 
       <mat-divider></mat-divider>
 
+      <div *ngIf="onboardingSession">
+      <div class="section-title">Informations sur l'onboarding</div>
+      <div class="user-info">
+        <p>Session Key : {{ onboardingSession.onboardingInformation.onboardingSessionKey }}</p>
+        <p>Party Key : {{ onboardingSession.onboardingInformation.key }}</p>
+        <p>Status : {{ onboardingSession.onboardingInformation.onboardingSessionStatus }}</p>
+        <p *ngIf="onboardingSession.onboardingWithReason.status === 'REFUSED' || onboardingSession.onboardingWithReason.status === 'REFUSED_TIMEOUT'">
+          Raison du refus : {{ onboardingSession.onboardingWithReason.validationNote}}
+        </p>
+      </div>
+
+      <mat-divider></mat-divider>
+      </div>
+
       <div class="section-title">Coordonnées</div>
       <div *ngFor="let contact of selectedParty.sessionParty.contactPoints" class="contact-item">
         <mat-icon>{{ contact.type === 'EMAIL' ? 'email' : 'phone' }}</mat-icon>
         <span>{{ contact.value }}</span>
       </div>
-      <!-- <div *ngIf="selectedParty.locations?.length" class="section-title">Adresse</div>
+      <div *ngIf="selectedParty.locations.length > 0" class="section-title">Adresse</div>
       <div *ngFor="let location of selectedParty.locations" class="address-item">
         <p>{{ location.address1 }}</p>
         <p>{{ location.postalCode }} {{ location.city }}</p>
         <p>{{ location.country }}</p>
-      </div> -->
+      </div>
 
       <mat-divider></mat-divider>
 

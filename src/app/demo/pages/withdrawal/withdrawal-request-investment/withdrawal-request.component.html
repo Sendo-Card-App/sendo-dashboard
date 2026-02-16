@@ -1,0 +1,213 @@
+<div class="withdrawal-request-container">
+  <!-- En-tête -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title"></h1>
+      <div class="header-info">
+        {{ totalItems }} demande(s) au total
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filter-section">
+    <div class="row">
+      <!-- Status Filter -->
+      <div class="col-md-4">
+        <div class="filter-group">
+          <label class="filter-label">Statut</label>
+          <select [(ngModel)]="filters.status" (change)="applyFilters()" class="form-select">
+            <option value="">Tous les statuts</option>
+            <option value="PENDING">{{ getStatusLabel("PENDING") }}</option>
+            <option value="APPROVED">{{ getStatusLabel("APPROVED") }}</option>
+            <option value="REJECTED">{{ getStatusLabel("REJECTED") }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Reset Button -->
+      <div class="col-md-2">
+        <div class="filter-group">
+          <label class="filter-label">&nbsp;</label>
+          <button class="btn-reset" (click)="clearFilters()" type="button">
+            <i class="ti ti-filter-off"></i>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des demandes de retrait -->
+  <div class="withdrawal-list-section">
+    <div class="section-card">
+      <div class="card-header">
+        <h3 class="card-title">Liste des Demandes</h3>
+      </div>
+
+      <div class="card-body">
+        <!-- Loading state -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="loading-content">
+            <mat-spinner diameter="50"></mat-spinner>
+            <div class="loading-text">Chargement des demandes...</div>
+          </div>
+        </div>
+
+        <!-- Tableau des demandes -->
+        <div *ngIf="!isLoading" class="table-responsive">
+          <table class="withdrawal-table">
+            <thead>
+              <tr>
+                <th>Utilisateur</th>
+                <th>Type de retrait</th>
+                <th>Montant (Souscription / Intérêts)</th>
+                <th>Monnaie</th>
+                <th>Type d'investissement</th>
+                <th>Statut</th>
+                <th>Date de demande</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let withdrawal of withdrawalRequests" class="withdrawal-row">
+                <!-- Colonne Utilisateur -->
+                <td class="agent-info">
+                  <div class="agent-details">
+                    <div class="avatar-circle"
+                         [style.background]="createStableAvatar(withdrawal.fundSubscription.user.firstname + withdrawal.fundSubscription.user.lastname).color">
+                      {{ createStableAvatar(withdrawal.fundSubscription.user.firstname + withdrawal.fundSubscription.user.lastname).letter }}
+                    </div>
+                    <div class="agent-text">
+                      <div class="agent-name f-w-600">
+                        {{ withdrawal.fundSubscription.user.firstname }} {{ withdrawal.fundSubscription.user.lastname }}
+                      </div>
+                      <!-- <div class="agent-code mat-caption">
+                        {{ withdrawal.partner.code }}
+                      </div> -->
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Colonne Type de retrait -->
+                <td class="contact-info">
+                  <div class="contact-email">{{ getLabelTypeInvestment(withdrawal.type) }}</div>
+                  <div class="contact-phone mat-caption">{{ withdrawal.type }}</div>
+                </td>
+
+                <!-- Colonne Montant -->
+                <td class="amount-info">
+                  <div class="amount-value f-w-600">
+                    {{ withdrawal.fundSubscription.amount }} / {{ withdrawal.fundSubscription.interestAmount }}
+                  </div>
+                </td>
+
+                <!-- Colonne Monnaie -->
+                <td class="amount-info">
+                  <div class="amount-value f-w-600">
+                    {{ withdrawal.fundSubscription.currency }}
+                  </div>
+                </td>
+
+                <!-- Colonne Type d'investissement -->
+                <td class="withdrawal-phone">
+                  <div class="phone-number">{{ withdrawal.fundSubscription.fund.name }}</div>
+                  <div class="contact-phone mat-caption">{{ withdrawal.fundSubscription.fundId }}</div>
+                </td>
+
+                <!-- Colonne Statut -->
+                <td class="status-info">
+                  <div class="status-container">
+                    <i class="ti status-icon"
+                       [class]="getStatusIcon(withdrawal.status)"
+                       [style.color]="getStatusColor(withdrawal.status)"></i>
+                    <span class="status-badge"
+                          [style.background]="getStatusColor(withdrawal.status)">
+                      {{ getStatusLabel(withdrawal.status) }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Colonne Date -->
+                <td class="date-info">
+                  <div class="created-date">
+                    {{ formatDate(withdrawal.createdAt) }}
+                  </div>
+                </td>
+
+                <!-- Colonne Actions -->
+                <td class="actions-info">
+                  <div class="actions-container">
+                    <button
+                      class="btn-initiate"
+                      (click)="initiateWithdrawal(withdrawal, 'APPROVED')"
+                      [disabled]="!canInitiateWithdrawal(withdrawal.status) || isProcessingRequest"
+                      [class.processing]="currentProcessingId === withdrawal.id"
+                      matTooltip="Initier le retrait"
+                      [matTooltipDisabled]="!canInitiateWithdrawal(withdrawal.status)">
+                      <span *ngIf="currentProcessingId !== withdrawal.id">
+                        <i class="ti ti-send"></i>
+                        Initier
+                      </span>
+                      <span *ngIf="currentProcessingId === withdrawal.id" class="processing-text">
+                        <i class="ti ti-loader spinner"></i>
+                        Traitement...
+                      </span>
+                    </button>
+                    <button
+                      *ngIf="withdrawal.status === 'PENDING'"
+                      class="btn-reject"
+                      (click)="initiateWithdrawal(withdrawal, 'REJECTED')"
+                      [disabled]="isProcessingRequest2"
+                      [class.processing]="currentProcessingId2 === withdrawal.id"
+                      matTooltip="Rejeter le retrait"
+                      [matTooltipDisabled]="isProcessingRequest2">
+                      <span *ngIf="currentProcessingId2 !== withdrawal.id">
+                        <i class="ti ti-send"></i>
+                        Rejeter
+                      </span>
+                      <span *ngIf="currentProcessingId2 === withdrawal.id" class="processing-text">
+                        <i class="ti ti-loader spinner"></i>
+                        Traitement...
+                      </span>
+                    </button>
+
+                    <!-- Message d'info pour les statuts non éligibles -->
+                    <div *ngIf="!canInitiateWithdrawal(withdrawal.status)" class="action-info">
+                      <i class="ti ti-info-circle"></i>
+                      <span class="info-text">
+                        {{ withdrawal.status === 'APPROVED' ? 'Déjà validée' :
+                           withdrawal.status === 'FAILED' ? 'Échec' :
+                           withdrawal.status === 'REJECTED' ? 'Demande rejetée' : 'Non disponible' }}
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Message vide -->
+          <div *ngIf="withdrawalRequests.length === 0 && !isLoading" class="no-data-message">
+            <i class="ti ti-cash-off no-data-icon"></i>
+            <p>Aucune demande de retrait trouvée</p>
+            <p class="no-data-subtitle" *ngIf="filters.status">
+              avec le statut "{{ getStatusLabel(filters.status) }}"
+            </p>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!isLoading && withdrawalRequests.length > 0" class="pagination-section">
+          <mat-paginator [length]="totalItems"
+                        [pageSize]="itemsPerPage"
+                        [pageSizeOptions]="[5, 10, 25, 100]"
+                        [pageIndex]="currentPage - 1"
+                        (page)="onPageChange($event)"
+                        showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

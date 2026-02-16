@@ -74,8 +74,8 @@ export class KycAllComponent implements OnInit {
   }
 
   applyFilter(filterValue: string): void {
-  this.dataSource.filter = filterValue.trim().toLowerCase();
-}
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
   loadKycDocuments(): void {
     this.isLoading = true;
@@ -133,22 +133,28 @@ export class KycAllComponent implements OnInit {
   getStatusClass(status: string): string {
     return `status-${status.toLowerCase()}`;
   }
-
   
-onReplaceDocument(event: Event, publicId: string): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    const file = input.files[0];
-    this.kycService.updateKycDocument(publicId, file).subscribe({
-      next: () => {
-        this.loadKycDocuments();
-         this.snackBar.open('Image modifier avec succes', 'Fermer', {
-    duration: 3000
-  });
-      },
-      error: () => {
-      }
-    });
+  onReplaceDocument(event: Event, publicId: string): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      
+      this.kycService.updateKycDocument(publicId, file).subscribe({
+        next: () => {
+          this.loadKycDocuments();
+          this.snackBar.open('Image modifier avec succes', 'Fermer', {
+            duration: 5000,
+            panelClass: ['success-snackbar']
+          });
+        },
+        error: (err) => {
+          console.log('erreur lors du remplacement du fichier : ', err)
+          this.snackBar.open('Rrreur de remplacement du fichier : '+err, 'Fermer', {
+            duration: 5000,
+            panelClass: ['success-snackbar']
+          });
+        }
+      });
+    }
   }
-}
 }

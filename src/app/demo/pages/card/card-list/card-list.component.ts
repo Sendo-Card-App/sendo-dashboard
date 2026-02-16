@@ -54,7 +54,8 @@ export class CardListComponent implements OnInit {
     this.cardService.getCards(
       this.currentPage,
       this.itemsPerPage,
-      this.currentStatus === '' ? undefined : this.currentStatus
+      this.currentStatus === '' ? undefined : this.currentStatus,
+      this.searchText ? this.searchText : undefined
     ).subscribe({
       next: (response: CardResponse) => {
         this.dataSource.data = response.data.items;

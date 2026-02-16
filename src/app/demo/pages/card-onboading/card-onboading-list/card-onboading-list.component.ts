@@ -3,7 +3,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDrawer } from '@angular/material/sidenav';
 import { CardService } from 'src/app/@theme/services/card.service';
-import { ContactPoint, KycDocument, SessionParty, SessionPartyPagination, SessionType } from 'src/app/@theme/models/card';
+import { ContactPoint, KycDocument, SessionParty, SessionPartyFull, SessionPartyPagination, SessionType } from 'src/app/@theme/models/card';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -42,6 +42,7 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterView
   currentuserRole: string[] | undefined;
   sendocLoad = false;
   summitload = false;
+  onboardingSession: SessionPartyFull['data'];
 
   selectedParty: SessionType | null = null;
   selectedKycDocuments: BaseResponse<KycDocument> | null = null;
@@ -153,17 +154,25 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterView
 
 
     viewDetails(party: SessionType): void {
-    this.selectedParty = party;
-    this.headerBlur = true;
-    this.drawer.toggle();
+      this.selectedParty = party;
+      this.headerBlur = true;
+      this.drawer.toggle();
 
-    console.log('View details for:', party);
+      //console.log('View details for:', party);
 
-    this.cardService.getKycDocuments(party.user.id).subscribe({
-      next: (docs) => this.selectedKycDocuments = docs,
-      error: (err) => console.error('Erreur de chargement KYC:', err),
-    });
-  }
+      this.cardService.getOnboardingSession(party.sessionParty.onboardingSessionKey).subscribe(
+        (response) => {
+          //console.log('onboarding session : ', response)
+          this.onboardingSession = response.data
+        },
+        (err) => console.error("Erreur de recuperation de l'onboarding session : ", err)
+      )
+
+      this.cardService.getKycDocuments(party.user.id).subscribe({
+        next: (docs) => this.selectedKycDocuments = docs,
+        error: (err) => console.error('Erreur de chargement KYC:', err),
+      });
+    }
 
 
   approveOnboarding(partyKey: string): void {

@@ -73,8 +73,8 @@ export class KycService {
     return this.http.get<KycPendingResponse>(
       `${this.apiUrl}/admin/kyc/pending`,
       {
-        ...this.getConfigAuthorized(),
-        params
+        params,
+        ...this.getConfigAuthorized()
       }
     );
   }
@@ -83,9 +83,10 @@ export class KycService {
   updateKycDocument(publicId: string, file: File): Observable<BaseResponse> {
     const formData = new FormData();
     formData.append('document', file);
-
+    
     return this.http.put<BaseResponse>(`${this.apiUrl}/kyc/${publicId}/admin`,
-      { formData, ...this.getConfigAuthorized() });
+      formData,
+      { ...this.getConfigAuthorized() });
   }
 
 
@@ -147,8 +148,8 @@ export class KycService {
     return this.http.get<KycListResponse>(
       `${this.apiUrl}/admin/kyc/list`,
       {
-        ...this.getConfigAuthorized(),
-        params
+        params,
+        ...this.getConfigAuthorized()
       }
     );
   }

@@ -311,14 +311,19 @@ export const menus: Navigation[] = [
         Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
         children: [
           {
-            id: 'alldebt',
-            title: 'Liste des demandes de retrait',
+            id: 'withdrawalsMerchant',
+            title: 'Demandes de retrait marchands',
             type: 'item',
-            url: '/withdrawal/allrequests',
-            // target: true,
+            url: '/withdrawals/merchant',
             breadcrumbs: true
           },
-
+          {
+            id: 'withdrawalsInvestment',
+            title: 'Demandes de retrait d\'investissement',
+            type: 'item',
+            url: '/withdrawals/investment',
+            breadcrumbs: true
+          },
 
         ]
       },

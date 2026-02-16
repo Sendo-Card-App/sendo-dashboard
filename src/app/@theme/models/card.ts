@@ -47,18 +47,29 @@ export interface SessionType {
     phone: string;
   };
   SessionParty: SessionParty;
+  sessionParty: SessionParty;
 
 }
 
 export interface SessionParty {
   key: string;
   onboardingSessionStatus: OnboardingSessionStatus;
+  onboardingSessionKey: string;
   documents: SessionDocument[];
   contactPoints: ContactPoint[];
   partyInfo: PartyInfo;
   locations: SessionLocation[];
   createdAt: string; // ou Date
 
+}
+
+export interface SessionPartyFull {
+  data: {
+    onboardingWithReason: unknown;
+    onboardingInformation: SessionParty;
+  };
+  message: string;
+  status: number;
 }
 
 export interface ContactPoint {

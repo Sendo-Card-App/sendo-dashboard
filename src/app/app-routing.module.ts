@@ -158,16 +158,20 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'withdrawal',
+    path: 'withdrawals',
     component: AdminComponent,
     canActivateChild: [RoleGuard],
     children: [
       {
-        path: 'allrequests',
-        loadComponent: () => import('./demo/pages/withdrawal/withdrawal-request/withdrawal-request.component').then((c) => c.WithdrawalRequestComponent),
+        path: 'merchant',
+        loadComponent: () => import('./demo/pages/withdrawal/withdrawal-request-merchant/withdrawal-request.component').then((c) => c.WithdrawalRequestComponent),
         data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }
       },
-
+      {
+        path: 'investment',
+        loadComponent: () => import('./demo/pages/withdrawal/withdrawal-request-investment/withdrawal-request.component').then((c) => c.WithdrawalRequestComponent),
+        data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }
+      },
     ]
   },
   {

@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { ThemeLayoutService } from 'src/app/@theme/services/theme-layout.service';
 import { ImageDialogComponent } from 'src/app/@theme/components/image-dialog/image-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-kyc-list',
@@ -32,7 +33,12 @@ export class KycListComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private kycService: KycService,private themeService: ThemeLayoutService,private dialog: MatDialog) {
+  constructor(
+    private kycService: KycService,
+    private themeService: ThemeLayoutService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+  ) {
     effect(() => {
       this.isRtlTheme(this.themeService.directionChange());
     });
@@ -41,6 +47,7 @@ export class KycListComponent implements OnInit, OnDestroy {
   private isRtlTheme(direction: string) {
     this.direction = direction;
   }
+  
   ngOnInit(): void {
     this.loadDocuments();
 
@@ -105,134 +112,171 @@ export class KycListComponent implements OnInit, OnDestroy {
     window.open(url, '_blank');
   }
 
- // Dans votre classe component
-userKycDocuments: KycDocument[] = [];
-userInfo: MeResponse ;
-isLoadingDocuments = false;
-// showRejectionForm = false;
-// rejectionReason = '';
-// selectedDocument : KycDocument | null = null;
+  // Dans votre classe component
+  userKycDocuments: KycDocument[] = [];
+  userInfo: MeResponse ;
+  isLoadingDocuments = false;
+  // showRejectionForm = false;
+  // rejectionReason = '';
+  // selectedDocument : KycDocument | null = null;
 
-// Méthode pour charger les documents d'un utilisateur
-loadUserDocuments(userId: number): void {
-  this.isLoadingDocuments = true;
-  this.kycService.getUserKyc(userId).subscribe({
-    next: (response) => {
-      this.userKycDocuments = response.data.kyc;
-      this.userInfo = response.data.user;
-      this.isLoadingDocuments = false;
-    },
-    error: (err) => {
-      console.error('Error loading user documents:', err);
-      this.isLoadingDocuments = false;
-    }
-  });
-}
-
-
-
-// Ajoutez ces propriétés
-showRejectionForm = false;
-rejectionReason = '';
-selectedDocument: KycDocument | null = null;
-isBulkRejection = false;
-
-// Méthode pour ouvrir le formulaire de rejet
-openRejectionForm(document?: KycDocument): void {
-  this.selectedDocument = document || null;
-  this.isBulkRejection = !document;
-  this.rejectionReason = '';
-  this.showRejectionForm = true;
-}
-
-// Méthode pour confirmer le rejet
-onRejectConfirm(): void {
-  if (!this.rejectionReason) return;
-
-  if (this.isBulkRejection) {
-    this.rejectAllDocuments();
-  } else if (this.selectedDocument) {
-    this.rejectSingleDocument(this.selectedDocument.id, this.rejectionReason);
+  // Méthode pour charger les documents d'un utilisateur
+  loadUserDocuments(userId: number): void {
+    this.isLoadingDocuments = true;
+    this.kycService.getUserKyc(userId).subscribe({
+      next: (response) => {
+        this.userKycDocuments = response.data.kyc;
+        this.userInfo = response.data.user;
+        this.isLoadingDocuments = false;
+      },
+      error: (err) => {
+        console.error('Error loading user documents:', err);
+        this.isLoadingDocuments = false;
+      }
+    });
   }
 
-  this.showRejectionForm = false;
-  this.rejectionReason = '';
-}
+  // Ajoutez ces propriétés
+  showRejectionForm = false;
+  rejectionReason = '';
+  selectedDocument: KycDocument | null = null;
+  isBulkRejection = false;
 
-// Méthode pour rejeter tous les documents
-rejectAllDocuments(): void {
-  const docsToReject = this.userKycDocuments.map(doc => ({
-    id: doc.id,
-    status: 'REJECTED' as const,
-    rejectionReason: this.rejectionReason
-  }));
+  // Méthode pour ouvrir le formulaire de rejet
+  openRejectionForm(document?: KycDocument): void {
+    this.selectedDocument = document || null;
+    this.isBulkRejection = !document;
+    this.rejectionReason = '';
+    this.showRejectionForm = true;
+  }
 
-  this.kycService.bulkReview({ documents: docsToReject }).subscribe({
-    next: () => {
-      this.loadUserDocuments(this.userInfo.user.id);
-      this.loadDocuments();
-    },
-    error: (err) => console.error('Error rejecting all documents:', err)
-  });
-}
+  // Méthode pour confirmer le rejet
+  onRejectConfirm(): void {
+    if (!this.rejectionReason) return;
 
-// Méthode pour approuver un document spécifique
-approveSingleDocument(documentId: number): void {
-  this.kycService.reviewKyc(documentId,{ status: 'APPROVED' }).subscribe({
-    next: () => {
-      this.loadUserDocuments(this.userInfo.user.id);
-      this.loadDocuments(); // Rafraîchir la liste principale
-    },
-    error: (err) => console.error('Error approving document:', err)
-  });
-}
+    if (this.isBulkRejection) {
+      this.rejectAllDocuments();
+    } else if (this.selectedDocument) {
+      this.rejectSingleDocument(this.selectedDocument.id, this.rejectionReason);
+    }
 
-// Méthode pour approuver tous les documents
-approveAllDocuments(): void {
+    this.showRejectionForm = false;
+    this.rejectionReason = '';
+  }
 
-  const docsToApprove: BulkReviewItem[] = this.userKycDocuments.map(doc => ({
-     id: doc.id,
-     status: 'APPROVED'
-   }));
+  // Méthode pour rejeter tous les documents
+  rejectAllDocuments(): void {
+    const docsToReject = this.userKycDocuments.map(doc => ({
+      id: doc.id,
+      status: 'REJECTED' as const,
+      rejectionReason: this.rejectionReason
+    }));
 
-   this.kycService.bulkReview({ documents: docsToApprove }).subscribe({
-     next: () => {
-       this.loadUserDocuments(this.userInfo.user.id);
-       this.loadDocuments(); // Rafraîchir la liste principale
-     },
-     error: (err) => console.error('Error approving all documents:', err)
-   });
- }
+    this.kycService.bulkReview({ documents: docsToReject }).subscribe({
+      next: () => {
+        this.snackBar.open('Documents rejetés avec succès !', 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        this.loadUserDocuments(this.userInfo.user.id);
+        this.loadDocuments();
+      },
+      error: (err) => {
+        console.error('Error rejecting all documents:', err)
+        this.snackBar.open('Erreur lors du rejet : ' + err.message, 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+      }
+    });
+  }
 
-// Méthode pour rejeter un document spécifique
-rejectSingleDocument(documentId: number, reason: string): void {
-  this.kycService.reviewKyc(documentId, {
-    status: 'REJECTED',
-    rejectionReason: reason
-  }).subscribe({
-    next: () => {
-      this.loadUserDocuments(this.userInfo.user.id);
-      this.loadDocuments();
-    },
-    error: (err) => console.error('Error rejecting document:', err)
-  });
-}
+  // Méthode pour approuver un document spécifique
+  approveSingleDocument(documentId: number): void {
+    this.kycService.reviewKyc(documentId, { status: 'APPROVED' }).subscribe({
+      next: () => {
+        this.snackBar.open('Document approuvé avec succès !', 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        this.loadUserDocuments(this.userInfo.user.id);
+        this.loadDocuments(); // Rafraîchir la liste principale
+      },
+      error: (err) => {
+        console.error('Error approving document:', err)
+        this.snackBar.open('Erreur de la validation : ' + err.message, 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+      }
+    });
+  }
 
+  // Méthode pour approuver tous les documents
+  approveAllDocuments(): void {
+    const docsToApprove: BulkReviewItem[] = this.userKycDocuments.map(doc => ({
+      id: doc.id,
+      status: 'APPROVED'
+    }));
+
+    this.kycService.bulkReview({ documents: docsToApprove }).subscribe({
+      next: () => {
+        this.snackBar.open('Documents approuvés avec succès !', 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        this.loadUserDocuments(this.userInfo.user.id);
+        this.loadDocuments(); // Rafraîchir la liste principale
+      },
+      error: (err) => {
+        console.error('Error approving all documents:', err)
+        this.snackBar.open('Erreur de la validation : ' + err.message, 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+      }
+    });
+  }
+
+  // Méthode pour rejeter un document spécifique
+  rejectSingleDocument(documentId: number, reason: string): void {
+    this.kycService.reviewKyc(documentId, {
+      status: 'REJECTED',
+      rejectionReason: reason
+    }).subscribe({
+      next: () => {
+        this.snackBar.open('Document rejeté avec succès !', 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+        this.loadUserDocuments(this.userInfo.user.id);
+        this.loadDocuments();
+      },
+      error: (err) => {
+        console.error('Error rejecting document:', err)
+        this.snackBar.open('Erreur lors du rejet du document : ' + err.message, 'Fermer', {
+          duration: 5000,
+          panelClass: ['success-snackbar']
+        });
+      }
+    });
+  }
 
   headerBlur1(userId: number): void {
     this.HeaderBlur.emit();
     this.loadUserDocuments(userId)
   }
+
   headerBlur() {
     this.HeaderBlur.emit();
   }
 
   openImageDialog(imageUrl: string): void {
-  this.dialog.open(ImageDialogComponent, {
-    data: { imageUrl },
-    panelClass: 'image-dialog-container',
-    maxWidth: '90vw',
-    maxHeight: '90vh'
-  });
-}
+    this.dialog.open(ImageDialogComponent, {
+      data: { imageUrl },
+      panelClass: 'image-dialog-container',
+      maxWidth: '90vw',
+      maxHeight: '90vh'
+    });
+  }
 }

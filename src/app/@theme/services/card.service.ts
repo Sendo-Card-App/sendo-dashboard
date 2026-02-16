@@ -2,7 +2,7 @@ import { BaseResponse, CardBalanceResponse } from './../models/index';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { KycDocument, CardStatus, CardResponse, VirtualCard, CardTransactionResponse, SessionPartyPagination } from '../models/card';
+import { KycDocument, CardStatus, CardResponse, VirtualCard, CardTransactionResponse, SessionPartyPagination, SessionPartyFull } from '../models/card';
 import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -33,6 +33,16 @@ getOnboardingRequests(
   );
 }
 
+  getOnboardingSession(
+    sessionKey: string
+  ): Observable<SessionPartyFull> {
+
+    return this.http.get<SessionPartyFull>(
+      `${this.apiUrl}/cards/onboarding/${sessionKey}`,
+      this.getConfigAuthorized()
+    );
+  }
+
   sendDocumentToNeero(documentType: 'ID_PROOF' | 'ADDRESS_PROOF' | 'NIU_PROOF' | 'SELFIE', userId: number) {
     const body = { documentType, userId };
     return this.http.post(`${this.apiUrl}/cards/onboarding/admin/send-docs`, body, this.getConfigAuthorized());
@@ -49,13 +59,17 @@ getOnboardingRequests(
   getCards(
     page: number = 1,
     limit: number = 10,
-    status?: CardStatus
+    status?: CardStatus,
+    search?: string
   ): Observable<CardResponse> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
     if (status) {
       params = params.set('status', status);
+    }
+    if (search) {
+      params = params.set('search', search);
     }
 
     return this.http.get<CardResponse>(`${this.apiUrl}/cards/admin`, { params, ...this.getConfigAuthorized() });
