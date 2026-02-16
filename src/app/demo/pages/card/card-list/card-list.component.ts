@@ -7,6 +7,9 @@ import { MatSort } from '@angular/material/sort';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { FormGroup } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-card-list',
@@ -21,6 +24,9 @@ export class CardListComponent implements OnInit {
   isLoading = false;
   searchText = '';
   currentStatus: CardStatus | '' = '';
+
+  // Subject pour la recherche avec debounce
+  private searchSubject = new Subject<string>();
 
   // Options de filtre
   statusOptions: {value: CardStatus | '', label: string}[] = [
@@ -41,10 +47,30 @@ export class CardListComponent implements OnInit {
   totalItems = 0;
   itemsPerPage = 10;
   currentPage = 1;
+  filterForm: FormGroup;
 
   constructor(private cardService: CardService, private router: Router) {}
 
+  private setupFilterListeners(): void {
+    // Recherche avec debounce (300ms)
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ).subscribe(searchText => {
+      this.currentPage = 1; // Reset à la première page
+      this.loadCards();
+    });
+
+    // Filtres avec reset de pagination
+    this.filterForm.valueChanges.subscribe(() => {
+      this.currentPage = 1;
+      this.loadCards();
+    });
+  }
+
   ngOnInit(): void {
+    //this.setupFilterListeners();
     this.loadCards();
   }
 
@@ -69,10 +95,10 @@ export class CardListComponent implements OnInit {
     });
   }
 
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.searchText = filterValue.trim().toLowerCase();
+  applyFilter(value: string): void {
+    this.searchText = value.trim().toLowerCase();
     this.dataSource.filter = this.searchText;
+    this.loadCards();
   }
 
   onStatusChange(status: CardStatus | ''): void {

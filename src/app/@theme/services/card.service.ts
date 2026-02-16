@@ -72,7 +72,14 @@ getOnboardingRequests(
       params = params.set('search', search);
     }
 
-    return this.http.get<CardResponse>(`${this.apiUrl}/cards/admin`, { params, ...this.getConfigAuthorized() });
+    const config = this.getConfigAuthorized();
+    return this.http.get<CardResponse>(
+      `${this.apiUrl}/cards/admin`, 
+      { 
+        params, 
+        headers: config.headers
+      }
+    );
   }
 
   getCardById(cardId: number): Observable<BaseResponse<VirtualCard>> {
