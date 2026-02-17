@@ -32,7 +32,7 @@ export class KycAllComponent implements OnInit {
   constructor(
     private kycService: KycService,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar,
+    private snackBar: MatSnackBar
   ) {
     this.filterForm = this.fb.group({
       search: [''],
@@ -44,33 +44,33 @@ export class KycAllComponent implements OnInit {
   ngOnInit(): void {
     this.loadKycDocuments();
 
-   this.filterForm.get('search')?.valueChanges
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe((value: string) => {
-      this.applyFilter(value);
-    });
+    this.filterForm.get('search')?.valueChanges
+      .pipe(debounceTime(200), distinctUntilChanged())
+      .subscribe((value: string) => {
+        this.applyFilter(value);
+      });
 
-  this.filterForm.valueChanges
-    .pipe(
-      debounceTime(500),
-      distinctUntilChanged()
-    )
-    .subscribe(() => {
-      this.currentPage = 1;
-      this.loadKycDocuments();
-    });
+    this.filterForm.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        this.currentPage = 1;
+        this.loadKycDocuments();
+      });
 
-  // Définis le prédicat de filtre
-  this.dataSource.filterPredicate = (data: unknown, filter: string) => {
-    const kycData = data as KycDocument;
-    const searchStr = [
-      kycData.user?.user.firstname,
-      kycData.user?.user.lastname,
-      kycData.type,
-      kycData.status
-    ].join(' ').toLowerCase();
-    return searchStr.includes(filter);
-  };
+    // Définis le prédicat de filtre
+    this.dataSource.filterPredicate = (data: unknown, filter: string) => {
+      const kycData = data as KycDocument;
+      const searchStr = [
+        kycData.user?.user.firstname,
+        kycData.user?.user.lastname,
+        kycData.type,
+        kycData.status
+      ].join(' ').toLowerCase();
+      return searchStr.includes(filter);
+    };
   }
 
   applyFilter(filterValue: string): void {
@@ -90,8 +90,6 @@ export class KycAllComponent implements OnInit {
         this.dataSource.data = response.data.items;
         this.totalItems = response.data.totalItems;
         this.isLoading = false;
-
-         console.log('Total items:', response.data);
       },
       error: (err) => {
         this.isLoading = false;

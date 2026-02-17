@@ -138,7 +138,7 @@ const routes: Routes = [
       {
         path: 'kyc-all',
         loadComponent: () => import('./demo/pages/kyc/kyc-all/kyc-all.component').then((c) => c.KycAllComponent),
-        data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'MANAGEMENT_CONTROLLER', 'CARD_MANAGER'] }
+        data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'MANAGEMENT_CONTROLLER', 'CARD_MANAGER', 'COMPLIANCE_OFFICER', 'CUSTOMER_ADVISER'] }
       },
 
 

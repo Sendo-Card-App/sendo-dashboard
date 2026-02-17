@@ -171,8 +171,8 @@
         <mat-icon>{{ contact.type === 'EMAIL' ? 'email' : 'phone' }}</mat-icon>
         <span>{{ contact.value }}</span>
       </div>
-      <div *ngIf="selectedParty.locations.length > 0" class="section-title">Adresse</div>
-      <div *ngFor="let location of selectedParty.locations" class="address-item">
+      <div *ngIf="selectedParty.sessionParty.locations.length > 0" class="section-title">Adresse</div>
+      <div *ngFor="let location of selectedParty.sessionParty.locations" class="address-item">
         <p>{{ location.address1 }}</p>
         <p>{{ location.postalCode }} {{ location.city }}</p>
         <p>{{ location.country }}</p>
