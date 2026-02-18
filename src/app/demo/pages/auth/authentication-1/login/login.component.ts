@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit {
         return this.authenticationService.getUserIdentifiant().pipe(
           tap((userResponse: BaseResponse2) => {
             console.log('User info:', userResponse.data);
-            localStorage.setItem('user-info', JSON.stringify(userResponse.data));
+            localStorage.setItem('user-info', JSON.stringify(userResponse.data.user));
           }),
           catchError((error) => {
             console.error('User info error:', error);
