@@ -70,6 +70,16 @@ export const menus: Navigation[] = [
             Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
           },
           {
+            id: 'allcodes-otp',
+            title: 'Liste des codes OTP',
+            type: 'item',
+            url: '/users/allcodes-otp',
+            // target: true,
+            breadcrumbs: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+            Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
+          },
+          {
             id: 'allmerchant',
             title: 'Liste des Agents',
             type: 'item',

@@ -23,6 +23,7 @@ export class KycAllComponent implements OnInit {
   totalItems = 0;
   currentPage = 1;
   itemsPerPage = 10;
+  private intervalId!: ReturnType<typeof setInterval>;
 
   filterForm: FormGroup;
 
@@ -71,6 +72,10 @@ export class KycAllComponent implements OnInit {
       ].join(' ').toLowerCase();
       return searchStr.includes(filter);
     };
+
+    this.intervalId = setInterval(() => {
+      this.loadKycDocuments();
+    }, 30000);
   }
 
   applyFilter(filterValue: string): void {
@@ -140,16 +145,16 @@ export class KycAllComponent implements OnInit {
       this.kycService.updateKycDocument(publicId, file).subscribe({
         next: () => {
           this.loadKycDocuments();
-          this.snackBar.open('Image modifier avec succes', 'Fermer', {
+          this.snackBar.open('Image modifiée avec succes', 'Fermer', {
             duration: 5000,
             panelClass: ['success-snackbar']
           });
         },
         error: (err) => {
           console.log('erreur lors du remplacement du fichier : ', err)
-          this.snackBar.open('Rrreur de remplacement du fichier : '+err, 'Fermer', {
+          this.snackBar.open('Erreur de remplacement du fichier : '+err, 'Fermer', {
             duration: 5000,
-            panelClass: ['success-snackbar']
+            panelClass: ['error-snackbar']
           });
         }
       });

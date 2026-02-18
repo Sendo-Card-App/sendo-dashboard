@@ -1,0 +1,110 @@
+<div class="row p-t-25">
+  <div class="filter-section">
+    <form [formGroup]="filterForm">
+      <div class="row">
+        <!-- Search Field -->
+        <div class="col-md-4">
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput placeholder="Search…" (keyup)="applyFilter($event.target.value)" />
+          </mat-form-field>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="col-md-2">
+          <button mat-stroked-button (click)="resetFilters()" type="button" class="w-100">
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-12">
+    <app-card cardTitle="Liste des utilisateurs" padding="0" cardClass="sm-block">
+      <div class="p-b-15">
+        <div class="table-containe table-reponsive">
+          <div class="table-responsive">
+            <div *ngIf="isLoading" class="loading-spinner text-center p-3">
+              <mat-spinner diameter="50"></mat-spinner>
+            </div>
+
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+              <!-- Code Column -->
+              <ng-container matColumnDef="code">
+                <th mat-header-cell *matHeaderCellDef>CODE OTP</th>
+                <td mat-cell *matCellDef="let code" class="text-nowrap">{{ code.code }}</td>
+              </ng-container>
+
+              <!-- Name Column -->
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef class="p-l-25">NAME</th>
+                <td mat-cell *matCellDef="let code" class="p-l-25 text-nowrap">
+                  <div class="flex align-item-center">
+                    <div class="flex-shrink-0">
+                      <div class="avatar-circle" [style.background]="createStableAvatar(code.user).color">
+                        {{ createStableAvatar(code.user).letter }}
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 m-l-15">
+                      <div class="f-w-600">{{ formatUserName(code.user) }}</div>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Email Column -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef>EMAIL</th>
+                <td mat-cell *matCellDef="let code" class="text-nowrap">{{ code.user.email }}</td>
+              </ng-container>
+
+              <!-- Phone Column -->
+              <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef>PHONE</th>
+                <td mat-cell *matCellDef="let code" class="text-nowrap">{{ code.user.phone || 'N/A' }}</td>
+              </ng-container>
+
+              <!-- Created At Column -->
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>CREATED AT</th>
+                <td mat-cell *matCellDef="let code" class="text-nowrap">{{ code.createdAt | date:'medium' }}</td>
+              </ng-container>
+
+              <!-- action Column -->
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef class="text-center">ACTIONS</th>
+                <td mat-cell *matCellDef="let code" class="text-nowrap">
+                  <div class="text-center text-nowrap">
+                    <ul class="list-inline p-l-0">
+                      <li class="list-inline-item m-r-10" matTooltip="View">
+                        <button mat-menu-item (click)="verifyUserAccount(code.user.phone, code.code)">
+                          <mat-icon>check</mat-icon>
+                          Vérifier
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+              <!-- Row shown when there is no matching data. -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="6">
+                  <div *ngIf="!isLoading" class="text-center p-3">
+                    No codes found {{ searchText ? 'matching "' + searchText + '"' : '' }}
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <mat-paginator [length]="totalItems" [pageSize]="itemsPerPage" [pageSizeOptions]="[5, 10, 25, 100]"
+              [pageIndex]="currentPage - 1" (page)="onPageChange($event)" showFirstLastButtons>
+            </mat-paginator>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

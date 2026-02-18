@@ -52,6 +52,19 @@ export class KycService {
       )
     }
   }
+  private getConfigAuthorizedMultipart() {
+    const dataRegistered = localStorage.getItem('login-sendo') || '{}'
+    const data = JSON.parse(dataRegistered)
+    return {
+      headers: new HttpHeaders(
+        {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+          'Authorization': `Bearer ${data.accessToken}`
+        }
+      )
+    }
+  }
 
   /**
    * Récupère tous les documents KYC en attente ("PENDING")
@@ -81,12 +94,14 @@ export class KycService {
 
   // kyc.service.ts
   updateKycDocument(publicId: string, file: File): Observable<BaseResponse> {
+    const encodedPublicId = encodeURIComponent(publicId);
     const formData = new FormData();
     formData.append('document', file);
     
-    return this.http.put<BaseResponse>(`${this.apiUrl}/kyc/${publicId}/admin`,
+    return this.http.put<BaseResponse>(`${this.apiUrl}/kyc/${encodedPublicId}/admin`,
       formData,
-      { ...this.getConfigAuthorized() });
+      this.getConfigAuthorizedMultipart()
+    );
   }
 
 

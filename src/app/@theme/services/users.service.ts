@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { MeResponse } from '../models';
+import { CodeOTPResponse, MeResponse } from '../models';
 import { MerchantListResponse, MerchantResponse, MerchantStatus } from '../models/merchant';
 
 export interface UserCreateRequest {
@@ -31,10 +31,23 @@ export interface PaginatedUsers {
   items: MeResponse['user'][];
 }
 
+export interface PaginatedCodesOTP {
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  items: CodeOTPResponse[];
+}
+
 export interface UsersResponse {
   status: number;
   message: string;
   data: PaginatedUsers;
+}
+
+export interface CodesOTPResponse {
+  status: number;
+  message: string;
+  data: PaginatedCodesOTP;
 }
 
 @Injectable({
@@ -43,6 +56,7 @@ export interface UsersResponse {
 export class UserService {
   private apiUrl = `${environment.apiUrl}/users`;
   private apiUrl1 = `${environment.apiUrl}`;
+  private apiAuth = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) { }
 
@@ -135,6 +149,26 @@ export class UserService {
     });
   }
 
+  getCodesOTP(
+    page: number = 1,
+    limit: number = 10,
+    search: string | null = null
+  ): Observable<CodesOTPResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    // Correction : HttpParams est immuable, il faut réassigner
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    const config = this.getConfigAuthorized();
+    return this.http.get<CodesOTPResponse>(`${this.apiUrl}/codes-otp`, {
+      params,
+      headers: config.headers
+    });
+  }
 
   getUserById(userId: string | number): Observable<ApiResponse<MeResponse>> {
     const config = this.getConfigAuthorized();
@@ -161,6 +195,14 @@ export class UserService {
   // Delete user by ID
   deleteUser(userId: string | number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${userId}`, this.getConfigAuthorized());
+  }
+
+  verifyUserAccount(phone: string, code: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
+      `${this.apiAuth}/otp/verify`,
+      { phone, code },
+      this.getConfigAuthorized()
+    );
   }
 
   //update user by ID

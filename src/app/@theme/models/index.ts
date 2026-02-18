@@ -59,6 +59,23 @@ export interface BaseResponse2 {
     } | null;
   }
 
+  export interface CodeOTPResponse {
+    id: number;
+    userId: number;
+    code: string;
+    type: string;
+    phone: string;
+    createdAt: string;
+    updatedAt: string;
+    user: {
+      id: number;
+      firstname: string;
+      lastname: string;
+      email: string;
+      phone: string;
+    }
+  }
+
 
 export interface Login {
     email: string;

@@ -52,6 +52,11 @@ const routes: Routes = [
         data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }
       },
       {
+        path: 'allcodes-otp',
+        loadComponent: () => import('./demo/pages/utilisateur/ut-allcodes-otp/ut-alluser.component').then((c) => c.UtAlluserComponent),
+        data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }
+      },
+      {
         path: 'allmerchant',
         loadComponent: () => import('./demo/pages/utilisateur/ut-merchant/ut-merchant.component').then((c) => c.UtMerchantComponent),
         data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }

@@ -158,7 +158,7 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterView
       this.headerBlur = true;
       this.drawer.toggle();
 
-      console.log('View details for:', party);
+      //console.log('View details for:', party);
 
       this.cardService.getOnboardingSession(party.sessionParty.onboardingSessionKey).subscribe(
         (response) => {
