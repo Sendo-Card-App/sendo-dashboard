@@ -257,7 +257,7 @@ const routes: Routes = [
       {
         path: 'card',
         loadComponent: () => import('./demo/pages/card-onboading/card-onboading-list/card-onboading-list.component').then((c) => c.CardOnboardingListComponent),
-        data: { roles: ['SUPER_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }
+        data: { roles: ['SUPER_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CARD_MANAGER'] }
       },
 
     ]
