@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { KycDocument } from 'src/app/@theme/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-kyc-all',
@@ -23,7 +24,9 @@ export class KycAllComponent implements OnInit {
   totalItems = 0;
   currentPage = 1;
   itemsPerPage = 10;
+  searchText = '';
   private intervalId!: ReturnType<typeof setInterval>;
+  private searchSubject = new Subject<string>();
 
   filterForm: FormGroup;
 
@@ -42,10 +45,28 @@ export class KycAllComponent implements OnInit {
     });
   }
 
+  private setupFilterListeners(): void {
+      // Recherche avec debounce (300ms)
+      this.searchSubject.pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ).subscribe(searchText => {
+        this.currentPage = 1; // Reset à la première page
+        this.loadKycDocuments();
+      });
+  
+      // Filtres avec reset de pagination
+      this.filterForm.valueChanges.subscribe(() => {
+        this.currentPage = 1;
+        this.loadKycDocuments();
+      });
+    }
+
   ngOnInit(): void {
     this.loadKycDocuments();
-
-    this.filterForm.get('search')?.valueChanges
+    this.setupFilterListeners();
+    /*this.filterForm.get('search')?.valueChanges
       .pipe(debounceTime(200), distinctUntilChanged())
       .subscribe((value: string) => {
         this.applyFilter(value);
@@ -59,7 +80,7 @@ export class KycAllComponent implements OnInit {
       .subscribe(() => {
         this.currentPage = 1;
         this.loadKycDocuments();
-      });
+      });*/
 
     // Définis le prédicat de filtre
     this.dataSource.filterPredicate = (data: unknown, filter: string) => {
@@ -80,6 +101,8 @@ export class KycAllComponent implements OnInit {
 
   applyFilter(filterValue: string): void {
     this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchText = filterValue.trim().toLowerCase();
+    this.searchSubject.next(this.searchText);
   }
 
   loadKycDocuments(): void {
@@ -89,7 +112,8 @@ export class KycAllComponent implements OnInit {
     this.kycService.getAllKyc(
       this.currentPage,
       this.itemsPerPage,
-      status
+      status,
+      this.filterForm.value.search
     ).subscribe({
       next: (response) => {
         this.dataSource.data = response.data.items;

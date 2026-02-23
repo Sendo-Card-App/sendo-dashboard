@@ -64,7 +64,7 @@ export class KycListComponent implements OnInit, OnDestroy {
 
   loadDocuments(): void {
     this.isLoading = true;
-    this.kycService.getPendingDocuments(this.currentPage, this.itemsPerPage, "CUSTOMER")
+    this.kycService.getPendingDocuments(this.currentPage, this.itemsPerPage, "CUSTOMER", this.searchText)
       .subscribe({
         next: (response) => {
           console.log('Documents:', response);

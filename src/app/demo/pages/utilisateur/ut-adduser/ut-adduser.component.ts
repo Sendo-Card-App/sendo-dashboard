@@ -128,7 +128,7 @@ export class UtAdduserComponent implements OnInit {
 
     this.userService.createUser(userData).subscribe({
       next: (response) => {
-        if (response.status === 200) {
+        if (response.status === 201) {
           this.invitationForm.reset();
           this.isSuccess = true;
           setTimeout(() => this.isSuccess = false, 3000);
