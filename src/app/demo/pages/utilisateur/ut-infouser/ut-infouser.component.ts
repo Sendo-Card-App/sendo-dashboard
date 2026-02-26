@@ -143,6 +143,10 @@ export class UtInfouserComponent implements OnInit {
     this.router.navigate(['/transactions/user', transactionId]);
   }
 
+  viewOrUploadKYC(userId: number): void {
+    this.router.navigate(['/kyc/user', userId]);
+  }
+
   makeDeposit(amount: number) {
     this.userService.deposit(this.user!.user.wallet.matricule, amount).subscribe({
       next: () => {

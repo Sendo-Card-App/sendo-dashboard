@@ -100,6 +100,11 @@ const routes: Routes = [
         data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }
       },
       {
+        path: 'cam-ca',
+        loadComponent: () => import('./demo/pages/transaction/transaction-cam-ca/transaction-cam-ca.component').then((c) => c.TransactionCamCaComponent),
+        data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CUSTOMER_ADVISER', 'CARD_MANAGER'] }
+      },
+      {
         path: 'addtransaction',
         loadComponent: () => import('./demo/pages/transaction/tr-addtransaction/tr-addtransaction.component').then((c) => c.TrAddtransactionComponent),
         data: { roles: ['SUPER_ADMIN'] }
@@ -145,7 +150,11 @@ const routes: Routes = [
         loadComponent: () => import('./demo/pages/kyc/kyc-all/kyc-all.component').then((c) => c.KycAllComponent),
         data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'MANAGEMENT_CONTROLLER', 'CARD_MANAGER', 'COMPLIANCE_OFFICER', 'CUSTOMER_ADVISER'] }
       },
-
+      {
+        path: 'user/:userId',
+        loadComponent: () => import('./demo/pages/kyc/kyc-verification/kyc-verification.component').then((c) => c.KycVerificationComponent),
+        data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN', 'TECHNICAL_DIRECTOR', 'MANAGEMENT_CONTROLLER', 'CARD_MANAGER', 'COMPLIANCE_OFFICER', 'CUSTOMER_ADVISER'] }
+      },
 
     ]
   },
@@ -271,6 +280,19 @@ const routes: Routes = [
         path: 'all',
         loadComponent: () => import('./demo/pages/commision/commission-list/commission-list.component').then((c) => c.CommissionListComponent),
         data: { roles: ['SUPER_ADMIN', 'SYSTEM_ADMIN'] }
+      },
+
+    ]
+  },
+  {
+    path: 'fund-subscriptions',
+    component: AdminComponent,
+    canActivateChild: [RoleGuard],
+    children: [
+      {
+        path: 'all',
+        loadComponent: () => import('./demo/pages/fund-subscription/fund-subscription.component').then((c) => c.FundSubscriptionComponent),
+        data: { roles: ['SUPER_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CARD_MANAGER'] }
       },
 
     ]

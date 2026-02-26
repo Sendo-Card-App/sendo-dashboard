@@ -17,12 +17,12 @@ import { AuthenticationService } from 'src/app/@theme/services/authentication.se
 
 @Component({
   selector: 'app-transaction-ca-cam',
-  templateUrl: './transaction-ca-cam.component.html',
-  styleUrl: './transaction-ca-cam.component.scss',
+  templateUrl: './transaction-cam-ca.component.html',
+  styleUrl: './transaction-cam-ca.component.scss',
   imports: [CommonModule, SharedModule],
   providers: [DatePipe]
 })
-export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TransactionCamCaComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns: string[] = ['transactionId', 'username', 'amount', 'type', 'status', 'method', 'createdAt', 'actions'];
   dataSource = new MatTableDataSource<Transactions>([]);
   isLoading = false;
@@ -45,14 +45,16 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
   ];
 
   typeOptions = [
+    { value: '', label: 'All' },
+    //{ value: 'DEPOSIT', label: 'Deposit' },
     { value: 'WITHDRAWAL', label: 'Withdrawal' },
-    { value: 'TRANSFER', label: 'Transfert' }
+    { value: 'TRANSFER', label: 'Transfer' }
   ];
 
   methodOptions = [
     { value: '', label: 'All' },
     { value: 'MOBILE_MONEY', label: 'Mobile Money' },
-    { value: 'INTERAC', label: 'Interac' }
+    { value: 'INTERAC', label: 'Par Interac' }
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -69,8 +71,6 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
   ) {
     this.filterForm = this.fb.group({
       search: [''],
-      type: [''],
-      method: [''],
       status: [''],
       minAmount: [''],
       maxAmount: [''],
@@ -146,16 +146,15 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
     // Note: +1 car l'API attend probablement page=1 pour la première page
     const apiPage = this.currentPage + 1;
 
-    this.transactionsService.getTransactionCaCam(
+    this.transactionsService.getTransactionCamCa(
       apiPage,
       this.itemsPerPage,
-      this.filterForm.value.type as 'WITHDRAWAL' | 'TRANSFER',
-      this.filterForm.value.method as 'MOBILE_MONEY' | 'INTERAC',
-      this.filterForm.value.status as TransactionStatus,
+      formValues.status as TransactionStatus,
       startDate || undefined,
       endDate || undefined
     ).subscribe({
       next: (response) => {
+        console.log('transactions cam-ca : ', response.data)
         this.dataSource.data = response.data.items;
         this.totalItems = response.data.totalItems; // Assurez-vous que c'est le bon champ
         this.isLoading = false;
@@ -260,7 +259,7 @@ exportToCSV(): void {
     1, // On ne récupère qu'un seul élément pour connaître le total
     this.filterForm.value.type as TransactionType,
     this.filterForm.value.status as TransactionStatus,
-    this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
+    this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER' | 'VIRTUAL_CARD' | 'WALLET' | 'INTERAC',
     startDate,
     endDate
   ).subscribe({
@@ -309,7 +308,7 @@ private getAllTransactionsForExport(
     pageSize,
     this.filterForm.value.type as TransactionType,
     this.filterForm.value.status as TransactionStatus,
-    this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER',
+    this.filterForm.value.method as 'MOBILE_MONEY' | 'BANK_TRANSFER' | 'VIRTUAL_CARD' | 'WALLET' | 'INTERAC',
     startDate,
     endDate
   ).subscribe({

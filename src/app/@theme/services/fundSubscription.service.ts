@@ -11,6 +11,12 @@ export class FundSubscriptionWithdrawalResponse {
     data: PaginatedData<FundSubscriptionWithdrawal>;
 }
 
+export class FundSubscriptionResponse {
+    status: number;
+    message: string;
+    data: PaginatedData<FundSubscription>;
+}
+
 export class FundResponse {
     status: number;
     message: string;
@@ -68,6 +74,36 @@ export class FundSubscriptionService {
     private apiUrl = `${environment.apiUrl}`;
     
     constructor(private http: HttpClient) { }
+
+    getFundSubscriptions(
+        page: number = 1,
+        limit: number = 10,
+        currency?: 'CAD' | 'XAF',
+        status?: 'MATURED' | 'ACTIVE' | 'CLOSED',
+        userId?: number,
+      ): Observable<FundSubscriptionResponse> {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const params: any = { page, limit };
+    
+        // On n’ajoute le filtre que s’il est défini
+        if (status && status.trim() !== '') {
+          params.status = status;
+        }
+
+        if (currency) params.currency = currency
+        if (userId) params.userId = userId
+    
+        return this.http
+          .get<FundSubscriptionResponse>(`${this.apiUrl}/fund-subscriptions/subscriptions`, {
+            params, ...this.getConfigAuthorized()
+          })
+          .pipe(
+            catchError((error: HttpErrorResponse) => {
+              console.error('Erreur lors du chargement des souscriptions:', error);
+              return throwError(() => new Error(error.message || 'Erreur serveur'));
+            })
+        );
+    }
 
     getFundWithdrawalRequests(
         page: number = 1,

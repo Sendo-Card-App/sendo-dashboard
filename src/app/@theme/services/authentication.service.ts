@@ -92,6 +92,10 @@ export class AuthenticationService {
     return this.httpClient.get<BaseResponse2>(`${this.urlcurl}/users/me`, this.getConfigAuthorized());
   }
 
+  getUserById(userId: number){
+    return this.httpClient.get<BaseResponse2>(`${this.urlcurl}/users/${userId}`, this.getConfigAuthorized());
+  }
+
   public getStoredUser(): MeResponse['user'] | null {
     const raw = localStorage.getItem('user-info');
     if (!raw) return null;

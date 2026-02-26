@@ -1,0 +1,175 @@
+<div class="withdrawal-request-container">
+  <!-- En-tête -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title"></h1>
+      <div class="header-info">
+        {{ totalItems }} souscription(s) au total
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filter-section">
+    <div class="row">
+      <!-- Status Filter -->
+      <div class="col-md-4">
+        <div class="filter-group">
+          <label class="filter-label">Statut</label>
+          <select [(ngModel)]="filters.status" (change)="applyFilters()" class="form-select">
+            <option value="">Tous les statuts</option>
+            <option value="ACTIVE">{{ getStatusLabel("ACTIVE") }}</option>
+            <option value="MATURED">{{ getStatusLabel("MATURED") }}</option>
+            <option value="CLOSED">{{ getStatusLabel("CLOSED") }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Currency Filter -->
+      <div class="col-md-4">
+        <div class="filter-group">
+          <label class="filter-label">Monnaie</label>
+          <select [(ngModel)]="filters.currency" (change)="applyFilters()" class="form-select">
+            <option value="">Toutes les monnaies</option>
+            <option value="XAF">XAF</option>
+            <option value="CAD">CAD</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Reset Button -->
+      <div class="col-md-2">
+        <div class="filter-group">
+          <label class="filter-label">&nbsp;</label>
+          <button class="btn-reset" (click)="clearFilters()" type="button">
+            <i class="ti ti-filter-off"></i>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des demandes de retrait -->
+  <div class="withdrawal-list-section">
+    <div class="section-card">
+      <div class="card-header">
+        <h3 class="card-title">Liste des Demandes</h3>
+      </div>
+
+      <div class="card-body">
+        <!-- Loading state -->
+        <div *ngIf="isLoading" class="loading-overlay">
+          <div class="loading-content">
+            <mat-spinner diameter="50"></mat-spinner>
+            <div class="loading-text">Chargement des demandes...</div>
+          </div>
+        </div>
+
+        <!-- Tableau des demandes -->
+        <div *ngIf="!isLoading" class="table-responsive">
+          <table class="withdrawal-table">
+            <thead>
+              <tr>
+                <th>Utilisateur</th>
+                <th>Email</th>
+                <th>Commission (%)</th>
+                <th>Montant (Souscription / Intérêts)</th>
+                <th>Type d'investissement</th>
+                <th>Statut</th>
+                <th>Date de souscription</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let subscription of fundSubscriptions" class="withdrawal-row">
+                <!-- Colonne Utilisateur -->
+                <td class="agent-info">
+                  <div class="agent-details">
+                    <div class="avatar-circle"
+                         [style.background]="createStableAvatar(subscription.user.firstname + subscription.user.lastname).color">
+                      {{ createStableAvatar(subscription.user.firstname + subscription.user.lastname).letter }}
+                    </div>
+                    <div class="agent-text">
+                      <div class="agent-name f-w-600">
+                        {{ subscription.user.firstname }} {{ subscription.user.lastname }}
+                      </div>
+                      <!-- <div class="agent-code mat-caption">
+                        {{ withdrawal.partner.code }}
+                      </div> -->
+                    </div>
+                  </div>
+                </td>
+                
+                <!-- Colonne Email -->
+                <td class="amount-info">
+                  <div class="amount-value f-w-600">
+                    {{ subscription.user.email }}
+                  </div>
+                </td>
+
+                <!-- Colonne Commission -->
+                <td class="contact-info">
+                  <div class="contact-email">{{ subscription.commissionRate }}</div>
+                  <div class="contact-phone mat-caption">{{ subscription.commissionRate }} %</div>
+                </td>
+
+                <!-- Colonne Montant -->
+                <td class="amount-info">
+                  <div class="amount-value f-w-600">
+                    {{ subscription.amount }} / {{ subscription.interestAmount }}
+                  </div>
+                </td>
+
+                <!-- Colonne Type d'investissement -->
+                <td class="withdrawal-phone">
+                  <div class="phone-number">{{ subscription.fund.name }}</div>
+                  <div class="contact-phone mat-caption">{{ subscription.fundId }}</div>
+                </td>
+
+                <!-- Colonne Statut -->
+                <td class="status-info">
+                  <div class="status-container">
+                    <i class="ti status-icon"
+                       [class]="getStatusIcon(subscription.status)"
+                       [style.color]="getStatusColor(subscription.status)"></i>
+                    <span class="status-badge"
+                          [style.background]="getStatusColor(subscription.status)">
+                      {{ getStatusLabel(subscription.status) }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Colonne Date -->
+                <td class="date-info">
+                  <div class="created-date">
+                    {{ formatDate(subscription.createdAt) }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Message vide -->
+          <div *ngIf="fundSubscriptions.length === 0 && !isLoading" class="no-data-message">
+            <i class="ti ti-cash-off no-data-icon"></i>
+            <p>Aucune demande de retrait trouvée</p>
+            <p class="no-data-subtitle" *ngIf="filters.status">
+              avec le statut "{{ getStatusLabel(filters.status) }}"
+            </p>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="!isLoading && fundSubscriptions.length > 0" class="pagination-section">
+          <mat-paginator [length]="totalItems"
+                        [pageSize]="itemsPerPage"
+                        [pageSizeOptions]="[5, 10, 25, 100]"
+                        [pageIndex]="currentPage - 1"
+                        (page)="onPageChange($event)"
+                        showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

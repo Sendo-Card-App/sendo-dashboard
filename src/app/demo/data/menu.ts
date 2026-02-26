@@ -111,7 +111,7 @@ export const menus: Navigation[] = [
         children: [
           {
             id: 'alltransaction',
-            title: 'Liste des transactions',
+            title: 'Toutes les transactions',
             type: 'item',
             url: '/transactions/alltransactions',
             // target: true,
@@ -120,8 +120,8 @@ export const menus: Navigation[] = [
             breadcrumbs: true
           },
           {
-            id: 'alltransaction',
-            title: 'Transaction Ca-Cam',
+            id: 'alltransaction-cacam',
+            title: 'Transactions Ca-Cam',
             type: 'item',
             url: '/transactions/ca-cam',
             // target: true,
@@ -129,7 +129,16 @@ export const menus: Navigation[] = [
             Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
             breadcrumbs: true
           },
-
+          {
+            id: 'alltransaction-camca',
+            title: 'Transactions Cam-Ca',
+            type: 'item',
+            url: '/transactions/cam-ca',
+            // target: true,
+            role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN, Role1.CARD_MANAGER, Role1.COMPLIANCE_OFFICER, Role1.CUSTOMER_ADVISER,
+            Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
+            breadcrumbs: true
+          },
         ]
       },
       {
@@ -336,6 +345,16 @@ export const menus: Navigation[] = [
           },
 
         ]
+      },
+      {
+        id: 'fund-subscriptions',
+        title: 'Souscription investissements',
+        type: 'item',
+        classes: 'nav-item',
+        url: '/fund-subscriptions/all',
+        icon: '#custom-presentation-chart',
+        role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN,  Role1.COMPLIANCE_OFFICER,
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR]
       },
     ]
   },

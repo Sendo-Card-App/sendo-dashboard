@@ -115,6 +115,15 @@
         </button>
       </div>
     </mat-card>
+    <mat-card class="status-card">
+      <div class="status-header">
+        <h3>Voir ou enregistrer les KYC</h3>
+        <button mat-stroked-button (click)="viewOrUploadKYC(user?.user.id)">
+          <mat-icon>upload</mat-icon>
+          Documents KYC
+        </button>
+      </div>
+    </mat-card>
     <app-card cardTitle="A propos">
       <p class="m-b-0" *ngIf="user?.user.profession; else noInfo">
         {{ user.profession }} basé à {{ user.city || 'ville non spécifiée' }}.

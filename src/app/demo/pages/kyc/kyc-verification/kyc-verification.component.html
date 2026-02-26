@@ -1,0 +1,232 @@
+<div class="kyc-verification-container">
+  <!-- Header -->
+  <div class="kyc-header">
+    <h1 class="kyc-title">Vérification KYC</h1>
+    <p class="kyc-subtitle">
+      Type de compte : 
+      @if (isCanadian) {
+        <span class="country-badge canada">🇨🇦 Canada (3 docs)</span>
+      } @else {
+        <span class="country-badge cameroon">🇨🇲 Cameroun (4 docs)</span>
+      }
+    </p>
+  </div>
+
+  <!-- Alerte rejet -->
+  @if (hasRejectedDocuments) {
+    <div class="rejection-alert">
+      <mat-icon>warning</mat-icon>
+      <div>
+        <h3>Documents à corriger</h3>
+        <p>Veuillez remplacer les documents rejetés.</p>
+      </div>
+    </div>
+  }
+
+  <div class="kyc-content">
+    <!-- Sidebar progression -->
+    <div class="kyc-sidebar">
+      <div class="progress-section">
+        <h3>Progression</h3>
+        <div class="progress-info">
+          <span>{{ progress }}%</span>
+          <span>{{ completedStepsCount }} / {{ isCanadian ? 3 : 4 }}</span>
+        </div>
+        <mat-progress-bar [value]="progress"></mat-progress-bar>
+      </div>
+
+      <!-- Steps list -->
+      <div class="steps-list">
+        @for (step of kycSteps; track step.id; let i = $index) {
+          @if (step.id !== 'ADDRESS_PROOF' || showAddressProof) {
+            <div class="step-item" 
+                 [class.active]="currentStep === i"
+                 [class.completed]="step.completed"
+                 [class.rejected]="step.status === 'REJECTED'"
+                 (click)="navigateToStep(i)">
+              <mat-icon>{{ step.icon }}</mat-icon>
+              <div class="step-info">
+                <h4>{{ step.title }}</h4>
+                @if (step.status) {
+                  <span class="status" [style.background]="getStatusColor(step.status)">
+                    {{ getStatusText(step.status) }}
+                  </span>
+                }
+                @if (step.files.length > 0 && step.canSubmit) {
+                  <span class="files-count">{{ step.files.length }} fichiers</span>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      @if (allDocumentsSubmitted) {
+        <div class="success-message">
+          <mat-icon>celebration</mat-icon>
+          <p>Tous documents soumis ! Vérification en cours...</p>
+        </div>
+      }
+    </div>
+
+    <!-- Main content -->
+    <div class="kyc-main">
+      <mat-card>
+        <!-- Header étape courante -->
+        <mat-card-header>
+          <div class="header-content">
+            <mat-icon class="step-icon">{{ currentStepData.icon }}</mat-icon>
+            <div>
+              <h2>{{ currentStepData.title }}</h2>
+              <p>{{ currentStepData.description }}</p>
+              @if (currentStepData.status) {
+                <div class="status-badge" [style.background]="getStatusColor(currentStepData.status)">
+                  <mat-icon>{{ getStatusIcon(currentStepData.status) }}</mat-icon>
+                  {{ getStatusText(currentStepData.status) }}
+                </div>
+              }
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Documents existants -->
+          @if (currentStepData.submittedDocuments?.length && !currentStepData.canSubmit) {
+            <div class="existing-docs" [class.rejected]="currentStepData.status === 'REJECTED'">
+              <mat-icon>{{
+                currentStepData.status === 'APPROVED' ? 'check_circle' :
+                currentStepData.status === 'REJECTED' ? 'error' : 'schedule'
+              }}</mat-icon>
+              <div>
+                <h4>{{ 
+                  currentStepData.status === 'APPROVED' ? 'Approuvé' :
+                  currentStepData.status === 'REJECTED' ? 'Rejeté' : 'En vérification' 
+                }}</h4>
+                @if (currentStepData.rejectionReason) {
+                  <p class="rejection-reason">{{ currentStepData.rejectionReason }}</p>
+                }
+                <a [href]="currentStepData.submittedDocuments[0].url" target="_blank">
+                  <mat-icon>visibility</mat-icon> Voir document
+                </a>
+              </div>
+            </div>
+          }
+
+          <!-- ✅ FORMULAIRE ID_PROOF UNIQUEMENT -->
+          @if (currentStepData.id === 'ID_PROOF' && currentStepData.canSubmit) {
+            <div class="id-proof-form">
+              <h4>📋 Informations obligatoires</h4>
+              <div class="form-grid">
+                <mat-form-field>
+                  <mat-label>Numéro pièce d'identité *</mat-label>
+                  <input matInput 
+                         [(ngModel)]="currentStepData.idDocumentNumber"
+                         placeholder="Ex: 12.345.6789">
+                  <mat-error>Numéro obligatoire</mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Date expiration *</mat-label>
+                  <input matInput 
+                         [(ngModel)]="currentStepData.expirationDate"
+                         type="date"
+                         [max]="maxExpirationDate">
+                  <mat-error>Date obligatoire</mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Tax ID OPTIONNEL -->
+              <div class="form-row optional-field">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Numéro NIU (optionnel)</mat-label>
+                  <input matInput 
+                        [(ngModel)]="currentStepData.taxIdNumber"
+                        placeholder="Ex: NIU-12345678">
+                </mat-form-field>
+              </div>
+            </div>
+          }
+
+          <!-- Zone upload -->
+          @if (currentStepData.canSubmit) {
+            <div class="drop-zone"
+                 (drop)="onDrop($event, currentStep)"
+                 (dragover)="onDragOver($event)"
+                 [class.disabled]="currentStepData.isUploading">
+              
+              <input #fileInput
+                     type="file"
+                     multiple
+                     accept="image/*,.pdf"
+                     (change)="onFileSelected($event, currentStep)"
+                     class="file-input">
+
+              <div class="drop-content">
+                @if (currentStepData.id === 'ID_PROOF') {
+                  <div class="id-proof-info">
+                    <mat-icon>info</mat-icon>
+                    <span>2 fichiers requis : recto + verso</span>
+                  </div>
+                }
+                <mat-icon>cloud_upload</mat-icon>
+                <p>Glissez ou cliquez pour ajouter</p>
+                <button mat-button (click)="fileInput.click()">Choisir fichiers</button>
+              </div>
+            </div>
+
+            <!-- Fichiers ajoutés -->
+            @if (currentStepData.files.length > 0) {
+              <div class="files-list">
+                <h4>{{ currentStepData.files.length }} fichier(s)</h4>
+                @for (file of currentStepData.files; track file.name; let i = $index) {
+                  <div class="file-item">
+                    <mat-icon>{{ getFileIcon(file) }}</mat-icon>
+                    <div>
+                      <strong>{{ file.name }}</strong>
+                      <span>{{ formatFileSize(file.size) }}</span>
+                    </div>
+                    <button mat-icon-button (click)="removeFile(currentStep, i)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </mat-card-content>
+
+        <!-- Actions -->
+        <mat-card-actions>
+          @if (currentStep > 0) {
+            <button mat-button (click)="prevStep()" [disabled]="isUploadingInProgress">
+              <mat-icon>arrow_back</mat-icon> Précédent
+            </button>
+          }
+
+          <span class="spacer"></span>
+
+          <!-- Bouton global ENVOYER TOUT -->
+          @if (!allDocumentsSubmitted) {
+            <button mat-raised-button 
+                    color="primary"
+                    (click)="uploadAllDocuments()"
+                    [disabled]="isUploadingInProgress || !areDocumentsReady">
+              @if (isUploadingInProgress) {
+                <mat-spinner diameter="20"></mat-spinner> Envoi...
+              } @else {
+                <mat-icon>cloud_upload</mat-icon>
+                Envoyer tout ({{ readyDocumentsCount }}/{{ isCanadian ? 3 : 4 }})
+              }
+            </button>
+          }
+
+          @if (currentStep < kycSteps.length - 1) {
+            <button mat-stroked-button (click)="nextStep()" [disabled]="isUploadingInProgress">
+              Suivant <mat-icon>arrow_forward</mat-icon>
+            </button>
+          }
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

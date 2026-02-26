@@ -129,7 +129,8 @@
                   transaction?.method === 'BANK_TRANSFER' || 
                   (transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || 
                   (transaction?.type === 'WITHDRAWAL' && transaction?.method === 'INTERAC') || 
-                  (transaction?.type === 'WALLET_TO_WALLET' && transaction?.method === 'WALLET')
+                  (transaction?.type === 'WALLET_TO_WALLET' && transaction?.method === 'WALLET') ||
+                  (transaction?.type === 'TRANSFER' && transaction?.method === 'WALLET')
                 "
               >
                 {{ isEditing ? 'Annuler' : 'Modifier' }}
@@ -158,7 +159,8 @@
                 (transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || 
                 (transaction?.method === 'INTERAC' && transaction?.type === 'DEPOSIT') ||
                 (transaction?.type === 'WITHDRAWAL' && transaction?.method === 'INTERAC') ||
-                (transaction?.type === 'WALLET_TO_WALLET' && transaction?.method === 'WALLET')
+                (transaction?.type === 'WALLET_TO_WALLET' && transaction?.method === 'WALLET') ||
+                (transaction?.type === 'TRANSFER' && transaction?.method === 'WALLET')
               )
             " 
             class="status-form" [formGroup]="statusForm"

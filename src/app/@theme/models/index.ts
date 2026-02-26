@@ -1,3 +1,5 @@
+import { KycDocumentType } from "../services/kyc.service";
+
 export interface LoginResponse {
     accessToken: string;
     deviceId: string;
@@ -172,10 +174,11 @@ export interface KycDocument {
   id: number;
   userId: number;
   user: MeResponse;
-  type: string;
-  status: string;
+  type: KycDocumentType;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
   createdAt: string;
-  // etc.
+  url: string;
+  publicId: string;
 }
 
 

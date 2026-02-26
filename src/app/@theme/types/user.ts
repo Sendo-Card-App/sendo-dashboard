@@ -1,3 +1,5 @@
+import { KycDocument } from "../models";
+
 export enum Role1 {
   SUPER_ADMIN = 'SUPER_ADMIN',
   SYSTEM_ADMIN = 'SYSTEM_ADMIN',
@@ -19,6 +21,7 @@ export class User {
     name: string;
     role: Role1[];
     country: string | null;
+    kycDocuments?: KycDocument[];
   };
 }
 

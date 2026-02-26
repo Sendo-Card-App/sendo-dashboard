@@ -31,6 +31,25 @@ export interface KycListResponse extends BaseResponse {
   data: PaginatedData<KycDocument>;
 }
 
+export type KycDocumentType =
+  | 'ID_PROOF'
+  | 'ADDRESS_PROOF'
+  | 'SELFIE';
+
+export interface KycDocumentUpload {
+  documents: {
+    type: KycDocumentType;
+    idDocumentNumber: string;
+    taxIdNumber?: string;
+    expirationDate?: string;
+  }[],
+  files: File[];
+}
+
+export interface KycUploadResponse extends BaseResponse {
+  data: KycDocument[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class KycService {
   private apiUrl = environment.apiUrl;
@@ -103,6 +122,31 @@ export class KycService {
     formData.append('document', file);
     
     return this.http.put<BaseResponse>(`${this.apiUrl}/kyc/${encodedPublicId}/admin`,
+      formData,
+      this.getConfigAuthorizedMultipart()
+    );
+  }
+
+  /**
+   * 📤 Upload des documents KYC
+   * @param data - { documents: [{ type, idDocumentNumber, ... }], files: [File, ...] }
+   *  - "documents" contient les métadonnées (type de document, numéro, etc.)
+   *  - "files" contient les fichiers à uploader
+   */
+  uploadKycDocuments(data: KycDocumentUpload): Observable<KycUploadResponse> {
+    const formData = new FormData();
+    formData.append('documents', JSON.stringify(data.documents));
+
+    for (const file of data.files) {
+      formData.append('files', file, file.name);
+    }
+
+    console.log('form data : ', data)
+
+    // ⚠️ Ne pas forcer "Content-Type: application/json" avec FormData !
+    // Sinon l'upload échoue.
+    return this.http.post<KycUploadResponse>(
+      `${this.apiUrl}/kyc/admin/upload`,
       formData,
       this.getConfigAuthorizedMultipart()
     );
