@@ -17,7 +17,8 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
 export class CommissionListComponent implements OnInit, AfterViewInit, OnDestroy {
   filterForm: FormGroup;
   isLoading = false;
-  totalFees = 0;
+  totalSendoFees = 0;
+  totalPartnerFees = 0;
   averageFees = 0;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   feesByType: any[] = [];
@@ -97,7 +98,8 @@ export class CommissionListComponent implements OnInit, AfterViewInit, OnDestroy
     ).subscribe({
       next: (response) => {
         if (response.status === 200) {
-          this.totalFees = response.data.totalFees;
+          this.totalSendoFees = response.data.totalSendoFees;
+          this.totalPartnerFees = response.data.totalPartnerFees;
           this.averageFees = response.data.averageFees;
           this.feesByType = response.data.feesByType;
           this.dataSource.data = response.data.recentFees;

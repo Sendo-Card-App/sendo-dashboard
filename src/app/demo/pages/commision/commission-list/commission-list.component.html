@@ -9,8 +9,20 @@
           <mat-icon>account_balance_wallet</mat-icon>
         </div>
         <div class="card-details">
-          <h3>Total des commissions</h3>
-          <p class="amount">{{ totalFees | currency:'XAF':'symbol':'1.0-0' }}</p>
+          <h3>Total des commissions Sendo</h3>
+          <p class="amount">{{ totalSendoFees | currency:'XAF':'symbol':'1.0-0' }}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content style="display: flex;">
+        <div class="card-icon total">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="card-details">
+          <h3>Total des commissions du partenaire</h3>
+          <p class="amount">{{ totalPartnerFees | currency:'XAF':'symbol':'1.0-0' }}</p>
         </div>
       </mat-card-content>
     </mat-card>
