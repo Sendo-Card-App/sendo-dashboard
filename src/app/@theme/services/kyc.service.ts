@@ -150,10 +150,7 @@ export class KycService {
     // Sinon l'upload échoue.
     return this.http.post<KycUploadResponse>(
       `${this.apiUrl}/kyc/admin/upload`,
-      {
-        ...formData,
-        userId: data.userId
-      },
+      formData,
       this.getConfigAuthorizedMultipart()
     );
   }
