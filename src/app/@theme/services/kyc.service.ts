@@ -44,6 +44,7 @@ export interface KycDocumentUpload {
     expirationDate?: string;
   }[],
   files: File[];
+  userId: number;
 }
 
 export interface KycUploadResponse extends BaseResponse {

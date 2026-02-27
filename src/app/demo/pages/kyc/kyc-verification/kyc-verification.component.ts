@@ -291,6 +291,7 @@ export class KycVerificationComponent implements OnInit {
     });
 
     if (allDocuments.length === 0) throw new Error('Aucun document prêt');
+    if (!this.user) throw new Error('Utilisateur non chargé');
     return { 
       documents: [
         {
@@ -301,7 +302,8 @@ export class KycVerificationComponent implements OnInit {
         },
         ...allDocuments
       ], 
-      files: allFiles 
+      files: allFiles ,
+      userId: Number(this.user.id)
     };
   }
 
