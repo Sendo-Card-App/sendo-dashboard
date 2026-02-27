@@ -78,8 +78,8 @@ export class KycService {
     return {
       headers: new HttpHeaders(
         {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
+          //"Access-Control-Allow-Origin": "*",
+          //"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
           'Authorization': `Bearer ${data.accessToken}`
         }
       )
@@ -122,7 +122,8 @@ export class KycService {
     const formData = new FormData();
     formData.append('document', file);
     
-    return this.http.put<BaseResponse>(`${this.apiUrl}/kyc/${encodedPublicId}/admin`,
+    return this.http.put<BaseResponse>(
+      `${this.apiUrl}/kyc/${encodedPublicId}/admin`,
       formData,
       this.getConfigAuthorizedMultipart()
     );
@@ -137,6 +138,7 @@ export class KycService {
   uploadKycDocuments(data: KycDocumentUpload): Observable<KycUploadResponse> {
     const formData = new FormData();
     formData.append('documents', JSON.stringify(data.documents));
+    formData.append('userId', String(data.userId)); 
 
     for (const file of data.files) {
       formData.append('files', file, file.name);
