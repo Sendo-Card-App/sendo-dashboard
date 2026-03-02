@@ -264,6 +264,28 @@
           </div>
         </mat-card>
 
+        <!-- Payment Additional Information -->
+        <mat-card class="additional-info-card">
+          <h3>Autres informatins sur le paiement</h3>
+
+          <div class="additional-info-grid">
+            <div class="info-item">
+              <span class="info-label">Devise transaction : </span>
+              <p class="info-value">{{ transaction.currency || 'N/A' }} </p>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Montant d'origine</span>
+              <p class="info-value">{{ transaction.accountNumber || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+              <span class="info-label">Marchand</span>
+              <p class="info-value">{{ transaction.bankName || 'N/A' }}</p>
+            </div>
+          </div>
+        </mat-card>
+
         <!-- Additional Information -->
         <mat-card class="additional-info-card">
           <h3>Informations receveur</h3>
@@ -287,7 +309,7 @@
 
             <div class="info-item">
               <span class="info-label">Pays</span>
-              <p class="info-value">{{ transaction.receiver.country || 'N/A' }}</p>
+              <p class="info-value">{{ transaction.receiver.country || transaction.transactionOriginCurrencyCode }}</p>
             </div>
           </div>
         </mat-card>

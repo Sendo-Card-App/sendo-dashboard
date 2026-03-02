@@ -117,7 +117,8 @@ export type CardStatus =
   | 'TERMINATED'
   | 'IN_TERMINATION'
   | 'SUSPENDED'
-  | 'BLOCKED';
+  | 'BLOCKED'
+  | 'FAILED_TERMINATION';
 
 export interface VirtualCard {
   id: number;

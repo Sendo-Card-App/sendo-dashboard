@@ -24,7 +24,7 @@ export class CommissionListComponent implements OnInit, AfterViewInit, OnDestroy
   feesByType: any[] = [];
 
   // Table configuration
-  displayedColumns: string[] = ['transactionId', 'amount', 'sendoFees', 'totalAmount', 'type', 'status', 'createdAt'];
+  displayedColumns: string[] = ['transactionId', 'amount', 'sendoFees', 'partnerFees', 'totalAmount', 'type', 'status', 'createdAt'];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dataSource = new MatTableDataSource<any>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -163,25 +163,25 @@ export class CommissionListComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   // Ajoutez ces méthodes utilitaires dans votre composant
-getTypeLabel(type: string): string {
-  const typeMap: { [key: string]: string } = {
-    'DEPOSIT': 'Dépôt',
-    'WITHDRAWAL': 'Retrait',
-    'PAYMENT': 'Paiement',
-    'TONTINE_PAYMENT': 'Paiement Tontine',
-    'VIEW_CARD_DETAILS': 'Vue détails carte',
-    'AGENT_TO_CUSTOMER': 'Dépôt agent',
-    'TRANSFER': 'CA-CAM'
-  };
-  return typeMap[type] || type;
-}
+  getTypeLabel(type: string): string {
+    const typeMap: { [key: string]: string } = {
+      'DEPOSIT': 'Dépôt',
+      'WITHDRAWAL': 'Retrait',
+      'PAYMENT': 'Paiement',
+      'TONTINE_PAYMENT': 'Paiement Tontine',
+      'VIEW_CARD_DETAILS': 'Vue détails carte',
+      'AGENT_TO_CUSTOMER': 'Dépôt agent',
+      'TRANSFER': 'CA-CAM'
+    };
+    return typeMap[type] || type;
+  }
 
-getStatusLabel(status: string): string {
-  const statusMap: { [key: string]: string } = {
-    'COMPLETED': 'Complété',
-    'FAILED': 'Échoué',
-    'PENDING': 'En attente'
-  };
-  return statusMap[status] || status;
-}
+  getStatusLabel(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'COMPLETED': 'Complété',
+      'FAILED': 'Échoué',
+      'PENDING': 'En attente'
+    };
+    return statusMap[status] || status;
+  }
 }

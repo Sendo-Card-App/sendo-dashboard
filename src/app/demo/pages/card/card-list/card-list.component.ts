@@ -123,6 +123,7 @@ export class CardListComponent implements OnInit {
       'IN_TERMINATION': 'En résiliation',
       'SUSPENDED': 'Suspendue',
       'BLOCKED': 'Bloquée par Sendo',
+      'FAILED_TERMINATION': 'Suppression échouée'
     };
     return statusMap[status] || status;
   }

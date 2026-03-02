@@ -116,17 +116,18 @@ export class CardDetailComponent implements OnInit {
   }
 
    formatStatus(status: string | undefined): string {
-  const statusMap: Partial<Record<CardStatus, string>> = {
-    'PRE_ACTIVE': 'Pré-activée',
-    'ACTIVE': 'Active',
-    'FROZEN': 'Bloquée',
-    'TERMINATED': 'Résiliée',
-    'IN_TERMINATION': 'En résiliation',
-    'SUSPENDED': 'Suspendue',
-  };
-  if (!status) return 'Inconnu';
-  return statusMap[status as CardStatus] ?? status;
-}
+    const statusMap: Partial<Record<CardStatus, string>> = {
+      'PRE_ACTIVE': 'Pré-activée',
+      'ACTIVE': 'Active',
+      'FROZEN': 'Bloquée',
+      'TERMINATED': 'Résiliée',
+      'IN_TERMINATION': 'En résiliation',
+      'FAILED_TERMINATION': 'Suppression échouée',
+      'SUSPENDED': 'Suspendue',
+    };
+    if (!status) return 'Inconnu';
+    return statusMap[status as CardStatus] ?? status;
+  }
 
   getStatusClass(status: CardStatus): string {
     return `status-${status.toLowerCase()}`;
