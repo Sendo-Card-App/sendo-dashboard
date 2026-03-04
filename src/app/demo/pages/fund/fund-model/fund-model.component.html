@@ -1,0 +1,105 @@
+<!-- fund-model.component.html -->
+<div class="container-fluid">
+  <div class="row m-t-25">
+    <div class="col-12">
+      <!-- En-tête -->
+      <!-- <div class="page-header">
+        <div class="header-content">
+          <i class="ti ti-percentage header-icon"></i>
+          <div>
+            <h1>Gestion des Commissions et Paliers</h1>
+            <p class="header-subtitle">Configurez les commissions et les paliers de tarification</p>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Tableau des fonds de souscription -->
+      <app-card cardClass="custom-card" padding="0">
+        <div class="table-responsive">
+          <div *ngIf="isLoading" class="loading-spinner text-center p-3">
+            <i class="ti ti-loader-2 spinner-icon"></i>
+            <p class="loading-text">Chargement des fonds model ...</p>
+          </div>
+
+          <table mat-table [dataSource]="fundsDataSource" class="custom-table" *ngIf="!isLoading">
+            <!-- Type Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                <i class="ti ti-category m-r-8"></i>
+                Nom
+              </th>
+              <td mat-cell *matCellDef="let fund" class="text-center">
+                <span class="text-center f-w-600 montant-cell">
+                  {{ fund.name }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Montant XAF Column -->
+            <ng-container matColumnDef="amountXAF">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                <i class="ti ti-currency-franc m-r-8"></i>
+                Montant XAF
+              </th>
+              <td mat-cell *matCellDef="let fund" class="text-center f-w-600 montant-cell">
+                {{ fund.amountXAF }}
+              </td>
+            </ng-container>
+
+            <!-- Montant CAD Column -->
+            <ng-container matColumnDef="amountCAD">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                <i class="ti ti-currency-franc m-r-8"></i>
+                Montant CAD
+              </th>
+              <td mat-cell *matCellDef="let fund" class="text-center f-w-600 montant-cell">
+                {{ fund.amountCAD }}
+              </td>
+            </ng-container>
+
+            <!-- Commission Column -->
+            <ng-container matColumnDef="annualCommission">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                <i class="ti ti-note m-r-8"></i>
+                Commission
+              </th>
+              <td mat-cell *matCellDef="let fund" class="description-cell text-center">
+                {{ fund.annualCommission }} %
+              </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="text-center">
+                <i class="ti ti-settings m-r-8"></i>
+                Action
+              </th>
+              <td mat-cell *matCellDef="let fund" class="text-center">
+                <div class="action-buttons">
+                  <button mat-icon-button color="primary"
+                          (click)="openEditFundDialog(fund)"
+                          matTooltip="Modifier" class="action-button">
+                    <i class="ti ti-edit-circle f-18"></i>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="fundsDisplayedColumns" class="table-header-row"></tr>
+            <tr mat-row *matRowDef="let row; columns: fundsDisplayedColumns;" class="table-data-row"></tr>
+
+            <!-- No data row -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">
+                <div class="text-center p-5 text-muted no-data">
+                  <i class="ti ti-percentage no-data-icon"></i>
+                  <p class="no-data-text">Aucun fond trouvé</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

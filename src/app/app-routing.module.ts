@@ -291,10 +291,14 @@ const routes: Routes = [
     children: [
       {
         path: 'all',
-        loadComponent: () => import('./demo/pages/fund-subscription/fund-subscription.component').then((c) => c.FundSubscriptionComponent),
+        loadComponent: () => import('./demo/pages/fund/fund-subscription/fund-subscription.component').then((c) => c.FundSubscriptionComponent),
         data: { roles: ['SUPER_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CARD_MANAGER'] }
       },
-
+      {
+        path: 'funds',
+        loadComponent: () => import('./demo/pages/fund/fund-model/fund-model.component').then((c) => c.FundModelComponent),
+        data: { roles: ['SUPER_ADMIN', 'TECHNICAL_DIRECTOR', 'COMPLIANCE_OFFICER', 'MANAGEMENT_CONTROLLER', 'CARD_MANAGER'] }
+      },
     ]
   },
   {

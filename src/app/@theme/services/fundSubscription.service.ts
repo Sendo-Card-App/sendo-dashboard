@@ -57,14 +57,17 @@ export class FundSubscription {
     }
 }
 
-export class Fund {
-    id: string;
-    amountXAF: number;
-    amountCAD: number;
-    name: string;
-    annualCommission: number;
-    createdAt: Date;
-    updatedAt: Date;
+export class FundUpdate {
+  amountXAF: number;
+  amountCAD: number;
+  name: string;
+  annualCommission: number;
+}
+
+export class Fund extends FundUpdate {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 @Injectable({
@@ -167,6 +170,14 @@ export class FundSubscriptionService {
           })
       );
     }
+
+    updateFundModel(fundId: string, payload: FundUpdate): Observable<FundResponse> {
+        return this.http.put<FundResponse>(
+          `${this.apiUrl}/fund-subscriptions/funds/${fundId}`,
+          payload,
+          this.getConfigAuthorized()
+        );
+      }
 
     /**
      * 🔐 Configuration avec Bearer Token

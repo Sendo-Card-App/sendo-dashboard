@@ -349,12 +349,26 @@ export const menus: Navigation[] = [
       {
         id: 'fund-subscriptions',
         title: 'Souscription investissements',
-        type: 'item',
-        classes: 'nav-item',
-        url: '/fund-subscriptions/all',
+        type: 'collapse',
         icon: '#custom-presentation-chart',
         role: [Role1.SUPER_ADMIN, Role1.SYSTEM_ADMIN,  Role1.COMPLIANCE_OFFICER,
-        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR]
+        Role1.MANAGEMENT_CONTROLLER, Role1.TECHNICAL_DIRECTOR],
+        children: [
+          {
+            id: 'list-all-funds',
+            url: '/fund-subscriptions/funds',
+            type: 'item',
+            breadcrumbs: true,
+            title: "Liste des fonds de souscription",
+          },
+          {
+            id: 'list-all-subscriptions',
+            url: '/fund-subscriptions/all',
+            type: 'item',
+            breadcrumbs: true,
+            title: "Liste des souscriptions d'investissement",
+          }
+        ]
       },
     ]
   },
