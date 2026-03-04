@@ -66,7 +66,7 @@
             <div class="summary-item">
               <span class="summary-label">Montant</span>
               <span class="summary-value highlight">
-                {{ transaction.totalAmount | currency:transaction.currency:'symbol':'1.2-2' }}
+                {{ transaction.totalAmount | currency:'FCFA':'symbol':'1.2-2' }}
               </span>
             </div>
 
@@ -130,7 +130,8 @@
                   (transaction?.method === 'MOBILE_MONEY' && transaction?.type === 'TRANSFER') || 
                   (transaction?.type === 'WITHDRAWAL' && transaction?.method === 'INTERAC') || 
                   (transaction?.type === 'WALLET_TO_WALLET' && transaction?.method === 'WALLET') ||
-                  (transaction?.type === 'TRANSFER' && transaction?.method === 'WALLET')
+                  (transaction?.type === 'TRANSFER' && transaction?.method === 'WALLET') ||
+                  (transaction?.type === 'DEPOSIT' && transaction?.method === 'INTERAC')
                 "
               >
                 {{ isEditing ? 'Annuler' : 'Modifier' }}
@@ -160,7 +161,8 @@
                 (transaction?.method === 'INTERAC' && transaction?.type === 'DEPOSIT') ||
                 (transaction?.type === 'WITHDRAWAL' && transaction?.method === 'INTERAC') ||
                 (transaction?.type === 'WALLET_TO_WALLET' && transaction?.method === 'WALLET') ||
-                (transaction?.type === 'TRANSFER' && transaction?.method === 'WALLET')
+                (transaction?.type === 'TRANSFER' && transaction?.method === 'WALLET') ||
+                (transaction?.type === 'DEPOSIT' && transaction?.method === 'INTERAC')
               )
             " 
             class="status-form" [formGroup]="statusForm"

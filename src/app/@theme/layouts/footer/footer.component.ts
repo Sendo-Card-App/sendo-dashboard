@@ -1,5 +1,5 @@
 // angular import
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // project import
@@ -11,4 +11,10 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })
-export class FooterComponent {}
+export class FooterComponent implements OnInit {
+  currentYear: number = new Date().getFullYear();
+
+  ngOnInit(): void {
+    this.currentYear = new Date().getFullYear();
+  }
+}

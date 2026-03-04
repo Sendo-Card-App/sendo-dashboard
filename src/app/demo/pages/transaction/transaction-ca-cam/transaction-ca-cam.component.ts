@@ -46,7 +46,8 @@ export class TransactionCaCamComponent implements OnInit, AfterViewInit, OnDestr
 
   typeOptions = [
     { value: 'WITHDRAWAL', label: 'Withdrawal' },
-    { value: 'TRANSFER', label: 'Transfert' }
+    { value: 'TRANSFER', label: 'Transfert' },
+    { value: 'DEPOSIT', label: 'Dépôt' }
   ];
 
   methodOptions = [

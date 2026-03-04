@@ -116,7 +116,7 @@
         <ng-container matColumnDef="totalAmount">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>
           <td mat-cell *matCellDef="let transaction">
-            {{ transaction.totalAmount | currency:transaction.currency:'symbol':'1.2-2' }}
+            {{ transaction.totalAmount | currency:'FCFA':'symbol':'1.2-2' }}
           </td>
         </ng-container>
 
