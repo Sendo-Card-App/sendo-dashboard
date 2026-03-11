@@ -227,6 +227,7 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterView
     case 'VERIFIED': return 'Vérifié';
     case 'REFUSED': return 'Refusé';
     case 'REFUSED_TIMEOUT': return 'Refusé (timeout)';
+    case 'REFUSED_SENDO': return 'Refusé (par Sendo)';
     default: return status;
   }
 }
