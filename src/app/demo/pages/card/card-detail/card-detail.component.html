@@ -93,10 +93,10 @@
 
             <button mat-stroked-button
                     color="primary"
-                    (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('COMPLIANCE_OFFICER') || currentuserRole?.includes('CARD_MANAGER')) && toggleCardStatus(card.status === 'ACTIVE' ? 'FREEZE' : 'UNFREEZE')"
+                    (click)="(currentuserRole?.includes('SUPER_ADMIN') || currentuserRole?.includes('COMPLIANCE_OFFICER') || currentuserRole?.includes('CARD_MANAGER')) && toggleCardStatus(card.status)"
                     [disabled]="(card.status === 'TERMINATED' || card.status === 'IN_TERMINATION' || card.status === 'FAILED_TERMINATION') || isUpdating || !currentuserRole?.includes('SUPER_ADMIN') && !currentuserRole?.includes('COMPLIANCE_OFFICER') && !currentuserRole?.includes('CARD_MANAGER')">
               <mat-icon>{{card.status === 'ACTIVE' ? 'lock' : 'lock_open'}}</mat-icon>
-              {{card.status === 'ACTIVE' ? 'Bloquer la carte' : 'Débloquer la carte'}}
+              {{ formatLabelActionButton(card.status) }}
               <mat-spinner *ngIf="isUpdating" diameter="20"></mat-spinner>
             </button>
           </div>

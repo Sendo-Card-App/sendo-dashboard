@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, Inject } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatDrawer } from '@angular/material/sidenav';
@@ -9,12 +10,25 @@ import { SharedModule } from 'src/app/demo/shared/shared.module';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BaseResponse } from 'src/app/@theme/models';
 import { AuthenticationService } from 'src/app/@theme/services/authentication.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-card-onboarding-list',
   templateUrl: './card-onboading-list.component.html',
   styleUrls: ['./card-onboading-list.component.scss'],
-  imports: [CommonModule, SharedModule],
+  imports: [
+    CommonModule, 
+    SharedModule, 
+    FormsModule
+  ],
 })
 export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -23,6 +37,8 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterView
   isLoading = false;
   searchText = '';
   currentStatus = '';
+  rejectKey: string = '';
+  rejectReason: string = '';
   
   statusOptions = [
     { value: '', label: 'Tous' },
@@ -52,7 +68,8 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterView
   constructor(
     private cardService: CardService,
     private snackBar: MatSnackBar,
-    private authentificationService: AuthenticationService
+    private authentificationService: AuthenticationService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -180,9 +197,18 @@ export class CardOnboardingListComponent implements OnInit, OnDestroy, AfterView
     console.log('Approve onboarding for:', partyKey);
   }
 
-  rejectOnboarding(partyKey: string): void {
+  rejectOnboarding(sessionKey: string, reason: string): void {
     // Implémentez la logique de rejet
-    console.log('Reject onboarding for:', partyKey);
+    this.cardService.rejectOnboardingRequest(sessionKey, reason).subscribe(
+      (response) => {
+        console.log('response : ', response)
+        this.snackBar.open('Traitement réussie', 'Fermer', { duration: 3000 });
+        this.rejectReason = '';
+      },
+      (err) => {
+        this.snackBar.open('Erreur lors du traitement : ' + err, 'Fermer', { duration: 3000 });
+      }
+    )
   }
 
   openDocument(): void {
@@ -279,4 +305,78 @@ submitDocumentsToNeero(userId: number) {
     }
   });
 }
+
+  // Méthode pour ouvrir la modal
+  openRejectDialog(party: SessionType): void {
+    console.log('party : ', party)
+    
+    const dialogRef = this.dialog.open(RejectReasonDialogComponent, {
+      width: '500px',
+      data: { key: party.sessionParty.onboardingSessionKey }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.reason) {
+        this.rejectOnboarding(
+          party.sessionParty.onboardingSessionKey, 
+          result.reason
+        );
+      }
+    });
+  }
+
+}
+
+
+@Component({
+  selector: 'app-reject-reason-dialog',
+  template: `
+    <h2 mat-dialog-title>Motif du rejet</h2>
+    <mat-dialog-content>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Motif (obligatoire)</mat-label>
+        <textarea matInput 
+                  rows="4" 
+                  [(ngModel)]="reason"
+                  placeholder="Décrivez le motif du rejet..."
+                  required></textarea>
+        <mat-error>Motif requis</mat-error>
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Annuler</button>
+      <button mat-raised-button 
+              color="warn" 
+              [mat-dialog-close]="{ reason: reason }"
+              [disabled]="!reason || reason.trim() === ''">
+        Rejeter
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    textarea { resize: vertical; }
+    .w-100 { width: 100%; }
+  `],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatTabsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ]
+})
+export class RejectReasonDialogComponent {
+  reason: string = '';
+
+  constructor(
+    public dialogRef: MatDialogRef<RejectReasonDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { key: string }
+  ) {}
 }

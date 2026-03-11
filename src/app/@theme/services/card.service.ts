@@ -56,6 +56,10 @@ getOnboardingRequests(
     return this.http.get<BaseResponse<KycDocument>>(`${this.apiUrl}/admin/kyc/${userId}/list`, this.getConfigAuthorized());
   }
 
+  rejectOnboardingRequest(sessionId: string, reason: string) {
+    return this.http.put(`${this.apiUrl}/cards/onboarding/${sessionId}/reject`, { reason }, this.getConfigAuthorized());
+  }
+
   getCards(
     page: number = 1,
     limit: number = 10,
@@ -98,8 +102,16 @@ getOnboardingRequests(
     return this.http.get<CardTransactionResponse>(`${this.apiUrl}/cards/${cardId}/transactions`, this.getConfigAuthorized());
   }
 
-  freezeOrUnfreezeCard(cardId: number, action: 'FREEZE' | 'UNFREEZE'): Observable<BaseResponse> {
+  changeStatusCard(cardId: number, action: 'FREEZE' | 'UNFREEZE'): Observable<BaseResponse> {
     return this.http.put<BaseResponse>(`${this.apiUrl}/cards/admin/${cardId}/status`, { action },{...this.getConfigAuthorized()});
+  }
+
+  freezeCard(cardId: number): Observable<BaseResponse> {
+    return this.http.put<BaseResponse>(`${this.apiUrl}/cards/freeze/${cardId}`, {...this.getConfigAuthorized()});
+  }
+
+  unfreezeCard(cardId: number): Observable<BaseResponse> {
+    return this.http.put<BaseResponse>(`${this.apiUrl}/cards/unfreeze/${cardId}`, {...this.getConfigAuthorized()});
   }
 
   deleteCard(cardId: number): Observable<BaseResponse> {

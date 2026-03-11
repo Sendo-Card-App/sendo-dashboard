@@ -33,7 +33,7 @@ export class CardListComponent implements OnInit {
     { value: '', label: 'Tous les statuts' },
     { value: 'PRE_ACTIVE', label: 'Pré-activée' },
     { value: 'ACTIVE', label: 'Active' },
-    { value: 'FROZEN', label: 'Bloquée' },
+    { value: 'FROZEN', label: 'Gêlée' },
     { value: 'SUSPENDED', label: 'Suspendue' },
     { value: 'IN_TERMINATION', label: 'En cours de résiliation' },
     { value: 'TERMINATED', label: 'Résiliée' },
@@ -118,7 +118,7 @@ export class CardListComponent implements OnInit {
     const statusMap: Record<CardStatus, string> = {
       'PRE_ACTIVE': 'Pré-activée',
       'ACTIVE': 'Active',
-      'FROZEN': 'Bloquée',
+      'FROZEN': 'Gêlée',
       'TERMINATED': 'Résiliée',
       'IN_TERMINATION': 'En résiliation',
       'SUSPENDED': 'Suspendue',

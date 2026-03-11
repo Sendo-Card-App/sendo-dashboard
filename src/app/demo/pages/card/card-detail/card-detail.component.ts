@@ -66,24 +66,54 @@ export class CardDetailComponent implements OnInit {
     });
   }
 
-  toggleCardStatus(newStatus: 'FREEZE' | 'UNFREEZE'): void {
+  toggleCardStatus(status: CardStatus): void {
     if (!this.card) return;
 
     this.isUpdating = true;
-    const action = newStatus === 'FREEZE' ? 'bloquer' : 'débloquer';
+    const action = status === 'ACTIVE' ? 'FREEZE' : (
+      status === 'FROZEN' ? 'UNFREEZE' : 'ACTIVE'
+    );
 
-    this.cardService.freezeOrUnfreezeCard(this.cardId, newStatus).subscribe({
-      next: () => {
-        this.showSuccess(`Carte ${action} avec succès`);
-        this.card!.status = newStatus === 'FREEZE' ? 'FROZEN' : 'ACTIVE';
-        this.isUpdating = false;
-      },
-      error: (err) => {
-        console.error(`Error ${action} card`, err);
-        this.showError(`Erreur lors de l'opération de ${action}`);
-        this.isUpdating = false;
-      }
-    });
+    if (action === 'ACTIVE') {
+      this.cardService.changeStatusCard(this.cardId, 'UNFREEZE').subscribe({
+        next: () => {
+          this.showSuccess(`Carte activée avec succès`);
+          this.card!.status = 'ACTIVE'
+          this.isUpdating = false;
+        },
+        error: (err) => {
+          console.error(`Error activation card`, err);
+          this.showError(`Erreur lors de l'opération d' activation`);
+          this.isUpdating = false;
+        }
+      });
+    } else if (action === 'FREEZE') {
+      this.cardService.changeStatusCard(this.cardId, 'FREEZE').subscribe({
+        next: () => {
+          this.showSuccess(`Carte bloquée avec succès`);
+          this.card!.status = 'BLOCKED'
+          this.isUpdating = false;
+        },
+        error: (err) => {
+          console.error(`Error bloquage card`, err);
+          this.showError(`Erreur lors de l'opération de bloquage`);
+          this.isUpdating = false;
+        }
+      });
+    } else if (action === 'UNFREEZE') {
+      this.cardService.unfreezeCard(this.cardId).subscribe({
+        next: () => {
+          this.showSuccess(`Carte dégêlée avec succès`);
+          this.card!.status = 'ACTIVE'
+          this.isUpdating = false;
+        },
+        error: (err) => {
+          console.error(`Error dégêle card`, err);
+          this.showError(`Erreur lors de l'opération de dégêle`);
+          this.isUpdating = false;
+        }
+      });
+    }
   }
 
   deleteCard(): void {
@@ -119,10 +149,11 @@ export class CardDetailComponent implements OnInit {
     const statusMap: Partial<Record<CardStatus, string>> = {
       'PRE_ACTIVE': 'Pré-activée',
       'ACTIVE': 'Active',
-      'FROZEN': 'Bloquée',
+      'FROZEN': 'Gêlée',
       'TERMINATED': 'Résiliée',
       'IN_TERMINATION': 'En résiliation',
       'FAILED_TERMINATION': 'Suppression échouée',
+      'BLOCKED': 'Bloquée par Sendo',
       'SUSPENDED': 'Suspendue',
     };
     if (!status) return 'Inconnu';
@@ -131,6 +162,23 @@ export class CardDetailComponent implements OnInit {
 
   getStatusClass(status: CardStatus): string {
     return `status-${status.toLowerCase()}`;
+  }
+
+  formatLabelActionButton(status: CardStatus) {
+    switch (status) {
+      case 'ACTIVE':
+        return 'Bloquer la carte'
+        break;
+      case 'BLOCKED':
+        return 'Débloquer la carte'
+        break;
+      case 'FROZEN':
+        return 'Dégêler la carte'
+    
+      default:
+        return 'Bloquer la carte'
+        break;
+    }
   }
 
   goBack(): void {

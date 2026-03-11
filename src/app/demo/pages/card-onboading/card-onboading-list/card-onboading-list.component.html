@@ -86,12 +86,12 @@
                         </button>
                       </li>
                       <li class="list-inline-item m-r-10" matTooltip="Approuver">
-                        <button mat-icon-button (click)="approveOnboarding(party.sessionParty.key)" color="primary">
+                        <button mat-icon-button (click)="approveOnboarding(party.sessionParty.onboardingSessionKey)" color="primary">
                           <i class="ti ti-check f-18"></i>
                         </button>
                       </li>
                       <li class="list-inline-item m-r-10" matTooltip="Rejeter">
-                        <button mat-icon-button (click)="rejectOnboarding(party.sessionParty.key)" color="warn">
+                        <button mat-icon-button (click)="openRejectDialog(party)" color="warn">
                           <i class="ti ti-x f-18"></i>
                         </button>
                       </li>
@@ -99,6 +99,7 @@
                   </div>
                 </td>
               </ng-container>
+
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>

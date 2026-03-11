@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CardOnboadingListComponent } from './card-onboading-list.component';
+import { CardOnboardingListComponent } from './card-onboading-list.component';
 
 describe('CardOnboadingListComponent', () => {
-  let component: CardOnboadingListComponent;
-  let fixture: ComponentFixture<CardOnboadingListComponent>;
+  let component: CardOnboardingListComponent;
+  let fixture: ComponentFixture<CardOnboardingListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CardOnboadingListComponent]
+      imports: [CardOnboardingListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CardOnboadingListComponent);
+    fixture = TestBed.createComponent(CardOnboardingListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,3 +21,5 @@ describe('CardOnboadingListComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+

@@ -138,3 +138,11 @@ $accent: #3f51b5;
     align-items: center;
   }
 }
+
+#rejectModal .modal-dialog {
+  max-width: 500px;
+}
+
+#rejectModal textarea {
+  resize: vertical;
+}
