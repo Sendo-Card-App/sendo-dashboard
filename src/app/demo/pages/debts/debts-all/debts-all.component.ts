@@ -16,8 +16,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { finalize } from 'rxjs/operators';
 
 import { SharedModule } from 'src/app/demo/shared/shared.module';
-import { Debt, DebtResponse } from 'src/app/@theme/models';
+import { Debt } from 'src/app/@theme/models';
 import { DebtService } from 'src/app/@theme/services/debt.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-debts-all',
@@ -51,6 +52,7 @@ export class DebtsAllComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 10;
   searchText = '';
+  totalDebtsAmount = 0;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -67,29 +69,33 @@ export class DebtsAllComponent implements OnInit {
   loadDebts(): void {
     this.isLoading = true;
 
-    this.debtService.getAllDebts(this.currentPage, this.itemsPerPage)
-      .pipe(finalize(() => this.isLoading = false))
-      .subscribe({
-        next: (response: DebtResponse) => {
-          if (response.status === 200) {
-            this.allDebts = response.data.items;
-            this.totalItems = response.data.totalItems;
-            this.currentPage = response.data.page;
+    // Appel parallèle pour pagination + total
+    forkJoin({
+      debts: this.debtService.getAllDebts(this.currentPage, this.itemsPerPage),
+      response: this.debtService.getTotalAmountDebts()
+    })
+    .pipe(finalize(() => this.isLoading = false))
+    .subscribe({
+      next: ({ debts, response }) => {
+        if (debts.status === 200) {
+          this.allDebts = debts.data.items;
+          this.totalItems = debts.data.totalItems;
+          this.currentPage = debts.data.page;
 
-            if (this.searchText) {
-              this.applyLocalFilter();
-            } else {
-              this.filteredDataSource = [...this.allDebts];
-            }
+          if (this.searchText) {
+            this.applyLocalFilter();
           } else {
-            this.showError('Erreur lors du chargement des dettes');
+            this.filteredDataSource = [...this.allDebts];
           }
-        },
-        error: (error) => {
-          console.error('Erreur chargement dettes:', error);
-          this.showError('Erreur lors du chargement des dettes');
         }
-      });
+        
+        this.totalDebtsAmount = response.data.amount || 0;
+      },
+      error: (error) => {
+        console.error('Erreur:', error);
+        this.showError('Erreur lors du chargement');
+      }
+    });
   }
 
   applyFilter(value: string): void {

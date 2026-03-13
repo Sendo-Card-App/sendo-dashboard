@@ -37,6 +37,16 @@ export class DebtService {
   }
 
   /**
+ * 🔹 Récupérer les dettes d’un utilisateur par son ID
+ * Endpoint : GET /debts/users/{userId}
+ */
+  getTotalAmountDebts(): Observable<BaseResponse<{ amount: number }>> {
+    return this.http.get<BaseResponse<{ amount: number }>>(
+      `${this.baseUrl}/debts/total-amount`, this.getConfigAuthorized()
+    );
+  }
+
+  /**
    * 💳 Payer une dette via une carte
    * Endpoint : POST /debts/{idDebt}/{idCard}/pay-from-card
    */

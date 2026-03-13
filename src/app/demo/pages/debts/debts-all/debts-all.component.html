@@ -30,6 +30,18 @@
   <div class="col-12">
     <app-card cardTitle="Liste des Dettes" padding="0" cardClass="sm-block">
 
+      <!-- Header avec Total -->
+      <ng-template #headerOptionsTemplate>
+        <div class="d-flex align-items-center justify-content-between w-100">
+          <!-- Total Dettes -->
+          <div class="total-debts-info">
+            <div class="total-label text-muted f-s-14">Total des dettes</div>
+            <div class="total-amount f-w-700 f-s-24 text-primary">
+              {{ formatAmount(totalDebtsAmount) }}
+            </div>
+          </div>
+        </div>
+      </ng-template>
       <!-- Header Options -->
       <!-- <ng-template #headerOptionsTemplate>
         <div class="table-options">
